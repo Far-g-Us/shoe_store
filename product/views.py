@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
-from product.models import Products
+from product.models import Product
 
 class ProductListView(ListView):
-    model = Products
+    model = Product
     template_name = 'product_list.html'
 
 class ProductDetailView(DetailView):
-    model = Products
+    model = Product
     template_name = 'product_detail.html'
 
