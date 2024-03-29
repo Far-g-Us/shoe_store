@@ -1,5 +1,20 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+<div class="container container_detail">
+{% csrf_token %}
+    <div>
+        <img src="{{ shoe.image.url }}" class="custom_img custom_img_detail" alt="Product image">
+    </div>
+    <div>
+            <h2 class="custom_h2">{{ shoe.name }}</h2>
+            {% if shoe.color %}<p class="custom_p">Цвет: {{ shoe.color }}</p>{% endif %}
+            {% if shoe.size %}<p class="custom_p">Размер: {{ shoe.size }}</p>{% endif %}
+            {% if shoe.price %}<p class="custom_p">Цена: {{ shoe.price }} руб</p>{% endif %}
+            {% if shoe.volume %}<p class="custom_p">Колличество: {{ shoe.volume }}</p>{% endif %}
+            {% if shoe.collection %}<p class="custom_p">Коллекция: {{ shoe.collection }}</p>{% endif %}
+            {% if shoe.description %}<p class="custom_p">Описание: {{ shoe.description }}</p>{% endif %}
+    </div>
 
+</div>
 {% endblock content %}

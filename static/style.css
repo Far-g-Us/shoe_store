@@ -1,0 +1,79 @@
+header {
+    z-index: 1;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #fff;
+}
+footer {
+    z-index: 0;
+    margin-top: 100px;
+    padding: 15px;
+    width: 100%;
+    background-color: #000000;
+}
+.container {
+    z-index: 0;
+    position: relative;
+    width: 100%;
+    margin-top: 100px;
+}
+.container_detail {
+    margin-top: 25px;
+}
+.custom_h2 {
+    color: rgb(0, 0, 0);
+    font-size: 48px;
+    font-family: 'Playfair Display';
+    font-style: italic;
+    src: local('static'), url(./font/Playfair_Display/PlayfairDisplay-BlackItalic.ttf);
+}
+.custom_h4 {
+    color:rgb(0, 0, 0);
+    font-size: 26px;
+    font-family: 'Playfair Display';
+    font-style: italic;
+    src: local('static'), url(./font/Playfair_Display/PlayfairDisplay-BlackItalic.ttf);
+}
+.custom_a {
+    font-size: 18px;
+    font-family: 'Playfair Display';
+    font-style: normal;  
+    src: local('static'), url(./font/Playfair_Display/PlayfairDisplay-Medium.ttf);
+    text-decoration: none;
+    color:rgb(0, 0, 0);
+}
+.custom_p {
+    color:rgb(0, 0, 0);
+    font-size: 20px;
+    font-family: 'Playfair Display';
+    font-style: normal;
+    src: local('static'), url(./font/Playfair_Display/PlayfairDisplay-Medium.ttf);
+}
+.custom_img {
+    width: 100%;
+    height: auto;
+
+}
+.custom_img_detail {
+    width: calc(40% - 10px);
+}
+.custom_div {
+    border: 1px solid black;
+    margin-left: 5px;
+    margin-right: 5px;
+
+}
+.col.custom_div {
+    width: calc(33.33% - 10px); /* 10px для отступа между карточками */
+    margin-bottom: 15px;
+    margin-top: 10px;
+}
+.custom_text {
+    color:rgb(0, 0, 0);
+    font-size: 20px;
+    font-family: 'Playfair Display';
+    font-style: normal;
+    src: local('static'), url(./font/Playfair_Display/PlayfairDisplay-Black.ttf);
+}
+

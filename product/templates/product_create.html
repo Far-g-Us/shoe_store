@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div>
+        <h2 class="custom_h2">Созданние продукта</h2>
+            <form class="custom_p" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-success" type="submit">Create</button>
+           </form>
+            {% for shoe in shoes %}
+<!--            <div>-->
+<!--                <h2 class="custom_h2">{{ shoe.name }}</h2>-->
+<!--                <p class="custom_p">{{ shoe.color }}</p>-->
+<!--                <p class="custom_p">{{ shoe.size }}</p>-->
+<!--                <h4 class="custom_h4">{{ shoe.price }}</h4>-->
+<!--                <p class="custom_p">{{ shoe.volume }}</p>-->
+<!--                <p class="custom_p">{{ shoe.collection }}</p>-->
+<!--                <h4 class="custom_h4">{{ shoe.description }}</h4>-->
+<!--            </div>-->
+            {% endfor %}
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <h4 class="custom_h4">Вы точно хотите удалить "{{ object.name }}"?</h4>
+        <form method="post">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit">Принять</button>
+        </form>
+    </div>
+{% endblock content %}

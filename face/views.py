@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from face.models import Face
-from product.models import Product
+from product.models import Shoes
 
 class indexView(ListView):
     model = Face
@@ -12,5 +12,5 @@ class indexView(ListView):
         return Face.objects.all()
 
 class ProductDetailView(DetailView):
-    model = Product
+    model = Shoes
     template_name = './product_detail.html'
