@@ -30,6 +30,14 @@ class CollectionProduct(models.Model):
     def __str__(self):
         return self.name
 
+class DiscountProduct(models.Model):
+    name = models.CharField(max_length=40, verbose_name='Скидка')
+
+    class Meta:
+        verbose_name_plural = 'Скидка'
+
+    def __str__(self):
+        return self.name
 
 class Shoes(models.Model):
     name = models.CharField(max_length=40, verbose_name='Кросовки')
@@ -37,7 +45,8 @@ class Shoes(models.Model):
     size = models.ManyToManyField(SizeProduct, max_length=40,  verbose_name='Размер кросовок')
     image = models.ImageField(verbose_name='Фото', upload_to='content/%Y/%m', blank=True)
     description = models.TextField(verbose_name='О товаре', blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
+    price = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Цена')
+    discount = models.ManyToManyField(DiscountProduct, max_length=40, verbose_name='Скидка')
     volume = models.CharField(max_length=100, verbose_name='Кол-во', blank=True, null=True)
     collection = models.ManyToManyField(CollectionProduct, max_length=40,  verbose_name='Коллекция')
 

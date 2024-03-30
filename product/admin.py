@@ -7,4 +7,5 @@ admin.site.register(Shoes)
 admin.site.register(ColorProduct)
 admin.site.register(SizeProduct)
 admin.site.register(CollectionProduct)
+admin.site.register(DiscountProduct)
 

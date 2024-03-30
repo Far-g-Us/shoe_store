@@ -8,13 +8,12 @@
     </div>
     <div>
             <h2 class="custom_h2">{{ shoe.name }}</h2>
-            {% if shoe.color %}<p class="custom_p">Цвет: {{ shoe.color }}</p>{% endif %}
-            {% if shoe.size %}<p class="custom_p">Размер: {{ shoe.size }}</p>{% endif %}
-            {% if shoe.price %}<p class="custom_p">Цена: {{ shoe.price }} руб</p>{% endif %}
+            {% for color in colors %}{% if not forloop.first %},{% endif %}<p class="custom_p">Цвет: {{ color.name }}</p>{% endfor %}
+            <p class="custom_p">Размер: {{ sizes|join:', ' }}</p>
+            <p class="custom_p">Цена: {{ shoe.price }} руб</p>
             {% if shoe.volume %}<p class="custom_p">Колличество: {{ shoe.volume }}</p>{% endif %}
-            {% if shoe.collection %}<p class="custom_p">Коллекция: {{ shoe.collection }}</p>{% endif %}
+            <p class="custom_p">Коллекция: {{ collections|join:', ' }}</p>
             {% if shoe.description %}<p class="custom_p">Описание: {{ shoe.description }}</p>{% endif %}
     </div>
-
 </div>
 {% endblock content %}

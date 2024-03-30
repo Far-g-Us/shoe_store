@@ -1,6 +1,7 @@
 from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
-from product.models import Shoes
+from product.models import Shoes, DiscountProduct
 from product.forms import ShoesForm
 
 class ProductListView(ListView):
@@ -20,6 +21,14 @@ class ProductDetailView(DetailView):
     def get_object(self):
         product_id = self.kwargs['product_id']
         return Shoes.objects.get(pk=product_id)
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shoe = self.get_object()
+        context['sizes'] = shoe.size.all()
+        context['collections'] = shoe.collection.all()
+        return context
 
 
 class ProductCreateView(CreateView):

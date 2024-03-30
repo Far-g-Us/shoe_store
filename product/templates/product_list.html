@@ -11,7 +11,9 @@
 
                     <div class="card-body">
                         <h2 class="card-title custom_h2">{{ shoe.name }}</h2>
-                        <h4 class="card-text custom_h4">{{ shoe.price }} руб</h4>
+                        <div class="custom_div_1">
+                            <h4 class="card-text custom_h4">{{ shoe.price }} руб</h4>
+                        </div>
                         <h4 class="card-text custom_h4">
                             {% for collection in shoe.collection.all %}
                             {{ collection.name }}

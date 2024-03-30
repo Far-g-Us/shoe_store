@@ -56,13 +56,17 @@ footer {
 
 }
 .custom_img_detail {
-    width: calc(40% - 10px);
+    width: calc(40% - 15px);
 }
 .custom_div {
     border: 1px solid black;
     margin-left: 5px;
     margin-right: 5px;
 
+}
+.custom_div_1 {
+    display: flex;
+    margin-right: 15px;
 }
 .col.custom_div {
     width: calc(33.33% - 10px); /* 10px для отступа между карточками */
@@ -76,4 +80,3 @@ footer {
     font-style: normal;
     src: local('static'), url(./font/Playfair_Display/PlayfairDisplay-Black.ttf);
 }
-

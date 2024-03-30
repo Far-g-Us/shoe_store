@@ -51,6 +51,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+SECURE_BROWSER_XSS_FILTER = True
+
 ROOT_URLCONF = "store.urls"
 
 TEMPLATES = [
