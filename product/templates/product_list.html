@@ -6,14 +6,12 @@
         <div class="col custom_div">
             <div class="card">
                 <a href="{% url 'product_detail' product_id=shoe.id %}">
-                <img src="{{ shoe.image.url }}" class="card-img-top custom_img" alt="Product image">
+                <img src="{{ shoe.image.url }}" class="card-img-top custom_img" alt="{{ shoe.name }}">
                 </a>
 
                     <div class="card-body">
                         <h2 class="card-title custom_h2">{{ shoe.name }}</h2>
-                        <div class="custom_div_1">
-                            <h4 class="card-text custom_h4">{{ shoe.price }} руб</h4>
-                        </div>
+                        <h4 class="card-text custom_h4">Цена {{ shoe.price }} руб</h4>
                         <h4 class="card-text custom_h4">
                             {% for collection in shoe.collection.all %}
                             {{ collection.name }}

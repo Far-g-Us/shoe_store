@@ -1,6 +1,7 @@
 from django.db import models
 
 
+
 class ColorProduct(models.Model):
     name = models.CharField(max_length=40, verbose_name='Цвет')
 
@@ -32,6 +33,7 @@ class CollectionProduct(models.Model):
 
 class DiscountProduct(models.Model):
     name = models.CharField(max_length=40, verbose_name='Скидка')
+    value = models.IntegerField(verbose_name='%')
 
     class Meta:
         verbose_name_plural = 'Скидка'

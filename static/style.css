@@ -18,6 +18,14 @@ footer {
     width: 100%;
     margin-top: 100px;
 }
+.container_1 {
+    z-index: 0;
+    position: relative;
+    width: 100%;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    justify-content: center;
+}
 .container_detail {
     margin-top: 25px;
 }
@@ -62,9 +70,9 @@ footer {
     border: 1px solid black;
     margin-left: 5px;
     margin-right: 5px;
-
 }
 .custom_div_1 {
+    color:#fff;
     display: flex;
     margin-right: 15px;
 }
@@ -80,3 +88,15 @@ footer {
     font-style: normal;
     src: local('static'), url(./font/Playfair_Display/PlayfairDisplay-Black.ttf);
 }
+.custom_text_1 {
+    color:rgb(255, 255, 255);
+    font-size: 20px;
+    font-family: 'Playfair Display';
+    font-style: normal;
+    src: local('static'), url(./font/Playfair_Display/PlayfairDisplay-Black.ttf);
+}
+.disabled {
+    text-decoration: none;
+    pointer-events: none;
+    opacity: 0.2;
+  }
