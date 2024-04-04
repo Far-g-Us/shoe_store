@@ -48,12 +48,17 @@ class Shoes(models.Model):
     image = models.ImageField(verbose_name='Фото', upload_to='content/%Y/%m', blank=True)
     description = models.TextField(verbose_name='О товаре', blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Цена')
-    discount = models.ManyToManyField(DiscountProduct, max_length=40, verbose_name='Скидка')
+    discount = models.IntegerField(verbose_name='Скидка', null=True)
     volume = models.CharField(max_length=100, verbose_name='Кол-во', blank=True, null=True)
     collection = models.ManyToManyField(CollectionProduct, max_length=40,  verbose_name='Коллекция')
 
     class Meta:
         verbose_name_plural = 'Обувь'
+
+    def discounted_price(self):
+        discount = self.discount
+        price = self.price
+        discounted_price = price
 
     def __str__(self):
         return self.name

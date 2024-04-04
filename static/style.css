@@ -7,10 +7,15 @@ header {
 }
 footer {
     z-index: 0;
-    margin-top: 100px;
+    margin-top: 70px;
     padding: 15px;
     width: 100%;
     background-color: #000000;
+}
+body {
+    margin: 0;
+    padding: 0;
+    padding-top: 62px;
 }
 .container {
     z-index: 0;
@@ -28,6 +33,7 @@ footer {
 }
 .container_detail {
     margin-top: 25px;
+    margin-bottom: 25px;
 }
 .custom_h2 {
     color: rgb(0, 0, 0);
@@ -58,16 +64,23 @@ footer {
     font-style: normal;
     src: local('static'), url(./font/Playfair_Display/PlayfairDisplay-Medium.ttf);
 }
+.custom_p1 {
+    color:rgb(0, 0, 0);
+    font-size: 18px;
+    font-family: 'Playfair Display';
+    font-style: normal;
+    src: local('static'), url(./font/Playfair_Display/PlayfairDisplay-Medium.ttf);
+}
 .custom_img {
     width: 100%;
     height: auto;
-
 }
 .custom_img_detail {
     width: calc(40% - 15px);
 }
 .custom_div {
     border: 1px solid black;
+    padding: 0;
     margin-left: 5px;
     margin-right: 5px;
 }
@@ -75,6 +88,9 @@ footer {
     color:#fff;
     display: flex;
     margin-right: 15px;
+}
+.card_1 {
+    border: none;
 }
 .col.custom_div {
     width: calc(33.33% - 10px); /* 10px для отступа между карточками */
