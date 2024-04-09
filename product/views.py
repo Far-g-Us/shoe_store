@@ -1,14 +1,16 @@
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
-from product.models import Shoes, DiscountProduct
+from product.models import Shoes
+from decimal import Decimal
 from product.forms import ShoesForm
+
 
 class ProductListView(ListView):
     model = Shoes
     fields = '__all__'
     context_object_name = 'shoes'
     template_name = 'product_list.html'
+
 
 class ProductDetailView(DetailView):
     model = Shoes
@@ -28,6 +30,10 @@ class ProductDetailView(DetailView):
         shoe = self.get_object()
         context['sizes'] = shoe.size.all()
         context['collections'] = shoe.collection.all()
+        price_decimal = Decimal(str(shoe.price))
+        discount_decimal = Decimal(str(shoe.discount))
+        discounted_price = price_decimal * (1 - discount_decimal / 100)
+        context['discounted_price'] = str(round(discounted_price))
         return context
 
 

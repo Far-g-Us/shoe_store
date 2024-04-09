@@ -111,8 +111,3 @@ body {
     font-style: normal;
     src: local('static'), url(./font/Playfair_Display/PlayfairDisplay-Black.ttf);
 }
-.disabled {
-    text-decoration: none;
-    pointer-events: none;
-    opacity: 0.2;
-  }
