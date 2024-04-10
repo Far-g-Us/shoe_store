@@ -1,21 +1,37 @@
+html {
+    height: 100%;
+}
+body {
+    margin: 0;
+    padding: 0;
+    padding-top: 22px;
+    color: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 header {
     z-index: 1;
     position: fixed;
     top: 0;
     width: 100%;
     background-color: #fff;
+    /* background: blue; */
 }
+main {
+    /* Чтобы занимал оставшееся пространство */
+    flex-grow: 1;
+    /* background: red; */
+}  
 footer {
-    z-index: 0;
+    /* z-index: 0; */
     margin-top: 70px;
     padding: 15px;
     width: 100%;
     background-color: #000000;
-}
-body {
-    margin: 0;
-    padding: 0;
-    padding-top: 62px;
+    /* Чтобы footer не уменьшался */
+    flex-shrink: 0;
 }
 .container {
     z-index: 0;
@@ -89,8 +105,22 @@ body {
     display: flex;
     margin-right: 15px;
 }
-.card_1 {
+.main-card {
     border: none;
+    border-radius: 0;
+    display: flex; 
+    flex-direction: column; 
+    /* height: 85vh; */
+    /* background: green; */
+}
+.main-card-body {
+    flex-grow: 1;
+    /* height: 32vh; */
+    overflow-y: auto;
+}
+.main-card-content {
+    align-items: center;
+    text-align: center;
 }
 .col.custom_div {
     width: calc(33.33% - 10px); /* 10px для отступа между карточками */

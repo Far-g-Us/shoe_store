@@ -1,8 +1,9 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
-from product.models import Shoes
+from product.models import Shoes, Category
 from decimal import Decimal
 from product.forms import ShoesForm
+from django.shortcuts import get_object_or_404
 
 
 class ProductListView(ListView):
@@ -11,11 +12,37 @@ class ProductListView(ListView):
     context_object_name = 'shoes'
     template_name = 'product_list.html'
 
+    def __init__(self, request, category_slug=None):
+        self.request = request
+        self.category_slug = category_slug
+
+    def get_products(self):
+        category = None
+        categories = Category.objects.all()
+        shoes = Shoes.objects.filter(available=True)
+
+        if self.category_slug:
+            category = get_object_or_404(Category, slug=self.category_slug)
+            shoes = shoes.filter(category=category)
+            return {
+                'category': category,
+                'categories': categories,
+                'shoes': shoes
+            }
 
 class ProductDetailView(DetailView):
     model = Shoes
     context_object_name = 'shoe'
     template_name = 'product_detail.html'
+
+    def __init__(self, request, id, slug):
+        self.request = request
+        self.id = id
+        self.slug = slug
+
+    def get_product_detail(self):
+        shoe = get_object_or_404(Shoes, id=self.id, slug=self.slug, available=True)
+        return {'shoe': shoe}
 
     def get_queryset(self):
         return Shoes.objects.all()
@@ -23,7 +50,6 @@ class ProductDetailView(DetailView):
     def get_object(self):
         product_id = self.kwargs['product_id']
         return Shoes.objects.get(pk=product_id)
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -35,7 +61,6 @@ class ProductDetailView(DetailView):
         discounted_price = price_decimal * (1 - discount_decimal / 100)
         context['discounted_price'] = str(round(discounted_price))
         return context
-
 
 class ProductCreateView(CreateView):
     model = Shoes
