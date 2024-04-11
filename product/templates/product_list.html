@@ -2,22 +2,24 @@
 {% block content %}
 <div class="container">
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for shoe in shoes %}
+        {% for shoe in shoesList %}
         <div class="col custom_div">
             <div class="card main-card">
                 <a href="{% url 'product_detail' product_id=shoe.id %}">
+                    {% if shoe.image %}
                 <img src="{{ shoe.image.url }}" class="card-img-top custom_img" alt="{{ shoe.name }}">
+                    {% endif %}
                 </a>
                 <div class="card-body main-card-body">
                     <div class="main-card-content">
                        <h2 class="card-title custom_h2">{{ shoe.name }}</h2>
                         {% if shoe.discount != 0 %}
                             {% if shoe.discounted_price != 0 %}
-                            <h4 class="card-text custom_h4" style="text-decoration: line-through;">Цена: {{ shoe.price }} руб</h4>
-                            <h4 class="card-text custom_h4">Цена со скидкой: {{ shoe.discounted_price }} руб</h4>
+                            <h4 class="card-text custom_h4" style="text-decoration: line-through;">Цена: {{ shoe.price.price }} руб</h4>
+                            <h4 class="card-text custom_h4">Цена со скидкой: {{ shoe.price.sale }} руб</h4>
                             {% endif %}
                         {% else %}
-                            <h4 class="card-text custom_h4">Цена: {{ shoe.price }} руб</h4>
+                            <h4 class="card-text custom_h4">Цена:{{ shoe.price.price }} руб</h4>
                         {% endif %}
                         <h4 class="card-text custom_h4">
                             {% for collection in shoe.collection.all %}

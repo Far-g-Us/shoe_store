@@ -13,9 +13,7 @@
                 {% endif %}
               </li>
               <li class="nav-item col-2">
-                <span class="nav-link custom_p custom_text" aria-current="page" id="catalog">Каталог</span>
-                <div id="productListContainer" style="display: none;"></div>
-                 <script src="main.js"></script>
+                  <a class="nav-link custom_text" href="{% url 'product_list' %}">Каталог</a>
               </li>
               <li class="nav-item col-6">
                 {% if user.is_staff %}

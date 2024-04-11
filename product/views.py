@@ -12,9 +12,25 @@ class ProductListView(ListView):
     context_object_name = 'shoes'
     template_name = 'product_list.html'
 
-    def __init__(self, request, category_slug=None):
-        self.request = request
+    def __init__(self, category_slug=None):
         self.category_slug = category_slug
+
+    def get_object(self):
+        return Shoes.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shoe = self.get_object()
+        shoesList = []
+        for item in shoe:
+            price_decimal = Decimal(str(item.price))
+            discount_decimal = Decimal(str(item.discount))
+            discounted_price = price_decimal * (1 - discount_decimal / 100)
+            item.price = {'price': price_decimal, 'sale': str(round(discounted_price))}
+            shoesList.append(item)
+            # print(shoesList)
+        context['shoesList'] = shoesList
+        return context
 
     def get_products(self):
         category = None
@@ -35,8 +51,7 @@ class ProductDetailView(DetailView):
     context_object_name = 'shoe'
     template_name = 'product_detail.html'
 
-    def __init__(self, request, id, slug):
-        self.request = request
+    def __init__(self, id, slug):
         self.id = id
         self.slug = slug
 
