@@ -1,7 +1,6 @@
-from django.shortcuts import render
 from django.views.generic import ListView, DetailView
-from face.models import Face
-from product.models import Shoes
+from face.models import Face, Cart, Contact
+
 
 class indexView(ListView):
     model = Face
@@ -11,6 +10,18 @@ class indexView(ListView):
     def get_queryset(self):
         return Face.objects.all()
 
-class ProductDetailView(DetailView):
-    model = Shoes
-    template_name = './product_detail.html'
+class cartView(ListView):
+    model = Cart
+    fields = '__all__'
+    template_name = 'cart.html'
+
+    def get_queryset(self):
+        return Cart.objects.all()
+
+class contactView(ListView):
+    model = Contact
+    fields = '__all__'
+    template_name = 'contact.html'
+
+    def get_queryset(self):
+        return Contact.objects.all()

@@ -45,7 +45,7 @@ $(document).ready(function(){
         autoplayTimeout: 5000,
         loop:true,
         nav:true,
-        navText:["<div class='prev'></div>","<div class='next'></div> "],
+        navText:["<img src='/static/img/banner/prev.png'>","<img src='/static/img/banner/next.png'>"],
         dots:false
     });
 
@@ -58,7 +58,7 @@ $(document).ready(function(){
         autoplayTimeout: 5000,
         loop:true,
         nav:true,
-        navText:["<div class='prev'></div>","<div class='next'></div> "],
+        navText:["<img src='/static/img/product/prev.png'>","<img src='/static/img/product/next.png'>"],
         dots:false
     });
 
@@ -73,7 +73,7 @@ $(document).ready(function(){
       nav:false,
       dots:true
     });
-    
+
     /*=================================
     Javascript for exclusive area carousel
     ==================================*/
@@ -83,7 +83,7 @@ $(document).ready(function(){
         autoplayTimeout: 5000,
         loop:true,
         nav:true,
-        navText:["<img src='./img/product/prev.png'>","<img src='img/product/next.png'>"],
+        navText:["<img src='/static/img/product/prev.png'>","<img src='/static/img/product/next.png'>"],
         dots:false
     });
 
@@ -189,6 +189,46 @@ $(document).ready(function(){
           dots: true,
           items: 1,
       })
+
+    //----- Active No ui slider --------//
+
+
+
+    $(function(){
+
+        if(document.getElementById("price-range")){
+
+        var nonLinearSlider = document.getElementById('price-range');
+
+        noUiSlider.create(nonLinearSlider, {
+            connect: true,
+            behaviour: 'tap',
+            start: [ 500, 4000 ],
+            range: {
+                // Starting at 500, step the value by 500,
+                // until 4000 is reached. From there, step by 1000.
+                'min': [ 0 ],
+                '10%': [ 500, 500 ],
+                '50%': [ 4000, 1000 ],
+                'max': [ 10000 ]
+            }
+        });
+
+
+        var nodes = [
+            document.getElementById('lower-value'), // 0
+            document.getElementById('upper-value')  // 1
+        ];
+
+        // Display the slider value and how far the handle moved
+        // from the left edge of the slider.
+        nonLinearSlider.noUiSlider.on('update', function ( values, handle, unencoded, isTap, positions ) {
+            nodes[handle].innerHTML = values[handle];
+        });
+
+        }
+
+    });
 
 
 

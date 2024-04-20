@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from product.models import Shoes, Category
@@ -50,14 +51,16 @@ class ProductDetailView(DetailView):
     model = Shoes
     context_object_name = 'shoe'
     template_name = 'product_detail.html'
+    paginate_by = 20
 
     def __init__(self, id, slug):
+        super(ProductDetailView, self).__init__()
         self.id = id
         self.slug = slug
 
-    def get_product_detail(self):
-        shoe = get_object_or_404(Shoes, id=self.id, slug=self.slug, available=True)
-        return {'shoe': shoe}
+    # def get_product_detail(self):
+    #     shoe = get_object_or_404(Shoes, id=self.id, slug=self.slug, available=True)
+    #     return {'shoe': shoe}
 
     def get_queryset(self):
         return Shoes.objects.all()
@@ -96,3 +99,8 @@ class ProductDeleteView(DeleteView):
     def get_object(self, queryset=None):
         product_id = self.kwargs.get('product_id')
         return Shoes.objects.get(id=product_id)
+
+
+class confirmView(DetailView):
+    fields = '__all__'
+    template_name = 'confirm.html'

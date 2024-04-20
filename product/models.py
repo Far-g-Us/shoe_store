@@ -55,9 +55,6 @@ class Category(models.Model):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
-    # def get_absolute_url(self):
-    #     return reverse('product:product_list_by_category', args=[self.slug])
-
     def __str__(self):
         return self.name
 
@@ -81,9 +78,6 @@ class Shoes(models.Model):
         ordering = ('name',)
         index_together = (('id', 'slug'),)
 
-    # def get_absolute_url(self):
-    #     return reverse('shop:product_detail_by_category', args=[self.id, self.slug])
 
     def __str__(self):
         return self.name
-
