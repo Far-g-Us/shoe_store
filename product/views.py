@@ -1,7 +1,7 @@
-from django.http import HttpResponse
+from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
-from product.models import Shoes, Category
+from product.models import Shoes, Category, Confirm
 from decimal import Decimal
 from product.forms import ShoesForm
 from django.shortcuts import get_object_or_404
@@ -12,9 +12,10 @@ class ProductListView(ListView):
     fields = '__all__'
     context_object_name = 'shoes'
     template_name = 'product_list.html'
+    paginate_by = 20
 
-    def __init__(self, category_slug=None):
-        self.category_slug = category_slug
+    def __init__(self, url=None):
+        self.url = url
 
     def get_object(self):
         return Shoes.objects.all()
@@ -38,8 +39,8 @@ class ProductListView(ListView):
         categories = Category.objects.all()
         shoes = Shoes.objects.filter(available=True)
 
-        if self.category_slug:
-            category = get_object_or_404(Category, slug=self.category_slug)
+        if self.url:
+            category = get_object_or_404(Category, url=self.url)
             shoes = shoes.filter(category=category)
             return {
                 'category': category,
@@ -47,27 +48,43 @@ class ProductListView(ListView):
                 'shoes': shoes
             }
 
+
 class ProductDetailView(DetailView):
     model = Shoes
     context_object_name = 'shoe'
     template_name = 'product_detail.html'
-    paginate_by = 20
 
-    def __init__(self, id, slug):
-        super(ProductDetailView, self).__init__()
-        self.id = id
-        self.slug = slug
-
-    # def get_product_detail(self):
-    #     shoe = get_object_or_404(Shoes, id=self.id, slug=self.slug, available=True)
-    #     return {'shoe': shoe}
+    # def __init__(self, id, url, *args, **kwargs):
+    #     self.id = id
+    #     self.url = url
+    #     super().__init__(*args, **kwargs)
+    #
+    # def get(self, request):
+    #     shoes = Shoes.objects.get(id=self.id)
+    #     context = {
+    #         'shoes': shoes,
+    #         'url': self.url
+    #     }
+    #     return render(request, 'product_detail.html', context)
 
     def get_queryset(self):
         return Shoes.objects.all()
 
-    def get_object(self):
-        product_id = self.kwargs['product_id']
-        return Shoes.objects.get(pk=product_id)
+    def get_object(self, queryset=None):
+        product_id = self.kwargs.get('id')  # Используйте 'id' вместо 'product_id'
+        slug = self.kwargs.get('url')  # Используйте 'url' вместо 'slug'
+        #print(product_id, slug)
+        try:
+            return get_object_or_404(Shoes, id=product_id, url=slug)
+        except Shoes.DoesNotExist:
+            raise Http404("Product does not exist")
+
+    # def get_object(self):
+    #     product_id = self.kwargs.get('product_id')
+    #     try:
+    #         return Shoes.objects.get(pk=product_id)
+    #     except Shoes.DoesNotExist:
+    #         raise Http404("Product does not exist")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -78,7 +95,10 @@ class ProductDetailView(DetailView):
         discount_decimal = Decimal(str(shoe.discount))
         discounted_price = price_decimal * (1 - discount_decimal / 100)
         context['discounted_price'] = str(round(discounted_price))
+        # print(discounted_price)
         return context
+
+
 
 class ProductCreateView(CreateView):
     model = Shoes
@@ -101,6 +121,18 @@ class ProductDeleteView(DeleteView):
         return Shoes.objects.get(id=product_id)
 
 
-class confirmView(DetailView):
+class ConfirmView(DetailView):
+    model = Confirm
     fields = '__all__'
-    template_name = 'confirm.html'
+    template_name = 'product_confirm.html'
+
+    def get_queryset(self):
+        return Shoes.objects.all()
+
+    def get_object(self, queryset=None):
+        product_id = self.kwargs.get('product_id')
+        try:
+            return Confirm.objects.get(id=product_id)
+        except Confirm.DoesNotExist:
+            product_id = None
+

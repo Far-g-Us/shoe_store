@@ -1,5 +1,7 @@
+from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
 from face.models import Face, Cart, Contact
+from product.models import Category, Shoes
 
 
 class indexView(ListView):
@@ -9,6 +11,23 @@ class indexView(ListView):
 
     def get_queryset(self):
         return Face.objects.all()
+
+    def __init__(self, url=None):
+        self.url = url
+
+    def get_products(self):
+        category = None
+        categories = Category.objects.all()
+        shoes = Shoes.objects.filter(available=True)
+
+        if self.url:
+            category = get_object_or_404(Category, url=self.url)
+            shoes = shoes.filter(category=category)
+            return {
+                'category': category,
+                'categories': categories,
+                'shoes': shoes
+            }
 
 class cartView(ListView):
     model = Cart
@@ -25,3 +44,4 @@ class contactView(ListView):
 
     def get_queryset(self):
         return Contact.objects.all()
+
