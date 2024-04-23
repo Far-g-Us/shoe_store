@@ -36,6 +36,24 @@ class CollectionProduct(models.Model):
         verbose_name_plural = 'Коллекции'
 
 
+class UpperMaterialProduct(models.Model):
+    name = models.CharField(max_length=65, db_index=True, verbose_name='Материал верха')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Материал верха'
+
+class LiningMaterialProduct(models.Model):
+    name = models.CharField(max_length=65, db_index=True, verbose_name='Материал подкладки')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Материал подкладки'
+
 # class DiscountProduct(models.Model):
 #     name = models.CharField(max_length=40, db_index=True, verbose_name='Скидка, %')
 #     value = models.IntegerField(verbose_name='%')
@@ -63,15 +81,22 @@ class Category(models.Model):
 
 class Shoes(models.Model):
     category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.SET_NULL, null=True)
-    name = models.CharField(max_length=40, verbose_name='Название') #, db_index=True
-    url = models.SlugField(max_length=130) #, db_index=True
+    name = models.CharField(max_length=40, verbose_name='Название', db_index=True)
+    url = models.SlugField(max_length=130, db_index=True)
     color = models.ManyToManyField(ColorProduct, max_length=40,  verbose_name='Цвет обуви', related_name='color_product')
     size = models.ManyToManyField(SizeProduct, max_length=40,  verbose_name='Размер обуви', related_name='size_product')
-    image = models.ImageField(verbose_name='Фото', upload_to='content/%Y/%m', blank=True)
+    upper_material = models.ManyToManyField(UpperMaterialProduct, max_length=50, verbose_name='Материал верха', related_name='upper_material_product')
+    lining_material = models.ManyToManyField(LiningMaterialProduct, max_length=50, verbose_name='Материал подкладки', related_name='lining_material_product')
+    main_image = models.ImageField(verbose_name='Основное фото', upload_to='content/%Y/%m', blank=True)
+    image_1 = models.ImageField(verbose_name='Фото №1', upload_to='content/%Y/%m', blank=True, null=True)
+    image_2 = models.ImageField(verbose_name='Фото №2', upload_to='content/%Y/%m', blank=True, null=True)
+    image_3 = models.ImageField(verbose_name='Фото №3', upload_to='content/%Y/%m', blank=True, null=True)
     description = models.TextField(verbose_name='О товаре', blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Цена, руб.', default=0)
     discount = models.DecimalField(max_digits=4, decimal_places=0, default=0, verbose_name='Скидка, %', null=True)
     stock = models.PositiveIntegerField(verbose_name='Осталось', blank=True)
+    сountry_of_manufacture = models.CharField(max_length=30, verbose_name='Страна производитель', blank=True)
+    manufacturers_code = models.CharField(max_length=10, verbose_name='Код производителя', blank=True)
     available = models.BooleanField(default=True)
     collection = models.ManyToManyField(CollectionProduct, max_length=40,  verbose_name='Коллекция', related_name='collection_product')
 

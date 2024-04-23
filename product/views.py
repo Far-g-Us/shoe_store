@@ -54,6 +54,7 @@ class ProductDetailView(DetailView):
     context_object_name = 'shoe'
     template_name = 'product_detail.html'
 
+
     # def __init__(self, id, url, *args, **kwargs):
     #     self.id = id
     #     self.url = url
@@ -89,12 +90,14 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         shoe = self.get_object()
+        context['colors'] = shoe.color.all()
         context['sizes'] = shoe.size.all()
         context['collections'] = shoe.collection.all()
         price_decimal = Decimal(str(shoe.price))
         discount_decimal = Decimal(str(shoe.discount))
         discounted_price = price_decimal * (1 - discount_decimal / 100)
         context['discounted_price'] = str(round(discounted_price))
+        # print(context)
         # print(discounted_price)
         return context
 

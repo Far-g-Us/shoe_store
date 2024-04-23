@@ -44,41 +44,49 @@
 			<div class="row s_product_inner">
 				<div class="col-lg-6">
 					<div class="s_Product_carousel">
-					{% if shoe.image %}
-						<div class="single-prd-item">
-							<img class="img-fluid" src="{{ shoe.image.url }}" alt="">
-						</div>
-						<div class="single-prd-item">
-							<img class="img-fluid" src="{{ shoe.image.url }}" alt="">
-						</div>
-						<div class="single-prd-item">
-							<img class="img-fluid" src="{{ shoe.image.url }}" alt="">
-						</div>
-						<div class="single-prd-item">
-							<img class="img-fluid" src="{{ shoe.image.url }}" alt="">
-						</div>
-					{% endif %}
+						{% if shoe.main_image %}<div class="single-prd-item">
+							<img class="img-fluid" src="{{ shoe.main_image.url }}" alt="{{ shoe.name }}">
+						</div>{% endif %}
+						{% if shoe.image_1 %}<div class="single-prd-item">
+							<img class="img-fluid" src="{{ shoe.image_1.url }}" alt="{{ shoe.name }}">
+						</div>{% endif %}
+						{% if shoe.image_2 %}<div class="single-prd-item">
+							<img class="img-fluid" src="{{ shoe.image_2.url }}" alt="{{ shoe.name }}">
+						</div>{% endif %}
+						{% if shoe.image_3 %}<div class="single-prd-item">
+							<img class="img-fluid" src="{{ shoe.image_3.url }}" alt="{{ shoe.name }}">
+						</div>{% endif %}
 					</div>
 				</div>
 				<div class="col-lg-5 offset-lg-1">
 					<div class="s_product_text">
 						<h3>{{ shoe.name }}</h3>
+<!--						{% if discounted_price %}-->
+<!--							{% if shoe.discount != 0 %}-->
+<!--                            	{% if shoe.discounted_price != 0 %}-->
+<!--									<h2>{{ discounted_price }}$</h2>-->
+<!--								{% endif %}-->
+<!--							{% else %}-->
+<!--                                <h2>{{ shoe.price }}$</h2>-->
+<!--                            {% endif %}-->
+<!--						{% endif %}-->
 						{% if discounted_price %}
 							{% if shoe.discount != 0 %}
-                            	{% if shoe.discounted_price != 0 %}
-                                	<h2 class="l-through">{{ shoe.price }}$</h2>
-									<h2>{{ shoe.discount.discount_price }}$</h2>
-								{% endif %}
+								<h2>{{ discounted_price }}$</h2>
 							{% else %}
                                 <h2>{{ shoe.price }}$</h2>
                             {% endif %}
 						{% endif %}
 						<ul class="list">
 							<li><a class="active" href="#"><span>Category</span> : {{ shoe.category }}</a></li>
-							<li><a href="#"><span>Availibility</span> : {{ shoe.available }}</a></li>
+							{% if shoe.available == True %}
+								<li><a href="#"><span>Availibility</span> : Есть в наличии</a></li>
+							{% elif shoe.available == False %}
+								<li><a href="#"><span>Availibility</span> : Нет в наличии</a></li>
+							{% endif %}
 							<li><a href="#"><span>Осталось</span> : {{ shoe.stock }}</a></li>
 						</ul>
-						<p>{{ shoe.description }}</p>
+						<p>{{ shoe.description|truncatechars:150 }}</p>
 						<div class="product_count">
 							<label>Quantity:</label>
 							<input type="text" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
@@ -102,6 +110,7 @@
 	<!--================Product Description Area =================-->
 	<section class="product_description_area">
 		<div class="container">
+		{% csrf_token %}
 			<ul class="nav nav-tabs" id="myTab" role="tablist">
 				<li class="nav-item">
 					<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Description</a>
@@ -129,26 +138,26 @@
 							<tbody>
 								<tr>
 									<td>
-										<h5>Color</h5>
+										<h5>Цвет</h5>
 									</td>
 									<td>
-										<h5>128mm</h5>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<h5>Height</h5>
-									</td>
-									<td>
-										<h5>508mm</h5>
+										<h5>{{ colors|join:', ' }}</h5>
 									</td>
 								</tr>
 								<tr>
 									<td>
-										<h5>Depth</h5>
+										<h5>Размер</h5>
 									</td>
 									<td>
-										<h5>85mm</h5>
+										<h5>{{ sizes|join:', ' }}</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Коллекция</h5>
+									</td>
+									<td>
+										<h5>{{ collections|join:', ' }}</h5>
 									</td>
 								</tr>
 								<tr>
@@ -258,11 +267,6 @@
 									<div class="col-md-12">
 										<div class="form-group">
 											<input type="email" class="form-control" id="email" name="email" placeholder="Email Address">
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="form-group">
-											<input type="text" class="form-control" id="number" name="number" placeholder="Phone Number">
 										</div>
 									</div>
 									<div class="col-md-12">
