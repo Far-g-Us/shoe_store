@@ -2,6 +2,15 @@ from django.db import models
 from django.urls import reverse
 
 
+class Gender(models.Model):
+    name = models.CharField(max_length=25, db_index=True, verbose_name='Пол')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Пол'
+
 class ColorProduct(models.Model):
     name = models.CharField(max_length=40, db_index=True, verbose_name='Цвет')
 
@@ -54,6 +63,24 @@ class LiningMaterialProduct(models.Model):
     class Meta:
         verbose_name = 'Материал подкладки'
 
+class OutsoleMaterialProduct(models.Model):
+    name = models.CharField(max_length=65, db_index=True, verbose_name='Материал подошвы')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Материал подошвы'
+
+class InsoleMaterialProduct(models.Model):
+    name = models.CharField(max_length=65, db_index=True, verbose_name='Материал стельки')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Материал стельки'
+
 # class DiscountProduct(models.Model):
 #     name = models.CharField(max_length=40, db_index=True, verbose_name='Скидка, %')
 #     value = models.IntegerField(verbose_name='%')
@@ -83,10 +110,13 @@ class Shoes(models.Model):
     category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=40, verbose_name='Название', db_index=True)
     url = models.SlugField(max_length=130, db_index=True)
+    gender = models.ManyToManyField(Gender, max_length=40, verbose_name='Пол', related_name='gender')
     color = models.ManyToManyField(ColorProduct, max_length=40,  verbose_name='Цвет обуви', related_name='color_product')
     size = models.ManyToManyField(SizeProduct, max_length=40,  verbose_name='Размер обуви', related_name='size_product')
-    upper_material = models.ManyToManyField(UpperMaterialProduct, max_length=50, verbose_name='Материал верха', related_name='upper_material_product')
+    upper_material = models.ManyToManyField(UpperMaterialProduct, max_length=75, verbose_name='Материал верха', related_name='upper_material_product')
     lining_material = models.ManyToManyField(LiningMaterialProduct, max_length=50, verbose_name='Материал подкладки', related_name='lining_material_product')
+    outsole_material = models.ManyToManyField(OutsoleMaterialProduct, max_length=50, verbose_name='Материал подошвы', related_name='outsole_material_product')
+    insole_material = models.ManyToManyField(InsoleMaterialProduct, max_length=50, verbose_name='Материал стельки', related_name='insole_material_product')
     main_image = models.ImageField(verbose_name='Основное фото', upload_to='content/%Y/%m', blank=True)
     image_1 = models.ImageField(verbose_name='Фото №1', upload_to='content/%Y/%m', blank=True, null=True)
     image_2 = models.ImageField(verbose_name='Фото №2', upload_to='content/%Y/%m', blank=True, null=True)
