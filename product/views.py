@@ -2,17 +2,15 @@ from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from product.models import Shoes, Category, Confirm
-from decimal import Decimal
 from product.forms import ShoesForm
 from django.shortcuts import get_object_or_404
-
+#from decimal import Decimal
 
 class ProductListView(ListView):
     model = Shoes
     fields = '__all__'
     context_object_name = 'shoes'
     template_name = 'product_list.html'
-    paginate_by = 20
 
     def __init__(self, url=None):
         self.url = url
@@ -20,19 +18,19 @@ class ProductListView(ListView):
     def get_object(self):
         return Shoes.objects.all()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        shoe = self.get_object()
-        shoesList = []
-        for item in shoe:
-            price_decimal = Decimal(str(item.price))
-            discount_decimal = Decimal(str(item.discount))
-            discounted_price = price_decimal * (1 - discount_decimal / 100)
-            item.price = {'price': price_decimal, 'sale': str(round(discounted_price))}
-            shoesList.append(item)
-            # print(shoesList)
-        context['shoesList'] = shoesList
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     shoe = self.get_object()
+    #     shoesList = []
+    #     for item in shoe:
+    #         price_decimal = Decimal(str(item.price))
+    #         discount_decimal = Decimal(str(item.discount))
+    #         discounted_price = price_decimal * (1 - discount_decimal / 100)
+    #         item.price = {'price': price_decimal, 'sale': str(round(discounted_price))}
+    #         shoesList.append(item)
+    #         # print(shoesList)
+    #     context['shoesList'] = shoesList
+    #     return context
 
     def get_products(self):
         category = None
@@ -90,15 +88,18 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         shoe = self.get_object()
+        context['gender'] = shoe.gender.all()
         context['colors'] = shoe.color.all()
         context['sizes'] = shoe.size.all()
         context['collections'] = shoe.collection.all()
-        price_decimal = Decimal(str(shoe.price))
-        discount_decimal = Decimal(str(shoe.discount))
-        discounted_price = price_decimal * (1 - discount_decimal / 100)
-        context['discounted_price'] = str(round(discounted_price))
-        # print(context)
-        # print(discounted_price)
+        context['upper_material'] = shoe.upper_material.all()
+        context['lining_material'] = shoe.lining_material.all()
+        context['outsole_material'] = shoe.outsole_material.all()
+        context['insole_material'] = shoe.insole_material.all()
+        # price_decimal = Decimal(str(shoe.price))
+        # discount_decimal = Decimal(str(shoe.discount))
+        # discounted_price = price_decimal * (1 - discount_decimal / 100)
+        # context['discounted_price'] = str(round(discounted_price))
         return context
 
 

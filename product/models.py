@@ -1,4 +1,5 @@
 from django.db import models
+from decimal import Decimal
 from django.urls import reverse
 
 
@@ -10,6 +11,7 @@ class Gender(models.Model):
 
     class Meta:
         verbose_name = 'Пол'
+        verbose_name_plural = 'Пол'
 
 class ColorProduct(models.Model):
     name = models.CharField(max_length=40, db_index=True, verbose_name='Цвет')
@@ -35,7 +37,6 @@ class SizeProduct(models.Model):
 
 class CollectionProduct(models.Model):
     name = models.CharField(max_length=40, db_index=True, verbose_name='Коллекция')
-    url = models.SlugField(max_length=130, unique=True)
 
     def __str__(self):
         return self.name
@@ -53,6 +54,7 @@ class UpperMaterialProduct(models.Model):
 
     class Meta:
         verbose_name = 'Материал верха'
+        verbose_name_plural = 'Материалы верха'
 
 class LiningMaterialProduct(models.Model):
     name = models.CharField(max_length=65, db_index=True, verbose_name='Материал подкладки')
@@ -62,6 +64,7 @@ class LiningMaterialProduct(models.Model):
 
     class Meta:
         verbose_name = 'Материал подкладки'
+        verbose_name_plural = 'Материалы подкладок'
 
 class OutsoleMaterialProduct(models.Model):
     name = models.CharField(max_length=65, db_index=True, verbose_name='Материал подошвы')
@@ -71,6 +74,7 @@ class OutsoleMaterialProduct(models.Model):
 
     class Meta:
         verbose_name = 'Материал подошвы'
+        verbose_name_plural = 'Материалы подошв'
 
 class InsoleMaterialProduct(models.Model):
     name = models.CharField(max_length=65, db_index=True, verbose_name='Материал стельки')
@@ -80,6 +84,7 @@ class InsoleMaterialProduct(models.Model):
 
     class Meta:
         verbose_name = 'Материал стельки'
+        verbose_name_plural = 'Материалы стелек'
 
 # class DiscountProduct(models.Model):
 #     name = models.CharField(max_length=40, db_index=True, verbose_name='Скидка, %')
@@ -129,9 +134,17 @@ class Shoes(models.Model):
     manufacturers_code = models.CharField(max_length=10, verbose_name='Код производителя', blank=True)
     available = models.BooleanField(default=True)
     collection = models.ManyToManyField(CollectionProduct, max_length=40,  verbose_name='Коллекция', related_name='collection_product')
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+    @property
+    def discounted_price(self):
+        price_decimal = Decimal(str(self.price))
+        discount_decimal = Decimal(str(self.discount))
+        discounted_price = price_decimal * (1 - discount_decimal / 100)
+        return round(discounted_price)
 
     class Meta:
         verbose_name_plural = 'Обувь'

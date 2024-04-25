@@ -70,9 +70,9 @@
 <!--                                <h2>{{ shoe.price }}$</h2>-->
 <!--                            {% endif %}-->
 <!--						{% endif %}-->
-						{% if discounted_price %}
+						{% if shoe.discounted_price %}
 							{% if shoe.discount != 0 %}
-								<h2>{{ discounted_price }}$</h2>
+								<h2>{{ shoe.discounted_price }}$</h2>
 							{% else %}
                                 <h2>{{ shoe.price }}$</h2>
                             {% endif %}
@@ -85,6 +85,8 @@
 								<li><a href="#"><span>Availibility</span> : Нет в наличии</a></li>
 							{% endif %}
 							<li><a href="#"><span>Осталось</span> : {{ shoe.stock }}</a></li>
+							<li><a href="#"><span>Производитель</span> : {{ shoe.сountry_of_manufacture }}</a></li>
+							<li><a href="#"><span>Код производителя</span> : {{ shoe.manufacturers_code }}</a></li>
 						</ul>
 						<p>{{ shoe.description|truncatechars:150 }}</p>
 						<div class="product_count">
@@ -138,6 +140,14 @@
 							<tbody>
 								<tr>
 									<td>
+										<h5>Пол</h5>
+									</td>
+									<td>
+										<h5>{{ gender|join:', ' }}</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
 										<h5>Цвет</h5>
 									</td>
 									<td>
@@ -162,42 +172,34 @@
 								</tr>
 								<tr>
 									<td>
-										<h5>Weight</h5>
+										<h5>Материал верха</h5>
 									</td>
 									<td>
-										<h5>52gm</h5>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<h5>Quality checking</h5>
-									</td>
-									<td>
-										<h5>yes</h5>
+										<h5>{{ upper_material|join:', ' }}</h5>
 									</td>
 								</tr>
 								<tr>
 									<td>
-										<h5>Freshness Duration</h5>
+										<h5>Материал подкладки</h5>
 									</td>
 									<td>
-										<h5>03days</h5>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<h5>When packeting</h5>
-									</td>
-									<td>
-										<h5>Without touch of hand</h5>
+										<h5>{{ lining_material|join:', ' }}</h5>
 									</td>
 								</tr>
 								<tr>
 									<td>
-										<h5>Each Box contains</h5>
+										<h5>Материал подошвы</h5>
 									</td>
 									<td>
-										<h5>60pcs</h5>
+										<h5>{{ outsole_material|join:', ' }}</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5>Материал стельки</h5>
+									</td>
+									<td>
+										<h5>{{ insole_material|join:', ' }}</h5>
 									</td>
 								</tr>
 							</tbody>

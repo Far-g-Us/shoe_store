@@ -205,7 +205,7 @@
 				<!-- Start Best Seller -->
 				<section class="lattest-product-area pb-40 category-list">
 					<div class="row">
-                        {% for shoe in shoesList %}
+                        {% for shoe in shoes %}
 						<!-- single product -->
 						<div class="col-lg-4 col-md-6">
 							<div class="single-product">
@@ -216,23 +216,21 @@
 									<h6>{{ shoe.name }}</h6>
 									<div class="price">
                                         {% if shoe.discount != 0 %}
-                                            {% if shoe.discounted_price != 0 %}
-                                            <h6 class="l-through">{{ shoe.price.price }}$</h6>
-                                            <h6>{{ shoe.price.sale }}$</h6>
-                                            {% endif %}
-                                        {% else %}
-                                           <h6>{{ shoe.price.price }}$</h6>
-                                        {% endif %}
+											{% if shoe.discounted_price != 0 %}
+											<h6 class="l-through">{{ shoe.price }}$</h6>
+											<h6>{{ shoe.discounted_price }}$</h6>
+											{% endif %}
+                                    	{% else %}
+										<h6>{{ shoe.price }}$</h6>
+                                    	{% endif %}
 									</div>
                                     {% if user.is_staff %}
                                     <a class="social-info" style="color: red;" href="{% url 'product_delete' product_id=shoe.id %}">Удалить продукт</a>
                                     {% endif %}
 									<div class="prd-bottom">
-
 										<a href="#" class="social-info">
 											<span class="ti-bag"></span>
 											<p class="hover-text">add to bag</p>
-										</a>
 										</a>
 										<a href="#" class="social-info">
 											<span class="lnr lnr-sync"></span>
