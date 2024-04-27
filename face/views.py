@@ -22,12 +22,15 @@ class indexView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         # Выбираем последние добавленные товары
         latest_products = Shoes.objects.order_by('-created_at')[:12]
 
         # Выбираем только товары, доступные для продажи
         available_products = Shoes.objects.filter(available=False)[:12]
-        #
+
+        # Выбираем только товары у которых есть скидка
+        discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]
         # shoe = self.get_object()
         # shoesList = []
         # for item in shoe:
@@ -40,6 +43,7 @@ class indexView(ListView):
         # context['shoesList'] = shoesList
         context['latest_products'] = latest_products
         context['available_products'] = available_products
+        context['discounted_products'] = discounted_products
         return context
 
     def get_products(self):

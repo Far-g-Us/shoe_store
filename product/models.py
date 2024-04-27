@@ -1,5 +1,6 @@
 from django.db import models
 from decimal import Decimal
+from django.db.models import F, FloatField, ExpressionWrapper
 from django.urls import reverse
 
 

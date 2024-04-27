@@ -32,6 +32,15 @@ class ProductListView(ListView):
     #     context['shoesList'] = shoesList
     #     return context
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Выбираем только товары у которых есть скидка
+        discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]
+        context['discounted_products'] = discounted_products
+
+        return context
+
     def get_products(self):
         category = None
         categories = Category.objects.all()
@@ -96,6 +105,11 @@ class ProductDetailView(DetailView):
         context['lining_material'] = shoe.lining_material.all()
         context['outsole_material'] = shoe.outsole_material.all()
         context['insole_material'] = shoe.insole_material.all()
+
+        # Выбираем только товары у которых есть скидка
+        discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]
+        context['discounted_products'] = discounted_products
+
         # price_decimal = Decimal(str(shoe.price))
         # discount_decimal = Decimal(str(shoe.discount))
         # discounted_price = price_decimal * (1 - discount_decimal / 100)
