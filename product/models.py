@@ -1,6 +1,6 @@
 from django.db import models
 from decimal import Decimal
-from django.db.models import F, FloatField, ExpressionWrapper
+from mptt.models import MPTTModel, TreeForeignKey
 from django.urls import reverse
 
 
@@ -99,15 +99,21 @@ class InsoleMaterialProduct(models.Model):
 #         verbose_name_plural = 'Скидки'
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=100) #, db_index=True
-    url = models.SlugField(max_length=160, unique=True) #, db_index=True
+class Category(MPTTModel):
+    name = models.CharField(max_length=160)
+    url = models.SlugField(max_length=160, unique=True)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('product_by_category', kwargs={'url': self.url})
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+
     class Meta:
-        #ordering = ('name',)
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
@@ -131,8 +137,8 @@ class Shoes(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Цена, руб.', default=0)
     discount = models.DecimalField(max_digits=4, decimal_places=0, default=0, verbose_name='Скидка, %', null=True)
     stock = models.PositiveIntegerField(verbose_name='Осталось', blank=True)
-    сountry_of_manufacture = models.CharField(max_length=30, verbose_name='Страна производитель', blank=True)
-    manufacturers_code = models.CharField(max_length=10, verbose_name='Код производителя', blank=True)
+    country_of_manufacture = models.CharField(max_length=30, verbose_name='Страна производитель', blank=True)
+    manufacturers_code = models.CharField(max_length=10, verbose_name='Код производителя', blank=True, help_text='"Код товара должен состоять из 5-6 цифр"')
     available = models.BooleanField(default=True)
     collection = models.ManyToManyField(CollectionProduct, max_length=40,  verbose_name='Коллекция', related_name='collection_product')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -149,8 +155,6 @@ class Shoes(models.Model):
 
     class Meta:
         verbose_name_plural = 'Обувь'
-        #ordering = ('name',)
-        #index_together = (('id', 'url'),)
 
 class Confirm(models.Model):
     pass

@@ -17,8 +17,8 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(Category, CategoryAdmin)
 
 class ShoeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'url', 'price', 'discount', 'stock', 'available', 'сountry_of_manufacture']
-    list_filter = ['available', 'сountry_of_manufacture']
+    list_display = ['name', 'url', 'price', 'discount', 'stock', 'available', 'country_of_manufacture']
+    list_filter = ['available', 'country_of_manufacture']
     list_editable = ['price', 'stock', 'available']
     prepopulated_fields = {'url': ('name',)}
 admin.site.register(Shoes, ShoeAdmin)

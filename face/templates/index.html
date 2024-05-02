@@ -216,7 +216,7 @@
                                     {% endif %}
 								</div>
 								{% if user.is_staff %}
-                                <a class="social-info" style="color: red;" href="{% url 'product_delete' product_id=shoe.id %}">Удалить продукт</a>
+                                <a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.id %}">Удалить продукт</a>
 								{% endif %}
 								<div class="prd-bottom">
 									<a href="#" class="social-info">
@@ -227,7 +227,7 @@
 										<span class="lnr lnr-sync"></span>
 										<p class="hover-text">compare</p>
 									</a>
-									<a href="{% url 'product_detail' shoe.id shoe.url %}" class="social-info">
+									<a href="{% url 'product_detail' shoe.url shoe.id %}" class="social-info">
 										<span class="lnr lnr-move"></span>
 										<p class="hover-text">view more</p>
 									</a>
@@ -237,7 +237,7 @@
 					</div>
 					{% endif %}
                 {% empty %}
-                <p>Нет доступных продуктов.</p>
+                <h4>Нет доступных продуктов.</h4>
                 {% endfor %}
 					<!-- single product -->
 <!--					<div class="col-lg-3 col-md-6">-->
@@ -320,7 +320,7 @@
 										<span class="lnr lnr-sync"></span>
 										<p class="hover-text">compare</p>
 									</a>
-									<a href="{% url 'product_detail' shoe.id shoe.url %}" class="social-info">
+									<a href="{% url 'product_detail' shoe.url shoe.id %}" class="social-info">
 										<span class="lnr lnr-move"></span>
 										<p class="hover-text">view more</p>
 									</a>
@@ -329,7 +329,7 @@
 						</div>
 					</div>
                     {% empty %}
-                    <p>Нет доступных продуктов.</p>
+                    <h4>Нет доступных продуктов.</h4>
                     {% endfor %}
 					<!-- single product -->
 <!--					<div class="col-lg-3 col-md-6">-->
@@ -486,9 +486,9 @@
 						{% for shoe in discounted_products %}
 						<div class="col-lg-4 col-md-4 col-sm-6">
 							<div class="single-related-product d-flex">
-								<a href="{% url 'product_detail' shoe.id shoe.url %}"><img src="{{ shoe.main_image.url }}" width="70" height="70" alt="{{ shoe.name }}"></a>
+								<a href="{% url 'product_detail' shoe.url shoe.id %}"><img src="{{ shoe.main_image.url }}" width="70" height="70" alt="{{ shoe.name }}"></a>
 								<div class="desc">
-									<a href="{% url 'product_detail' shoe.id shoe.url %}" class="title">{{ shoe.name }}</a>
+									<a href="{% url 'product_detail' shoe.url shoe.id %}" class="title">{{ shoe.name }}</a>
 									<div class="price">
 										<h6>{{ shoe.discounted_price }}$</h6>
 										<h6 class="l-through">{{ shoe.price }}$</h6>
@@ -496,7 +496,9 @@
 								</div>
 							</div>
 						</div>
-						{% endfor %}
+						{% empty %}
+                    	<h4>Нет доступных продуктов.</h4>
+                    	{% endfor %}
 					</div>
 				</div>
 				<div class="col-lg-3">

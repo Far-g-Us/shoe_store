@@ -30,7 +30,7 @@
 					<nav class="d-flex align-items-center">
 						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
 						<a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
-						<a href="{% url 'product_detail' shoe.id shoe.url %}">product-details</a>
+						<a href="{% url 'product_detail' shoe.url shoe.id %}">product-details</a>
 					</nav>
 				</div>
 			</div>
@@ -85,7 +85,7 @@
 								<li><a href="#"><span>Availibility</span> : Нет в наличии</a></li>
 							{% endif %}
 							<li><a href="#"><span>Осталось</span> : {{ shoe.stock }}</a></li>
-							<li><a href="#"><span>Производитель</span> : {{ shoe.сountry_of_manufacture }}</a></li>
+							<li><a href="#"><span>Производитель</span> : {{ shoe.country_of_manufacture }}</a></li>
 							<li><a href="#"><span>Код производителя</span> : {{ shoe.manufacturers_code }}</a></li>
 						</ul>
 						<p>{{ shoe.description|truncatechars:150 }}</p>
@@ -429,9 +429,9 @@
 						{% for shoe in discounted_products %}
 						<div class="col-lg-4 col-md-4 col-sm-6">
 							<div class="single-related-product d-flex">
-								<a href="{% url 'product_detail' shoe.id shoe.url %}"><img src="{{ shoe.main_image.url }}" width="70" height="70" alt="{{ shoe.name }}"></a>
+								<a href="{% url 'product_detail' shoe.url shoe.id %}"><img src="{{ shoe.main_image.url }}" width="70" height="70" alt="{{ shoe.name }}"></a>
 								<div class="desc">
-									<a href="{% url 'product_detail' shoe.id shoe.url %}" class="title">{{ shoe.name }}</a>
+									<a href="{% url 'product_detail' shoe.url shoe.id %}" class="title">{{ shoe.name }}</a>
 									<div class="price">
 										<h6>{{ shoe.discounted_price }}$</h6>
 										<h6 class="l-through">{{ shoe.price }}$</h6>
