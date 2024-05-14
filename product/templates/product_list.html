@@ -42,41 +42,40 @@
 						</select>
 					</div>
 					<div class="pagination">
-						<a href="#" class="prev-arrow"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></a>
-						<a href="#" class="active">1</a>
-						<a href="#">2</a>
-						<a href="#">3</a>
-						<a href="#" class="dot-dot"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
-						<a href="#">6</a>
-						<a href="#" class="next-arrow"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+						{% for page_num in page_numbers %}
+							{% if page_obj.number == page_num %}
+								<a class="page-item active">{{ page_num }}</a>
+							{% else %}
+								<a href="?page={{ page_num }}" class="page-item">{{ page_num }}</a>
+							{% endif %}
+						{% endfor %}
 					</div>
 				</div>
 				<!-- End Filter Bar -->
 				<!-- Start Best Seller -->
 				<section class="lattest-product-area pb-40 category-list">
 					<div class="row">
-						{% for shoe in filter.qs %}
+						{% for shoe in page_obj %}
 						<!-- single product -->
 						<div class="col-lg-4 col-md-6">
 							<div class="single-product">
 								{% if shoe.main_image %}
-								<img class="img-fluid" src="{{ shoe.main_image.url }}" alt="{{ shoe.name }}">
+									<img class="img-fluid" src="{{ shoe.main_image.url }}" alt="{{ shoe.name }}">
 								{% endif %}
 								<div class="product-details">
 									<h6>{{ shoe.name }}</h6>
 									<div class="price">
 										{% if shoe.discount != 0 %}
-										{% if shoe.discounted_price != 0 %}
-										<h6 class="l-through">{{ shoe.price }}$</h6>
-										<h6>{{ shoe.discounted_price }}$</h6>
-										{% endif %}
+											{% if shoe.discounted_price != 0 %}
+												<h6 class="l-through">{{ shoe.price }}$</h6>
+												<h6>{{ shoe.discounted_price }}$</h6>
+											{% endif %}
 										{% else %}
-										<h6>{{ shoe.price }}$</h6>
+											<h6>{{ shoe.price }}$</h6>
 										{% endif %}
 									</div>
 									{% if user.is_staff %}
-									<a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.id %}">Удалить
-										продукт</a>
+										<a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.id %}">Удалить продукт</a>
 									{% endif %}
 									<div class="prd-bottom">
 										<a href="#" class="social-info">
@@ -121,13 +120,13 @@
 						</select>
 					</div>
 					<div class="pagination">
-						<a href="#" class="prev-arrow"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></a>
-						<a href="#" class="active">1</a>
-						<a href="#">2</a>
-						<a href="#">3</a>
-						<a href="#" class="dot-dot"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
-						<a href="#">6</a>
-						<a href="#" class="next-arrow"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+					{% for page_num in page_numbers %}
+						{% if page_obj.number == page_num %}
+							<a class="page-item active">{{ page_num }}</a>
+						{% else %}
+							<a href="?page={{ page_num }}" class="page-item">{{ page_num }}</a>
+						{% endif %}
+					{% endfor %}
 					</div>
 				</div>
 				<!-- End Filter Bar -->

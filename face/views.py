@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
 from face.models import Face, Cart, Contact
 from product.models import Category, Shoes
-#from decimal import Decimal
+
 
 
 class indexView(ListView):
@@ -24,10 +24,10 @@ class indexView(ListView):
         context = super().get_context_data(**kwargs)
 
         # Выбираем последние добавленные товары
-        latest_products = Shoes.objects.order_by('-created_at')[:12]
+        latest_products = Shoes.objects.order_by('-created_at')[:6]
 
         # Выбираем только товары, доступные для продажи
-        available_products = Shoes.objects.filter(available=False)[:12]
+        available_products = Shoes.objects.filter(available=False)[:6]
 
         # Выбираем только товары у которых есть скидка
         discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]

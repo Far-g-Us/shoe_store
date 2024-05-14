@@ -15,7 +15,7 @@ class ProductListView(FilterView):
     filterset_class = ShoesFilter
     context_object_name = 'shoes'
     template_name = 'product_list.html'
-    paginate_by = 12
+    paginate_by = 9
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -25,22 +25,35 @@ class ProductListView(FilterView):
             category = Category.objects.get(url=category_url)
             queryset = filter.qs.filter(category__in=category.get_descendants(include_self=True))
         queryset = queryset.annotate(num_products=Count('category__shoes')).order_by('id')
-        price_min = self.request.GET.get('price_min')
-        price_max = self.request.GET.get('price_max')
-        if price_min and price_max:
+        #### НЕ ТРОГАЙ ПОКА РАБОТАЕТ ####
+        price_min = self.request.GET.get('price__gte')
+        price_max = self.request.GET.get('price__lte')
+        if price_min is not None and price_max is not None:
             queryset = queryset.filter(price__range=(price_min, price_max))
-        elif price_min:
+        elif price_min is not None:
             queryset = queryset.filter(price__gte=price_min)
-        elif price_max:
+        elif price_max is not None:
             queryset = queryset.filter(price__lte=price_max)
+        # print(f'price_min: {price_min}, price_max: {price_max}')
+        ####__________________________####
         return queryset
 
     def get_context_data(self, **kwargs):
+        #### НЕ ТРОГАЙ ПОКА РАБОТАЕТ ####
+        # print(self.request.GET)
         context = super().get_context_data(**kwargs)
+        # Обработка товаров для пагинации
+        # shoes = context['shoes']
+        paginator = context['paginator']
+        page_obj = context['page_obj']
+        page_numbers = [n for n in paginator.page_range if n > page_obj.number - 4 and n < page_obj.number + 4]
+        context['page_numbers'] = page_numbers
+        ####__________________________####
         # Выбираем все товары
         context['show_products'] = Shoes.objects.all()[:12]
         # Выбираем только товары у которых есть скидка
         context['discounted_products'] = Shoes.objects.filter(discount__gt=0, available=True)[:9]
+        # Фильтрация товаров по значениям из файла filters.py
         context['filter'] = ShoesFilter(self.request.GET, queryset=self.get_queryset())
         context['categories'] = Category.objects.all()
         category_url = self.kwargs.get('url')
