@@ -35,6 +35,15 @@ class SizeProduct(models.Model):
         verbose_name = 'Размер'
         verbose_name_plural = 'Размеры'
 
+class CountryOfManufacture(models.Model):
+    name = models.CharField(max_length=50, db_index=True, verbose_name='Страна производитель')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Страна производитель'
+        verbose_name_plural = 'Страны производители'
 
 class CollectionProduct(models.Model):
     name = models.CharField(max_length=40, db_index=True, verbose_name='Коллекция')
@@ -119,10 +128,11 @@ class Category(MPTTModel):
 
 
 class Shoes(models.Model):
-    category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=40, verbose_name='Название', db_index=True)
     url = models.SlugField(max_length=130, db_index=True)
-    gender = models.ManyToManyField(Gender, max_length=40, verbose_name='Пол', related_name='gender')
+    brand = models.CharField(max_length=100, verbose_name='Бренд', blank=True)
+    gender = models.ManyToManyField(Gender, max_length=40, verbose_name='Пол', related_name='gender', blank=True)
     color = models.ManyToManyField(ColorProduct, max_length=40,  verbose_name='Цвет обуви', related_name='color_product')
     size = models.ManyToManyField(SizeProduct, max_length=40,  verbose_name='Размер обуви', related_name='size_product')
     upper_material = models.ManyToManyField(UpperMaterialProduct, max_length=75, verbose_name='Материал верха', related_name='upper_material_product')
@@ -137,7 +147,7 @@ class Shoes(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Цена, руб.', default=0)
     discount = models.DecimalField(max_digits=4, decimal_places=0, default=0, verbose_name='Скидка, %', null=True)
     stock = models.PositiveIntegerField(verbose_name='Осталось', blank=True)
-    country_of_manufacture = models.CharField(max_length=30, verbose_name='Страна производитель', blank=True)
+    country_of_manufacture = models.ManyToManyField(CountryOfManufacture, max_length=10, verbose_name='Страна производитель', related_name='country_of_manufacture_product', blank=True)
     manufacturers_code = models.CharField(max_length=10, verbose_name='Код производителя', blank=True, help_text='"Код товара должен состоять из 5-6 цифр"')
     available = models.BooleanField(default=True)
     collection = models.ManyToManyField(CollectionProduct, max_length=40,  verbose_name='Коллекция', related_name='collection_product')

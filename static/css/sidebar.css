@@ -1,0 +1,22 @@
+.filter-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .filter-label {
+    width: 100px;
+    font-weight: bold;
+  }
+  
+  .filter-value {
+    flex-grow: 1;
+  }
+  
+  .form-control {
+    width: 100%;
+  }
+  
+  .btn-primary {
+    margin-left: 10px;
+  }

@@ -136,7 +136,7 @@ $(document).ready(function(){
 
      if(document.getElementById("js-countdown")){
 
-        var countdown = new Date("October 17, 2018");
+        var countdown = new Date("May 05, 2024");
 
         function getRemainingTime(endtime) {
             var milliseconds = Date.parse(endtime) - Date.parse(new Date());
@@ -194,41 +194,46 @@ $(document).ready(function(){
 
 
 
-    $(function(){
-
-        if(document.getElementById("price-range")){
-
-        var nonLinearSlider = document.getElementById('price-range');
-
-        noUiSlider.create(nonLinearSlider, {
-            connect: true,
-            behaviour: 'tap',
-            start: [ 500, 4000 ],
-            range: {
-                // Starting at 500, step the value by 500,
-                // until 4000 is reached. From there, step by 1000.
-                'min': [ 0 ],
-                '10%': [ 500, 500 ],
-                '50%': [ 4000, 1000 ],
-                'max': [ 10000 ]
-            }
-        });
-
-
-        var nodes = [
-            document.getElementById('lower-value'), // 0
-            document.getElementById('upper-value')  // 1
-        ];
-
-        // Display the slider value and how far the handle moved
-        // from the left edge of the slider.
-        nonLinearSlider.noUiSlider.on('update', function ( values, handle, unencoded, isTap, positions ) {
-            nodes[handle].innerHTML = values[handle];
-        });
-
+    $(function() {
+      $('input[name="name"]').on('input', function() {
+        if ($(this).val()) {
+          $(this).addClass('has-value');
+        } else {
+          $(this).removeClass('has-value');
         }
-
+      });
     });
+
+//    $(function() {
+//      if(document.getElementById("price-range")) {
+//        var nonLinearSlider = document.getElementById('price-range');
+//
+//        noUiSlider.create(nonLinearSlider, {
+//            connect: true,
+//            behaviour: 'tap',
+//            start: [ 500, 4000 ],
+//            range: {
+//                'min': [ 0 ],
+//                '10%': [ 500, 500 ],
+//                '50%': [ 4000, 1000 ],
+//                'max': [ 10000 ]
+//            }
+//        });
+//
+//        var nodes = [
+//            document.getElementById('lower-value'), // 0
+//            document.getElementById('upper-value')  // 1
+//        ];
+//
+//        // Display the slider value and how far the handle moved
+//        // from the left edge of the slider.
+//        nonLinearSlider.noUiSlider.on('update', function ( values, handle, unencoded, isTap, positions ) {
+//            nodes[handle].innerHTML = values[handle];
+//            $("#lower-value").val(values[0]);
+//            $("#upper-value").val(values[1]);
+//        });
+//      }
+//    });
 
 
 

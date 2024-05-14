@@ -85,7 +85,7 @@
 								<li><a href="#"><span>Availibility</span> : Нет в наличии</a></li>
 							{% endif %}
 							<li><a href="#"><span>Осталось</span> : {{ shoe.stock }}</a></li>
-							<li><a href="#"><span>Производитель</span> : {{ shoe.country_of_manufacture }}</a></li>
+							<li><a href="#"><span>Производитель</span> : {{ country_of_manufacture|join:'' }}</a></li>
 							<li><a href="#"><span>Код производителя</span> : {{ shoe.manufacturers_code }}</a></li>
 						</ul>
 						<p>{{ shoe.description|truncatechars:150 }}</p>
@@ -138,6 +138,14 @@
 					<div class="table-responsive">
 						<table class="table">
 							<tbody>
+								<tr>
+									<td>
+										<h5>Бренд</h5>
+									</td>
+									<td>
+										<h5>{{ shoe.brand }}</h5>
+									</td>
+								</tr>
 								<tr>
 									<td>
 										<h5>Пол</h5>

@@ -1,80 +1,61 @@
-from django.http import Http404
-from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
+from django_filters.views import FilterView
 from product.models import Shoes, Category, Confirm
 from product.forms import ShoesForm
-from django.shortcuts import get_object_or_404
-#from decimal import Decimal
+from .filters import ShoesFilter
+from django.shortcuts import get_object_or_404, render
+from django.db.models import Count
+from django.http import Http404
+from django.urls import reverse_lazy
 
-
-class ProductListView(ListView):
+class ProductListView(FilterView):
     model = Shoes
-    fields = '__all__'
+    filterset_class = ShoesFilter
     context_object_name = 'shoes'
     template_name = 'product_list.html'
-
-    def __init__(self, url=None):
-        self.url = url
+    paginate_by = 12
 
     def get_queryset(self):
-        return Shoes.objects.all()
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     shoe = self.get_object()
-    #     shoesList = []
-    #     for item in shoe:
-    #         price_decimal = Decimal(str(item.price))
-    #         discount_decimal = Decimal(str(item.discount))
-    #         discounted_price = price_decimal * (1 - discount_decimal / 100)
-    #         item.price = {'price': price_decimal, 'sale': str(round(discounted_price))}
-    #         shoesList.append(item)
-    #         # print(shoesList)
-    #     context['shoesList'] = shoesList
-    #     return context
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        #Выбираем все товары
-        show_products = Shoes.objects.all()[:12]
-        context['show_products'] = show_products
-
-        # Выбираем только товары у которых есть скидка
-        discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]
-        context['discounted_products'] = discounted_products
-
-        return context
-
-    # def get_products(self):
-    #     category = None
-    #     categories = Category.objects.all()
-    #     shoes = Shoes.objects.filter(available=True)
-    #
-    #     if self.url:
-    #         category = get_object_or_404(Category, url=self.url)
-    #         shoes = shoes.filter(category=category)
-    #         return {
-    #             'category': category,
-    #             'categories': categories,
-    #             'shoes': shoes
-    #         }
-
-class ProductByCategoryListView(ListView):
-    model = Shoes
-    template_name = 'product_list.html'
-    context_object_name = 'shoes'
-    category = None
-
-    def get_queryset(self):
-        self.category = Category.objects.get(url=self.kwargs['url'])
-        queryset = Shoes.objects.all().filter(category__url=self.category.url)
+        queryset = super().get_queryset()
+        filter = ShoesFilter(self.request.GET, queryset=queryset)
+        category_url = self.kwargs.get('url')
+        if category_url:
+            category = Category.objects.get(url=category_url)
+            queryset = filter.qs.filter(category__url=category_url)
+        queryset = queryset.annotate(num_products=Count('category__shoes')).order_by('id')
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['name'] = f'Статьи из категории: {self.object.category.name}'
+        # Выбираем все товары
+        context['show_products'] = Shoes.objects.all()[:12]
+        # Выбираем только товары у которых есть скидка
+        context['discounted_products'] = Shoes.objects.filter(discount__gt=0, available=True)[:9]
+        context['filter'] = ShoesFilter(self.request.GET, queryset=self.get_queryset())
+        context['categories'] = Category.objects.all()
+        category_url = self.kwargs.get('url')
+        if category_url:
+            category = Category.objects.get(url=category_url)
+            context['name'] = f'Обувь из категории: {category.name}'
         return context
+
+
+
+# class ProductByCategoryListView(ListView):
+#     model = Shoes
+#     template_name = 'product_list.html'
+#     context_object_name = 'shoes'
+#     category = None
+#
+#     def get_queryset(self):
+#         self.category = Category.objects.get(url=self.kwargs['url'])
+#         queryset = Shoes.objects.all().filter(category__url=self.category.url)
+#         return queryset
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['name'] = f'Обувь из категории: {self.category.name}'
+#         return context
 
     # def get_queryset(self):
     #     queryset = Shoes.objects.filter(
@@ -94,7 +75,7 @@ class ProductByCategoryListView(ListView):
 
 class ProductDetailView(DetailView):
     model = Shoes
-    # context_object_name = 'shoe'
+    context_object_name = 'shoe'
     template_name = 'product_detail.html'
 
 
@@ -141,6 +122,7 @@ class ProductDetailView(DetailView):
         context['lining_material'] = shoe.lining_material.all()
         context['outsole_material'] = shoe.outsole_material.all()
         context['insole_material'] = shoe.insole_material.all()
+        context['country_of_manufacture'] = shoe.country_of_manufacture.all()
 
         # Выбираем только товары у которых есть скидка
         discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]

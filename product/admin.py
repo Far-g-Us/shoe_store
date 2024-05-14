@@ -9,6 +9,7 @@ admin.site.register(UpperMaterialProduct)
 admin.site.register(LiningMaterialProduct)
 admin.site.register(OutsoleMaterialProduct)
 admin.site.register(InsoleMaterialProduct)
+admin.site.register(CountryOfManufacture)
 # admin.site.register(DiscountProduct)
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -17,9 +18,9 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(Category, CategoryAdmin)
 
 class ShoeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'url', 'price', 'discount', 'stock', 'available', 'country_of_manufacture']
-    list_filter = ['available', 'country_of_manufacture']
-    list_editable = ['price', 'stock', 'available']
+    list_display = ['name', 'url', 'price', 'discount', 'stock', 'available']
+    list_filter = ['available', 'country_of_manufacture', 'size', 'color', 'collection', 'gender', 'brand']
+    list_editable = ['price', 'discount', 'stock', 'available']
     prepopulated_fields = {'url': ('name',)}
 admin.site.register(Shoes, ShoeAdmin)
 
