@@ -3,10 +3,12 @@ from django_filters.views import FilterView
 from product.models import Shoes, Category, Confirm
 from product.forms import ShoesForm
 from .filters import ShoesFilter
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from django.core.paginator import Paginator
 from django.http import Http404
 from django.urls import reverse_lazy
+
 
 class ProductListView(FilterView):
     model = Shoes
@@ -21,8 +23,16 @@ class ProductListView(FilterView):
         category_url = self.kwargs.get('url')
         if category_url:
             category = Category.objects.get(url=category_url)
-            queryset = filter.qs.filter(category__url=category_url)
+            queryset = filter.qs.filter(category__in=category.get_descendants(include_self=True))
         queryset = queryset.annotate(num_products=Count('category__shoes')).order_by('id')
+        price_min = self.request.GET.get('price_min')
+        price_max = self.request.GET.get('price_max')
+        if price_min and price_max:
+            queryset = queryset.filter(price__range=(price_min, price_max))
+        elif price_min:
+            queryset = queryset.filter(price__gte=price_min)
+        elif price_max:
+            queryset = queryset.filter(price__lte=price_max)
         return queryset
 
     def get_context_data(self, **kwargs):

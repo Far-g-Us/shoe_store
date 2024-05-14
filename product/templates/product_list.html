@@ -55,7 +55,7 @@
 				<!-- Start Best Seller -->
 				<section class="lattest-product-area pb-40 category-list">
 					<div class="row">
-						{% for shoe in object_list %}
+						{% for shoe in filter.qs %}
 						<!-- single product -->
 						<div class="col-lg-4 col-md-6">
 							<div class="single-product">

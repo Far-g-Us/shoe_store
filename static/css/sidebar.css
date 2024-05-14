@@ -1,22 +1,85 @@
 .filter-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .filter-label {
-    width: 100px;
-    font-weight: bold;
-  }
-  
-  .filter-value {
-    flex-grow: 1;
-  }
-  
-  .form-control {
-    width: 100%;
-  }
-  
-  .btn-primary {
-    margin-left: 10px;
-  }
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.filter-label {
+  width: 100px;
+  margin-left: 10px;
+  font-weight: bold;
+  margin-right: 7px;
+}
+
+.filter-value {
+  flex-grow: 1;
+}
+
+.filter-value-button {
+  display: flex;
+  align-items: center;
+  color:white;
+}
+
+.filter-button-confirm {
+  background-color: #0069d9;
+  transition: 1s linear; /* Время изменения */
+}
+
+.filter-button-confirm:hover {
+  color: #000;
+  background: #ffc107;
+  border-color: #ffc107;
+}
+
+.filter-button {
+  color: #fff;
+  background-color: #dc3545;
+  border-color: #dc3545;
+  align-items: center;
+  margin-left: 5px;
+  margin-right: 5px;
+  transition: 1s linear; /* Время изменения */
+}
+
+.filter-button > a {
+  color: #fff;
+  transition: 1s linear; /* Время изменения */
+}
+
+.filter-button > a:hover {
+  color: #000;
+}
+
+.filter-button:hover {
+  background: #198754;
+  border-color: #198754;
+}
+
+.form-control {
+  width: 100%;
+}
+
+.btn-primary {
+  margin-left: 10px;
+}
+
+.w-85 {
+  width: 85%;
+}
+
+.input-sm input {
+  width: 85%; /* задайте нужный размер */
+  display: block;
+  height: calc(2.25rem + 2px);
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+

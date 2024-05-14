@@ -22,78 +22,163 @@
 <!--				{{ filter.form.as_p }}-->
 <!--				<button type="submit">Filter</button>-->
 <!--			</form>-->
-				<form method="get">
-					<div class="filter-row">
-						<div class="filter-label">Brand:</div>
-						<div class="filter-value">
-							<input type="text" name="brand" value="{{ request.GET.brand }}" class="form-control">
-						</div>
-					</div>
-					<div class="filter-row">
-						<div class="filter-label">Gender:</div>
-						<div class="filter-value">
-							<select name="gender" class="form-control" multiple>
-								{% for gender in filter.form.gender.field.queryset %}
-									<option> {{ gender }}</option>
-								{% endfor %}
-							</select>
-						</div>
-					</div>
-					<div class="filter-row">
-						<div class="filter-label">Color:</div>
-						<div class="filter-value">
-							<select name="color" class="form-control" multiple>
-								{% for color in filter.form.color.field.queryset %}
-									<option>{{ color }}</option>
-								{% endfor %}
-							</select>
-						</div>
-					</div>
-					<div class="filter-row">
-						<div class="filter-label">Size:</div>
-						<div class="filter-value">
-							<select name="size" class="form-control" multiple>
-								{% for size in filter.form.size.field.queryset %}
-									<option>{{ size }}</option>
-								{% endfor %}
-							</select>
-						</div>
-					</div>
-					<div class="filter-row">
-						<div class="filter-label">Country of manufacture:</div>
-						<div class="filter-value">
-							<select name="country_of_manufacture" class="form-control" multiple>
-								{% for country in filter.form.country_of_manufacture.field.queryset %}
-									<option>{{ country }}</option>
-								{% endfor %}
-							</select>
-						</div>
-					</div>
-					<div class="filter-row">
-						<div class="filter-label">Collection:</div>
-						<div class="filter-value">
-							<select name="collection" class="form-control" multiple>
-								{% for collection in filter.form.collection.field.queryset %}
-									<option>{{ collection }}</option>
-								{% endfor %}
-							</select>
-						</div>
-					</div>
-					<div class="filter-row">
-						<div class="filter-label">Discount:</div>
-						<div class="filter-value">
-							<input type="number" name="discount" value="{{ request.GET.discount }}" class="form-control">
-						</div>
-					</div>
-					<div class="filter-row">
-						<div class="filter-label">Price:</div>
-						<div class="filter-value">
-							<input type="number" name="price__gte" value="{{ request.GET.price__gte }}" class="form-control">
-							<input type="number" name="price__lte" value="{{ request.GET.price__lte }}" class="form-control">
-						</div>
-					</div>
-					<button type="submit" class="btn btn-primary">Filter</button>
-				</form>
+
+                <form method="get">
+                    {% csrf_token %}
+                    <div class="filter-row">
+                        <div class="filter-label">Бренд:</div>
+                        <div class="filter-value  d-flex input-sm">
+                            {{ filter.form.brand }}
+                            {% if filter.form.brand.value %}
+                                <button class="filter-button btn btn-danger"><a href="{% url 'product_list' %}?{% for key, value in request.GET.items %}{% if key != 'brand' %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endif %}{% endfor %}" class="filter-value-button">Clear</a></button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-label">Пол:</div>
+                        <div class="filter-value  d-flex">
+                            {{ filter.form.gender }}
+                            {% if filter.form.gender.value %}
+                                <button class="filter-button btn btn-danger"><a href="{% url 'product_list' %}?{% for key, value in request.GET.items %}{% if key != 'gender' %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endif %}{% endfor %}" class="filter-value-button">Clear</a></button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-label">Цвет:</div>
+                        <div class="filter-value  d-flex">
+                            {{ filter.form.color }}
+                            {% if filter.form.color.value %}
+                                <button class="filter-button btn btn-danger"><a href="{% url 'product_list' %}?{% for key, value in request.GET.items %}{% if key != 'color' %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endif %}{% endfor %}" class="filter-value-button">Clear</a></button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-label">Размер:</div>
+                        <div class="filter-value  d-flex">
+                            {{ filter.form.size }}
+                            {% if filter.form.size.value %}
+                                <button class="filter-button btn btn-danger"><a href="{% url 'product_list' %}?{% for key, value in request.GET.items %}{% if key != 'size' %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endif %}{% endfor %}" class="filter-value-button">Clear</a></button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-label">Страна производства:</div>
+                        <div class="filter-value d-flex">
+                            {{ filter.form.country_of_manufacture }}
+                            {% if filter.form.country_of_manufacture.value %}
+                                <button class="filter-button btn btn-danger"><a href="{% url 'product_list' %}?{% for key, value in request.GET.items %}{% if key != 'country_of_manufacture' %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endif %}{% endfor %}" class="filter-value-button">Clear</a></button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-label">Коллекция:</div>
+                        <div class="filter-value  d-flex">
+                            {{ filter.form.collection }}
+                            {% if filter.form.collection.value %}
+                               <button class="filter-button btn btn-danger"><a href="{% url 'product_list' %}?{% for key, value in request.GET.items %}{% if key != 'collection' %}{{ key }}={{ value }}{% if not forloop.last %}&{% endif %}{% endif %}{% endfor %}" class="filter-value-button">Clear</a></button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-label">Скидка:</div>
+                        <div class="filter-value  d-flex input-sm">
+                            {{ filter.form.discount }}
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-label">Цена, руб. от:</div>
+                        <div class="filter-value  d-flex">
+                            <input type="number" name="price__gte" value="{{ filter.form.price__gte.value }}" class="form-control w-85">
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-label">Цена, руб. до:</div>
+                        <div class="filter-value  d-flex">
+                            <input type="number" name="price__lte" value="{{ filter.form.price__lte.value }}" class="form-control w-85">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary filter-button-confirm">Filter</button>
+                </form>
+
+
+<!--            <form method="get">-->
+<!--                {% csrf_token %}-->
+<!--                <div class="filter-row">-->
+<!--                    <div class="filter-label">Бренд:</div>-->
+<!--                    <div class="filter-value">-->
+<!--                        <input type="text" name="brand" value="{{ request.GET.brand }}" class="form-control">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="filter-row">-->
+<!--                    <div class="filter-label">Пол:</div>-->
+<!--                    <div class="filter-value">-->
+<!--                        <select name="gender" class="form-control" multiple>-->
+<!--                            {% for value in my_filter.form.fields.gender.choices %}-->
+<!--                            	<option value="{{ value.0 }}" {% if value.0 in request.GET.getlist|add:'gender' %}selected{% endif %}>{{ value.1 }}</option>-->
+<!--                            {% endfor %}-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="filter-row">-->
+<!--                    <div class="filter-label">Цвет:</div>-->
+<!--                    <div class="filter-value">-->
+<!--                        <select name="color" class="form-control" multiple>-->
+<!--                            {% for value in my_filter.form.fields.color.choices %}-->
+<!--                            	<option value="{{ value.0 }}" {% if value.0 in request.GET.getlist|add:'color' %}selected{% endif %}>{{ value.1 }}</option>-->
+<!--                            {% endfor %}-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="filter-row">-->
+<!--                    <div class="filter-label">Размер:</div>-->
+<!--                    <div class="filter-value">-->
+<!--                        <select name="size" class="form-control" multiple>-->
+<!--                            {% for value in my_filter.form.fields.size.choices %}-->
+<!--                            	<option value="{{ value.0 }}" {% if value.0 in request.GET.getlist|add:'size' %}selected{% endif %}>{{ value.1 }}</option>-->
+<!--                            {% endfor %}-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="filter-row">-->
+<!--                    <div class="filter-label">Страна производства:</div>-->
+<!--                    <div class="filter-value">-->
+<!--                        <select name="country_of_manufacture" class="form-control" multiple>-->
+<!--                            {% for value in my_filter.form.fields.country_of_manufacture.choices %}-->
+<!--                            	<option value="{{ value.0 }}" {% if value.0 in request.GET.getlist|add:'country_of_manufacture' %}selected{% endif %}>{{ value.1 }}</option>-->
+<!--                            {% endfor %}-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="filter-row">-->
+<!--                    <div class="filter-label">Коллекция:</div>-->
+<!--                    <div class="filter-value">-->
+<!--                        <select name="collection" class="form-control" multiple>-->
+<!--                            {% for value in my_filter.form.fields.collection.choices %}-->
+<!--                            	<option value="{{ value.0 }}" {% if value.0 in request.GET.getlist|add:'collection' %}selected{% endif %}>{{ value.1 }}</option>-->
+<!--                            {% endfor %}-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="filter-row">-->
+<!--                    <div class="filter-label">Скидка:</div>-->
+<!--                    <div class="filter-value">-->
+<!--                        <input type="number" name="discount" value="{{ request.GET.discount }}" class="form-control">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="filter-row">-->
+<!--                    <div class="filter-label">Цена, руб. от:</div>-->
+<!--                    <div class="filter-value">-->
+<!--                        <input type="number" name="price__gte" value="{{ request.GET.price__gte }}" class="form-control">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="filter-row">-->
+<!--                    <div class="filter-label">Цена, руб. до:</div>-->
+<!--                    <div class="filter-value">-->
+<!--                        <input type="number" name="price__lte" value="{{ request.GET.price__lte }}" class="form-control">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <button type="submit" class="btn btn-primary">Filter</button>-->
+<!--            </form>-->
 		</div>
 	</div>
 
