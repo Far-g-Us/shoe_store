@@ -1,13 +1,14 @@
-from django.views.generic import ListView, DetailView, CreateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, DeleteView, FormView
 from django_filters.views import FilterView
-from product.models import Shoes, Category, Confirm
-from product.forms import ShoesForm
+from product.models import Shoes, Category, Confirm, Review
+from product.forms import ShoesForm, ReviewForm
 from .filters import ShoesFilter
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Count
 from django.core.paginator import Paginator
 from django.http import Http404
 from django.urls import reverse_lazy
+
 
 
 class ProductListView(FilterView):
@@ -28,14 +29,15 @@ class ProductListView(FilterView):
         #### НЕ ТРОГАЙ ПОКА РАБОТАЕТ ####
         price_min = self.request.GET.get('price__gte')
         price_max = self.request.GET.get('price__lte')
-        if price_min is not None and price_max is not None:
+
+        if (price_min and price_max):
             queryset = queryset.filter(price__range=(price_min, price_max))
-        elif price_min is not None:
+        elif price_min:
             queryset = queryset.filter(price__gte=price_min)
-        elif price_max is not None:
+        elif price_max:
             queryset = queryset.filter(price__lte=price_max)
-        # print(f'price_min: {price_min}, price_max: {price_max}')
-        ####__________________________####
+        print(f'price_min: {price_min}, price_max: {price_max}')
+        ###################################
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -48,7 +50,7 @@ class ProductListView(FilterView):
         page_obj = context['page_obj']
         page_numbers = [n for n in paginator.page_range if n > page_obj.number - 4 and n < page_obj.number + 4]
         context['page_numbers'] = page_numbers
-        ####__________________________####
+        #######################################
         # Выбираем все товары
         context['show_products'] = Shoes.objects.all()[:12]
         # Выбираем только товары у которых есть скидка
@@ -80,21 +82,6 @@ class ProductListView(FilterView):
 #         context['name'] = f'Обувь из категории: {self.category.name}'
 #         return context
 
-    # def get_queryset(self):
-    #     queryset = Shoes.objects.filter(
-    #         category__in=self.request.GET.getlist('category'),
-    #         gender__in=self.request.GET.getlist('gender'),
-    #         size__in=self.request.GET.getlist('size'),
-    #         country_of_manufacture__in=self.request.GET.getlist('country_of_manufacture'),
-    #         price__in=self.request.GET.getlist('price'),
-    #         discount__in=self.request.GET.getlist('discount'),
-    #         collection__in=self.request.GET.getlist('collection'),
-    #         upper_material__in=self.request.GET.getlist('upper_material'),
-    #         lining_material__in=self.request.GET.getlist('lining_material'),
-    #         outsole_material__in=self.request.GET.getlist('outsole_material'),
-    #         insole_material__in=self.request.GET.getlist('insole_material')
-    #     )
-    #     return queryset
 
 class ProductDetailView(DetailView):
     model = Shoes
@@ -148,8 +135,9 @@ class ProductDetailView(DetailView):
         context['country_of_manufacture'] = shoe.country_of_manufacture.all()
 
         # Выбираем только товары у которых есть скидка
-        discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]
-        context['discounted_products'] = discounted_products
+        # discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]
+        # context['discounted_products'] = discounted_products
+        context['discounted_products'] = Shoes.objects.filter(discount__gt=0, available=True)[:9]
 
         # price_decimal = Decimal(str(shoe.price))
         # discount_decimal = Decimal(str(shoe.discount))
@@ -193,3 +181,15 @@ class ConfirmView(DetailView):
             return Confirm.objects.get(id=product_id)
         except Confirm.DoesNotExist:
             product_id = None
+
+
+class AddReview(FormView):
+    def post(self, request, pk):
+        form = ReviewForm(request.POST)
+        print(request.POST)
+        shoes = Shoes.objects.get(id=pk)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.shoes = shoes
+            form.save()
+        return redirect(shoes.get_absolute_url())
