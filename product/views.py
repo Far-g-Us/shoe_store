@@ -7,10 +7,10 @@ from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Count
 from django.core.paginator import Paginator
 from django.http import Http404
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 
 
-
+from urllib import request
 class ProductListView(FilterView):
     model = Shoes
     filterset_class = ShoesFilter
@@ -85,8 +85,9 @@ class ProductListView(FilterView):
 
 class ProductDetailView(DetailView):
     model = Shoes
-    context_object_name = 'shoe'
     template_name = 'product_detail.html'
+    context_object_name = 'shoe'
+    
 
 
     # def __init__(self, id, url, *args, **kwargs):
@@ -183,13 +184,34 @@ class ConfirmView(DetailView):
             product_id = None
 
 
+# class AddReview(FormView):
+#     def post(self, request, pk):
+#         form = ReviewForm(request.POST)
+#         
+#         shoes = Shoes.objects.get(pk)
+#         if form.is_valid():
+#             form = form.save(commit=False)
+#             form.shoes = shoes
+#             form.save()
+#         return redirect(shoes.get_absolute_url())
+
+
 class AddReview(FormView):
-    def post(self, request, pk):
-        form = ReviewForm(request.POST)
+    form_class = ReviewForm
+
+
+    def form_valid(self, form):
+        shoes = Shoes.objects.get(id=self.kwargs['id'])
+        form.instance.shoes = shoes
+        form.save()
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shoes = Shoes.objects.get(id=self.kwargs['id'])
+        context['shoes'] = shoes
         print(request.POST)
-        shoes = Shoes.objects.get(id=pk)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.shoes = shoes
-            form.save()
-        return redirect(shoes.get_absolute_url())
+        return context
+
+    def get_success_url(self):
+        return reverse('product_detail', kwargs={'id': self.kwargs['id']})

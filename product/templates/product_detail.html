@@ -354,25 +354,25 @@
 									<li><a href="#"><i class="fa fa-star"></i></a></li>
 								</ul>
 								<p>Outstanding</p>
-								<form method="post" action="{% url 'add_review' pk=shoes.pk %}" class="row contact_form" novalidate="novalidate">
+								<form method="post" action="{% url 'add_review' id=shoe.id %}" class="row contact_form" novalidate="novalidate">
 									{% csrf_token %}
 									<div class="col-md-12">
 										<div class="form-group">
 											<input type="text" class="form-control" name="name" placeholder="Your Full name">
 										</div>
-									<!--onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your Full name'"-->
+
 									</div>
 									<div class="col-md-12">
 										<div class="form-group">
 											<input type="email" class="form-control" name="email" placeholder="Email Address">
 										</div>
-									<!--onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email Address'"-->
+
 									</div>
 									<div class="col-md-12">
 										<div class="form-group">
-											<textarea class="form-control" name="message" rows="1" placeholder="Review"></textarea>
+											<textarea class="form-control" name="message" placeholder="Review"></textarea>
 										</div>
-									<!--onfocus="this.placeholder = ''" onblur="this.placeholder = 'Review'"-->
+
 									</div>
 									<div class="col-md-12 text-right">
 										<button type="submit" value="submit" class="primary-btn">Submit Now</button>
