@@ -1,17 +1,14 @@
-from django.views.generic import ListView, DetailView, CreateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, DeleteView, FormView
 from django_filters.views import FilterView
 from product.models import Shoes, Category, Confirm, Review
 from product.forms import ShoesForm, ReviewForm
-from .filters import ShoesFilter
-from django.shortcuts import get_object_or_404
+from product.filters import ShoesFilter
+from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Count
 from django.core.paginator import Paginator
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
-from .serializers import ReviewSerializer
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.views.decorators.http import require_http_methods
+
 
 
 
@@ -199,24 +196,31 @@ class ConfirmView(DetailView):
 #             form.save()
 #         return redirect(shoes.get_absolute_url())
 
-class AddReview(APIView):
-    model = Review
-    
-    def get_queryset(self):
-        return Shoes.objects.all()
+class ProductDetailReview(FormView):
+    template_name = 'product_detail.html'
+    form_class = ReviewForm
+
+    def form_valid(self, form):
+        shoes = self.get_object()
+        review = Review.objects.create(shoes=shoes, **form.cleaned_data)
+        review.save()
+        print(review)
+        return super().form_valid(form)
 
     def get_object(self, queryset=None):
-        product_id = self.kwargs.get('product_id')
+        url = self.kwargs.get('url')
+        product_id = self.kwargs.get('id')
         try:
-            return Confirm.objects.get(id=product_id)
-        except Review.DoesNotExist:
-            product_id = None
+            return get_object_or_404(Shoes, url=url, id=product_id)
+        except Shoes.DoesNotExist:
+            raise Http404("Product does not exist")
+
+    def get_success_url(self):
+        url = self.kwargs.get('url')
+        product_id = self.kwargs.get('id')
+        return reverse_lazy('product_detail', kwargs={'url': url, 'id': product_id})
     
-    @require_http_methods(["POST"])
-    def post(self, request, id):
-        serializer = ReviewSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(shoes_id=id)
-            return Response({'message': 'Review added'})
-        else:
-            return Response(serializer.errors)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['shoes'] = self.get_object()
+        return context

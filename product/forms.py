@@ -14,4 +14,4 @@ class FilterForm(forms.Form):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['name', 'email', 'text']
+        fields = ['name', 'image', 'email', 'text']

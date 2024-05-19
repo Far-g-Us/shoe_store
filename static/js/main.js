@@ -250,22 +250,5 @@ $(document).ready(function(){
         e.preventDefault();
         $('.load-product').fadeIn('slow');
         $(this).fadeOut();
-    });
-});
-
-$(document).ready(function () {
-  $('form').submit(function (event) {
-    event.preventDefault();
-    $.ajax({
-      url: $(this).attr('action'),
-      method: $(this).attr('method'),
-      data: $(this).serialize(),
-      success: function (data) {
-        console.log(data);
-      },
-      error: function (error) {
-        console.log(error);
-      }
-    });
-  });
+    }); 
 });

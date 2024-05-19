@@ -193,11 +193,13 @@ class Rating(models.Model):
         verbose_name_plural = 'Рейтинги'
 
 class Review(models.Model):
-    email = models.EmailField()
-    name = models.CharField(verbose_name='Имя', max_length=100)
-    text = models.TextField(verbose_name='Сообщение', max_length=5000)
+    email = models.EmailField(blank=True)
+    name = models.CharField(verbose_name='Имя', max_length=100, blank=True)
+    image = models.ImageField(verbose_name='фото', upload_to='comment/%Y/%m', blank=True)
+    text = models.TextField(verbose_name='Сообщение', max_length=5000, blank=True)
     parent = models.ForeignKey('self', verbose_name='Родитель', on_delete=models.SET_NULL, blank=True, null=True)
-    shoes = models.ForeignKey(Shoes, verbose_name='Обувь', on_delete=models.CASCADE)
+    shoes = models.ForeignKey(Shoes, verbose_name='Комментарий', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name} - {self.shoes}"

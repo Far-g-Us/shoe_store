@@ -326,7 +326,9 @@
 								<div class="review_item">
 									<div class="media">
 										<div class="d-flex">
-											<img src="{% static 'img/product/review-1.png' %}" alt="">
+											{% if review.image %}
+												<img class="img-fluid reviewer-image" src="{{ review.image.url }}" alt="{{ review.name }}">
+											{% endif %}
 										</div>
 										<div class="media-body">
 											<h4>{{ review.name }}</h4>
@@ -338,8 +340,11 @@
 										</div>
 									</div>
 									<p>{{ review.text }}</p>
+									<p>{{ review.created_at }}</p>
 								</div>
-							{% endfor %}
+							{% empty %}
+								<p>No reviews yet.</p>
+  							{% endfor %}
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -354,21 +359,26 @@
 									<li><a href="#"><i class="fa fa-star"></i></a></li>
 								</ul>
 								<p>Outstanding</p>
-								<form method="post" action="{% url 'add_review' shoe.id %}" class="row contact_form" novalidate="novalidate" onsubmit="console.log('Form submitted')">
+								<form method="post" action="{% url 'create_review' shoe.url shoe.id %}" enctype="multipart/form-data" class="row contact_form" novalidate="novalidate" onsubmit="console.log('Form submitted')">
 									{% csrf_token %}
 									<div class="col-md-12">
 										<div class="form-group">
-											<input type="text" class="form-control" name="name" placeholder="Your Full name">
+											<input type="file" class="form-control" id="image" name="image" placeholder="Your Image">
 										</div>
 									</div>
 									<div class="col-md-12">
 										<div class="form-group">
-											<input type="email" class="form-control" name="email" placeholder="Email Address">
+											<input type="text" class="form-control" id="name" name="name" placeholder="Your Full name">
 										</div>
 									</div>
 									<div class="col-md-12">
 										<div class="form-group">
-											<textarea class="form-control" name="message" placeholder="Review"></textarea>
+											<input type="email" class="form-control" id="email" name="email" placeholder="Email Address">
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<textarea class="form-control" id="text" name="text" placeholder="Review"></textarea>
 										</div>
 									</div>
 									<div class="col-md-12 text-right">
@@ -427,3 +437,46 @@
 	</section>
 <!--	 End related-product Area -->
 {% endblock content %}
+<!--<script>-->
+<!--const form = document.querySelector('.contact_form');-->
+
+<!--form.addEventListener('submit', async (event) => {-->
+<!--  event.preventDefault(); // Отменяем стандартное поведение отправки формы-->
+
+<!--  const formData = new FormData(form); // Создаем объект FormData из формы-->
+
+<!--  const response = await fetch(`{% url 'review_create' shoe.id %}`, {-->
+<!--    method: 'POST',-->
+<!--    headers: {-->
+<!--      'Content-Type': 'application/json',-->
+<!--      'X-CSRFToken': '{{ csrf_token }}' // Добавляем CSRF-токен в заголовок запроса-->
+<!--    },-->
+<!--    body: JSON.stringify(Object.fromEntries(formData.entries())), // Преобразуем FormData в JSON-строку и отправляем в теле запроса-->
+<!--  });-->
+
+<!--  const result = await response.json(); // Получаем ответ сервера в формате JSON-->
+
+<!--  console.log(result); // Выводим ответ сервера в консоль-->
+<!--});-->
+<!--</script>-->
+<script>
+const form = document.querySelector('.contact_form');
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault(); // Отменяем стандартное поведение отправки формы
+
+  const formData = new FormData(form); // Создаем объект FormData из формы
+
+  const response = await fetch(`{% url 'review_create' shoe.id %}`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}' // Добавляем CSRF-токен в заголовок запроса
+    },
+    body: formData, // Отправляем FormData напрямую в теле запроса
+  });
+
+  const result = await response.json(); // Получаем ответ сервера в формате JSON
+
+  console.log(result); // Выводим ответ сервера в консоль
+});
+</script>
