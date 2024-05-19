@@ -322,7 +322,7 @@
 								</div>
 							</div>
 							<div class="review_list">
-							{% for review in shoes.review_set.all %}
+							{% for review in shoe.review_set.all %}
 								<div class="review_item">
 									<div class="media">
 										<div class="d-flex">
@@ -354,25 +354,22 @@
 									<li><a href="#"><i class="fa fa-star"></i></a></li>
 								</ul>
 								<p>Outstanding</p>
-								<form method="post" action="{% url 'add_review' id=shoe.id %}" class="row contact_form" novalidate="novalidate">
+								<form method="post" action="{% url 'add_review' shoe.id %}" class="row contact_form" novalidate="novalidate" onsubmit="console.log('Form submitted')">
 									{% csrf_token %}
 									<div class="col-md-12">
 										<div class="form-group">
 											<input type="text" class="form-control" name="name" placeholder="Your Full name">
 										</div>
-
 									</div>
 									<div class="col-md-12">
 										<div class="form-group">
 											<input type="email" class="form-control" name="email" placeholder="Email Address">
 										</div>
-
 									</div>
 									<div class="col-md-12">
 										<div class="form-group">
 											<textarea class="form-control" name="message" placeholder="Review"></textarea>
 										</div>
-
 									</div>
 									<div class="col-md-12 text-right">
 										<button type="submit" value="submit" class="primary-btn">Submit Now</button>

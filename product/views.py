@@ -1,16 +1,20 @@
-from django.views.generic import ListView, DetailView, CreateView, DeleteView, FormView
+from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django_filters.views import FilterView
 from product.models import Shoes, Category, Confirm, Review
 from product.forms import ShoesForm, ReviewForm
 from .filters import ShoesFilter
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django.core.paginator import Paginator
-from django.http import Http404
-from django.urls import reverse, reverse_lazy
+from django.http import Http404, HttpResponseRedirect
+from django.urls import reverse_lazy
+from .serializers import ReviewSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.views.decorators.http import require_http_methods
 
 
-from urllib import request
+
 class ProductListView(FilterView):
     model = Shoes
     filterset_class = ShoesFilter
@@ -36,7 +40,7 @@ class ProductListView(FilterView):
             queryset = queryset.filter(price__gte=price_min)
         elif price_max:
             queryset = queryset.filter(price__lte=price_max)
-        print(f'price_min: {price_min}, price_max: {price_max}')
+        # print(f'price_min: {price_min}, price_max: {price_max}')
         ###################################
         return queryset
 
@@ -187,7 +191,7 @@ class ConfirmView(DetailView):
 # class AddReview(FormView):
 #     def post(self, request, pk):
 #         form = ReviewForm(request.POST)
-#         
+        
 #         shoes = Shoes.objects.get(pk)
 #         if form.is_valid():
 #             form = form.save(commit=False)
@@ -195,23 +199,24 @@ class ConfirmView(DetailView):
 #             form.save()
 #         return redirect(shoes.get_absolute_url())
 
+class AddReview(APIView):
+    model = Review
+    
+    def get_queryset(self):
+        return Shoes.objects.all()
 
-class AddReview(FormView):
-    form_class = ReviewForm
-
-
-    def form_valid(self, form):
-        shoes = Shoes.objects.get(id=self.kwargs['id'])
-        form.instance.shoes = shoes
-        form.save()
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        shoes = Shoes.objects.get(id=self.kwargs['id'])
-        context['shoes'] = shoes
-        print(request.POST)
-        return context
-
-    def get_success_url(self):
-        return reverse('product_detail', kwargs={'id': self.kwargs['id']})
+    def get_object(self, queryset=None):
+        product_id = self.kwargs.get('product_id')
+        try:
+            return Confirm.objects.get(id=product_id)
+        except Review.DoesNotExist:
+            product_id = None
+    
+    @require_http_methods(["POST"])
+    def post(self, request, id):
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(shoes_id=id)
+            return Response({'message': 'Review added'})
+        else:
+            return Response(serializer.errors)
