@@ -7,7 +7,7 @@
 	<div class="container">
 		<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 			<div class="col-first">
-				<h1>Product Delete Page</h1>
+				<h1>Product Review Delete Page</h1>
 				<nav class="d-flex align-items-center">
 					<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
 					<a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
@@ -19,20 +19,20 @@
 </section>
 <!-- End Banner Area -->
 
-<!-- Start Product Delete -->
+<!-- Start Comment Delete -->
 <section class="section_gap-delete">
-	<div class="container">
-		<h1>Удалить {{ object.name }}</h1>
-		<h4>Вы точно хотите удалить "{{ object.name }}"?</h4>
-		<div class="button-container">
-			<form method="post">
-				{% csrf_token %}
-				<button class="btn btn-danger" type="submit">Принять</button>
-			</form>
-			<button type="submit" class="btn btn-primary"><a href="{% url 'product_list' %}">Отмена</a></button>
-		</div>
-	</div>
+    <div class="container">
+        <h1>Удалить комментарий {{ object.name }}</h1>
+        <h4>Вы точно хотите удалить "{{ object.name }}"?</h4>
+        <div class="button-container">
+            <form method="post">
+                {% csrf_token %}
+                <button class="btn btn-danger" type="submit">Принять</button>
+            </form>
+            <button type="submit" class="btn btn-primary"><a href="{% url 'product_list' %}">Отмена</a></button>
+        </div>
+    </div>
 </section>
-<!-- End Product Delete -->
+<!-- End Comment Delete -->
 
 {% endblock content %}

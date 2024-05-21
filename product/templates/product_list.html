@@ -28,10 +28,10 @@
 				<!-- Start Filter Bar -->
 				<div class="filter-bar d-flex flex-wrap align-items-center">
 					<div class="sorting">
-						<select>
-							<option value="1">Default sorting</option>
-							<option value="1">Default sorting</option>
-							<option value="1">Default sorting</option>
+						<select id="sort-by">
+						  <option value="">Default sorting</option>
+						  <option value="price_asc">Sort by price (low to high)</option>
+						  <option value="price_desc">Sort by price (high to low)</option>
 						</select>
 					</div>
 					<div class="sorting mr-auto">
@@ -53,7 +53,7 @@
 				</div>
 				<!-- End Filter Bar -->
 				<!-- Start Best Seller -->
-				<section class="lattest-product-area pb-40 category-list">
+				<section class="lattest-product-area pb-40 category-list" id="category-list">
 					<div class="row">
 						{% for shoe in page_obj %}
 						<!-- single product -->
@@ -75,7 +75,7 @@
 										{% endif %}
 									</div>
 									{% if user.is_staff %}
-										<a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.id %}">Удалить продукт</a>
+										<a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.url shoe.id %}">Удалить продукт</a>
 									{% endif %}
 									<div class="prd-bottom">
 										<a href="#" class="social-info">
@@ -198,5 +198,26 @@
 <!--    </div>-->
 <!--    {% endfor %}-->
 
+<script>
+document.querySelector('#sort-by').addEventListener('change', function(event) {
+  const sortBy = event.target.value
+  const url = `/path/to/shoes?sort_by=${sortBy}`
+
+  fetch(url, { method: 'GET' })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+      return response.json()
+    })
+    .then(data => {
+      const shoesListElement = document.querySelector('#category-list .row')
+      shoesListElement.innerHTML = data.html
+    })
+    .catch(error => {
+      console.error('An error occurred while fetching:', error)
+    })
+})
+</script>
 
 {% endblock content %}

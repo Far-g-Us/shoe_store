@@ -30,7 +30,7 @@
 					<nav class="d-flex align-items-center">
 						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
 						<a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
-						<a href="{% url 'product_detail' shoe.url shoe.id %}">Product-details</a>
+						<a href="{% url 'product_detail' shoe.url shoe.id %}">Product-Details</a>
 					</nav>
 				</div>
 			</div>
@@ -299,8 +299,9 @@
 								<div class="col-6">
 									<div class="box_total">
 										<h5>Overall</h5>
-										<h4>4.0</h4>
-										<h6>(03 Reviews)</h6>
+										<h4>{{ average_rating }}</h4>
+										<h6>({{ num_comments }} Reviews)</h6>
+										<p>{{ shoe.get_latest_review }}</p>
 									</div>
 								</div>
 								<div class="col-6">
@@ -331,16 +332,25 @@
 											{% endif %}
 										</div>
 										<div class="media-body">
-											<h4>{{ review.name }}</h4>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
+											<div class="container-comment">
+												<div class="column-comment">
+													<h4 >{{ review.name }}</h4>
+													<a>{{ review.created_at }}</a>
+												</div>
+												<div class="row-comment">
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star"></i>
+												</div>
+											</div>
 										</div>
 									</div>
 									<p>{{ review.text }}</p>
-									<p>{{ review.created_at }}</p>
+									{% if user.is_staff %}
+										<a style="color: red;" href="{% url 'review_delete' shoe.url shoe.id review.id %}">Удалить комментарий</a>
+									{% endif %}
 								</div>
 							{% empty %}
 								<p>No reviews yet.</p>

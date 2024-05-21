@@ -181,7 +181,6 @@ class RatingStar(models.Model):
         verbose_name_plural = 'Звёзды рейтинга'
 
 class Rating(models.Model):
-    ip = models.CharField(verbose_name='IP адрес', max_length=15)
     star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='звезда')
     shoes = models.ForeignKey(Shoes, on_delete=models.CharField, verbose_name='обувь')
 

@@ -9,10 +9,15 @@
   margin-left: 10px;
   margin-right: 7px;
   font-weight: bold;
+  color: #343a40;
 }
 
 .filter-value {
   flex-grow: 1;
+}
+
+body .filter-value  {
+ color: #212529;
 }
 
 .filter-value-button {
@@ -83,3 +88,6 @@
   transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
+.sidebar-filter .head {
+  margin-top: 10px;
+}

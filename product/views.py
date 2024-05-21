@@ -1,14 +1,15 @@
+from django.template.loader import render_to_string
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, FormView
+from django.views.generic import View
 from django_filters.views import FilterView
 from product.models import Shoes, Category, Confirm, Review
 from product.forms import ShoesForm, ReviewForm
 from product.filters import ShoesFilter
-from django.shortcuts import get_object_or_404, redirect, render
-from django.db.models import Count
+from django.shortcuts import get_object_or_404
+from django.db.models import Count, Sum
 from django.core.paginator import Paginator
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, JsonResponse
 from django.urls import reverse_lazy
-
 
 
 
@@ -18,6 +19,7 @@ class ProductListView(FilterView):
     context_object_name = 'shoes'
     template_name = 'product_list.html'
     paginate_by = 9
+
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -65,6 +67,26 @@ class ProductListView(FilterView):
             context['name'] = f'Обувь из категории: {category.name}'
         return context
 
+class SortShoesView(View):
+    def get(self, request, *args, **kwargs):
+        sort_by = request.GET.get('sort_by')
+
+        if sort_by == 'price_asc':
+            shoes = Shoes.objects.order_by('price')
+        elif sort_by == 'price_desc':
+            shoes = Shoes.objects.order_by('-price')
+        else:
+            shoes = Shoes.objects.all()
+
+        # Ограничиваем количество товаров, которые будут возвращены
+        # Это необходимо для увеличения производительности и уменьшения объема данных, передаваемых по сети
+        shoes = shoes[:10]
+
+        # Передаем товары в шаблон и получаем HTML-код, который будет отображать отсортированный список товаров
+        html = render_to_string('shoes_list.html', {'shoes': shoes})
+
+        # Возвращаем HTML-код в формате JSON
+        return JsonResponse({'html': html})
 
 
 # class ProductByCategoryListView(ListView):
@@ -88,21 +110,7 @@ class ProductDetailView(DetailView):
     model = Shoes
     template_name = 'product_detail.html'
     context_object_name = 'shoe'
-    
 
-
-    # def __init__(self, id, url, *args, **kwargs):
-    #     self.id = id
-    #     self.url = url
-    #     super().__init__(*args, **kwargs)
-    #
-    # def get(self, request):
-    #     shoes = Shoes.objects.get(id=self.id)
-    #     context = {
-    #         'shoes': shoes,
-    #         'url': self.url
-    #     }
-    #     return render(request, 'product_detail.html', context)
 
     def get_queryset(self):
         return Shoes.objects.all()
@@ -116,13 +124,6 @@ class ProductDetailView(DetailView):
         except Shoes.DoesNotExist:
             raise Http404("Product does not exist")
 
-    # def get_object(self):
-    #     product_id = self.kwargs.get('product_id')
-    #     try:
-    #         return Shoes.objects.get(pk=product_id)
-    #     except Shoes.DoesNotExist:
-    #         raise Http404("Product does not exist")
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         shoe = self.get_object()
@@ -135,6 +136,12 @@ class ProductDetailView(DetailView):
         context['outsole_material'] = shoe.outsole_material.all()
         context['insole_material'] = shoe.insole_material.all()
         context['country_of_manufacture'] = shoe.country_of_manufacture.all()
+        # Выводим количество комментариев и средний рейтинг для каждого товара на его странице
+        context['num_comments'] = shoe.review_set.count()
+        ratings = shoe.rating_set.annotate(value_sum=Sum('star__value'))
+        total_value = ratings.aggregate(Sum('value_sum'))['value_sum__sum'] or 0
+        total_count = ratings.count() or 1
+        context['average_rating'] = total_value / total_count
 
         # Выбираем только товары у которых есть скидка
         # discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]
@@ -162,11 +169,21 @@ class ProductCreateView(CreateView):
 class ProductDeleteView(DeleteView):
     model = Shoes
     template_name = 'product_confirm_delete.html'
-    success_url = reverse_lazy('product_list')
+    # success_url = reverse_lazy('product_list')
+
+    def get_queryset(self):
+        return Shoes.objects.all()
 
     def get_object(self, queryset=None):
-        product_id = self.kwargs.get('product_id')
-        return Shoes.objects.get(id=product_id)
+        slug = self.kwargs.get('url')
+        product_id = self.kwargs.get('id')
+        try:
+            return get_object_or_404(Shoes, url=slug, id=product_id)
+        except Shoes.DoesNotExist:
+            raise Http404("Product does not exist")
+
+    def get_success_url(self):
+        return reverse_lazy('product_list')
 
 
 class ConfirmView(DetailView):
@@ -185,17 +202,6 @@ class ConfirmView(DetailView):
             product_id = None
 
 
-# class AddReview(FormView):
-#     def post(self, request, pk):
-#         form = ReviewForm(request.POST)
-        
-#         shoes = Shoes.objects.get(pk)
-#         if form.is_valid():
-#             form = form.save(commit=False)
-#             form.shoes = shoes
-#             form.save()
-#         return redirect(shoes.get_absolute_url())
-
 class ProductDetailReview(FormView):
     template_name = 'product_detail.html'
     form_class = ReviewForm
@@ -204,8 +210,13 @@ class ProductDetailReview(FormView):
         shoes = self.get_object()
         review = Review.objects.create(shoes=shoes, **form.cleaned_data)
         review.save()
-        print(review)
+        # print(review)
         return super().form_valid(form)
+
+    def get_success_url(self):
+        url = self.kwargs.get('url')
+        product_id = self.kwargs.get('id')
+        return reverse_lazy('product_detail', kwargs={'url': url, 'id': product_id})
 
     def get_object(self, queryset=None):
         url = self.kwargs.get('url')
@@ -214,13 +225,28 @@ class ProductDetailReview(FormView):
             return get_object_or_404(Shoes, url=url, id=product_id)
         except Shoes.DoesNotExist:
             raise Http404("Product does not exist")
-
-    def get_success_url(self):
-        url = self.kwargs.get('url')
-        product_id = self.kwargs.get('id')
-        return reverse_lazy('product_detail', kwargs={'url': url, 'id': product_id})
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['shoes'] = self.get_object()
         return context
+
+class DeleteProductReview(DeleteView):
+    model = Review
+    template_name = 'product_review_delete.html'
+    # success_url = reverse_lazy('product_list')
+
+    def get_queryset(self):
+        return Review.objects.all()
+
+    def get_object(self, queryset=None):
+        review_id = self.kwargs.get('review_id')
+        try:
+            return get_object_or_404(Review, id=review_id)
+        except Review.DoesNotExist:
+            raise Http404("Comment does not exist")
+
+    def get_success_url(self):
+        product_url = self.kwargs.get('url')
+        product_id = self.kwargs.get('id')
+        return reverse_lazy('product_detail', kwargs={'url': product_url, 'id': product_id})
