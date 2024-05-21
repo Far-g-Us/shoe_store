@@ -1,4 +1,3 @@
-from django.template.loader import render_to_string
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, FormView
 from django.views.generic import View
 from django_filters.views import FilterView
@@ -8,7 +7,8 @@ from product.filters import ShoesFilter
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Sum
 from django.core.paginator import Paginator
-from django.http import Http404, JsonResponse
+from django.shortcuts import render
+from django.http import Http404, HttpResponse
 from django.urls import reverse_lazy
 
 
@@ -67,26 +67,28 @@ class ProductListView(FilterView):
             context['name'] = f'Обувь из категории: {category.name}'
         return context
 
-class SortShoesView(View):
-    def get(self, request, *args, **kwargs):
-        sort_by = request.GET.get('sort_by')
 
-        if sort_by == 'price_asc':
-            shoes = Shoes.objects.order_by('price')
-        elif sort_by == 'price_desc':
-            shoes = Shoes.objects.order_by('-price')
-        else:
-            shoes = Shoes.objects.all()
+def shoes_list(request):
+    # Get the sorting parameter from the request
+    sort_by = request.GET.get('sort_by')
 
-        # Ограничиваем количество товаров, которые будут возвращены
-        # Это необходимо для увеличения производительности и уменьшения объема данных, передаваемых по сети
-        shoes = shoes[:10]
+    # Create a queryset of shoes
+    try:
+        shoes = Shoes.objects.all()
+    except Shoes.DoesNotExist:
+        raise Http404("Shoes not found")
 
-        # Передаем товары в шаблон и получаем HTML-код, который будет отображать отсортированный список товаров
-        html = render_to_string('shoes_list.html', {'shoes': shoes})
+    # Sort the shoes by price
+    if sort_by == 'price_asc':
+        shoes = shoes.order_by('price')
+    elif sort_by == 'price_desc':
+        shoes = shoes.order_by('-price')
+    else:
+        # If the sort_by parameter is invalid, default to sorting by ID
+        shoes = shoes.order_by('id')
 
-        # Возвращаем HTML-код в формате JSON
-        return JsonResponse({'html': html})
+    # Render the HTML page
+    return render(request, 'product_list.html', {'shoes': shoes})
 
 
 # class ProductByCategoryListView(ListView):

@@ -29,9 +29,9 @@
 				<div class="filter-bar d-flex flex-wrap align-items-center">
 					<div class="sorting">
 						<select id="sort-by">
-						  <option value="">Default sorting</option>
-						  <option value="price_asc">Sort by price (low to high)</option>
-						  <option value="price_desc">Sort by price (high to low)</option>
+							<option value="">Сортировать по:</option>
+							<option value="price_asc">Цене (по возрастанию)</option>
+							<option value="price_desc">Цене (по убыванию)</option>
 						</select>
 					</div>
 					<div class="sorting mr-auto">
@@ -53,8 +53,8 @@
 				</div>
 				<!-- End Filter Bar -->
 				<!-- Start Best Seller -->
-				<section class="lattest-product-area pb-40 category-list" id="category-list">
-					<div class="row">
+				<section class="lattest-product-area pb-40 category-list">
+					<div class="row" id="shoes-list">
 						{% for shoe in page_obj %}
 						<!-- single product -->
 						<div class="col-lg-4 col-md-6">
@@ -107,7 +107,7 @@
 						{% empty %}
 						<p>Нет доступных продуктов.</p>
 						{% endfor %}
-					</div>
+						</div>
 				</section>
 				<!-- End Best Seller -->
 				<!-- Start Filter Bar -->
@@ -199,25 +199,43 @@
 <!--    {% endfor %}-->
 
 <script>
-document.querySelector('#sort-by').addEventListener('change', function(event) {
-  const sortBy = event.target.value
-  const url = `/path/to/shoes?sort_by=${sortBy}`
+	// Get the select element
+	const select = document.querySelector('#sort-by');
 
-  fetch(url, { method: 'GET' })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
-      }
-      return response.json()
-    })
-    .then(data => {
-      const shoesListElement = document.querySelector('#category-list .row')
-      shoesListElement.innerHTML = data.html
-    })
-    .catch(error => {
-      console.error('An error occurred while fetching:', error)
-    })
-})
+	// Check if the select element exists
+	if (select) {
+		// Add an event listener for the change event
+		select.addEventListener('change', function () {
+			// Get the selected option
+			const sortBy = select.value;
+
+			// Send a fetch request to the server
+			fetch(`/shoes/?sort_by=${sortBy}`)
+				.then((response) => {
+					// Check if the response is ok
+					if (response.ok) {
+						return response.text();
+					} else {
+						throw new Error(`Server responded with status ${response.status}`);
+					}
+				})
+				.then((html) => {
+					// Update the shoes list on the page
+					const shoesList = document.querySelector('#shoes-list');
+					if (shoesList) {
+						shoesList.innerHTML = html;
+					} else {
+						throw new Error('Shoes list element not found');
+					}
+				})
+				.catch((error) => {
+					console.error(error);
+					// Handle the error gracefully, e.g. show an error message to the user
+				});
+		});
+	} else {
+		console.error('Select element not found');
+	}
 </script>
 
 {% endblock content %}
