@@ -68,29 +68,6 @@ class ProductListView(FilterView):
         return context
 
 
-def shoes_list(request):
-    # Get the sorting parameter from the request
-    sort_by = request.GET.get('sort_by')
-
-    # Create a queryset of shoes
-    try:
-        shoes = Shoes.objects.all()
-    except Shoes.DoesNotExist:
-        raise Http404("Shoes not found")
-
-    # Sort the shoes by price
-    if sort_by == 'price_asc':
-        shoes = shoes.order_by('price')
-    elif sort_by == 'price_desc':
-        shoes = shoes.order_by('-price')
-    else:
-        # If the sort_by parameter is invalid, default to sorting by ID
-        shoes = shoes.order_by('id')
-
-    # Render the HTML page
-    return render(request, 'product_list.html', {'shoes': shoes})
-
-
 # class ProductByCategoryListView(ListView):
 #     model = Shoes
 #     template_name = 'product_list.html'

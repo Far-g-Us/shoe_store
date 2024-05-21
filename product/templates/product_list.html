@@ -30,8 +30,10 @@
 					<div class="sorting">
 						<select id="sort-by">
 							<option value="">Сортировать по:</option>
-							<option value="price_asc">Цене (по возрастанию)</option>
-							<option value="price_desc">Цене (по убыванию)</option>
+							<option value="name_asc">По названию (А-Я)</option>
+							<option value="name_desc">По названию (Я-А)</option>
+							<option value="price_asc">По цене (возрастанию)</option>
+							<option value="price_desc">По цене (убыванию)</option>
 						</select>
 					</div>
 					<div class="sorting mr-auto">
@@ -197,45 +199,5 @@
 <!--        </div>-->
 <!--    </div>-->
 <!--    {% endfor %}-->
-
-<script>
-	// Get the select element
-	const select = document.querySelector('#sort-by');
-
-	// Check if the select element exists
-	if (select) {
-		// Add an event listener for the change event
-		select.addEventListener('change', function () {
-			// Get the selected option
-			const sortBy = select.value;
-
-			// Send a fetch request to the server
-			fetch(`/shoes/?sort_by=${sortBy}`)
-				.then((response) => {
-					// Check if the response is ok
-					if (response.ok) {
-						return response.text();
-					} else {
-						throw new Error(`Server responded with status ${response.status}`);
-					}
-				})
-				.then((html) => {
-					// Update the shoes list on the page
-					const shoesList = document.querySelector('#shoes-list');
-					if (shoesList) {
-						shoesList.innerHTML = html;
-					} else {
-						throw new Error('Shoes list element not found');
-					}
-				})
-				.catch((error) => {
-					console.error(error);
-					// Handle the error gracefully, e.g. show an error message to the user
-				});
-		});
-	} else {
-		console.error('Select element not found');
-	}
-</script>
 
 {% endblock content %}
