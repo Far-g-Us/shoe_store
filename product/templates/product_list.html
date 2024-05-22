@@ -28,21 +28,15 @@
 				<!-- Start Filter Bar -->
 				<div class="filter-bar d-flex flex-wrap align-items-center">
 					<div class="sorting">
-						<select id="sort-by">
-							<option value="">Сортировать по:</option>
-							<option value="name_asc">По названию (А-Я)</option>
-							<option value="name_desc">По названию (Я-А)</option>
-							<option value="price_asc">По цене (возрастанию)</option>
-							<option value="price_desc">По цене (убыванию)</option>
-						</select>
+					  <select id="sortProducts">
+						  <option value="">Сортировать по:</option>
+						  <option value="name_asc">По названию (А-Я)</option>
+						  <option value="name_desc">По названию (Я-А)</option>
+						  <option value="price_asc">По цене (возрастанию)</option>
+						  <option value="price_desc">По цене (убыванию)</option>
+					  </select>
 					</div>
-					<div class="sorting mr-auto">
-						<select>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
-						</select>
-					</div>
+					<div class="sorting mr-auto"></div>
 					<div class="pagination">
 						{% for page_num in page_numbers %}
 							{% if page_obj.number == page_num %}
@@ -56,7 +50,7 @@
 				<!-- End Filter Bar -->
 				<!-- Start Best Seller -->
 				<section class="lattest-product-area pb-40 category-list">
-					<div class="row" id="shoes-list">
+					<div class="row">
 						{% for shoe in page_obj %}
 						<!-- single product -->
 						<div class="col-lg-4 col-md-6">
@@ -114,13 +108,7 @@
 				<!-- End Best Seller -->
 				<!-- Start Filter Bar -->
 				<div class="filter-bar d-flex flex-wrap align-items-center">
-					<div class="sorting mr-auto">
-						<select>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
-						</select>
-					</div>
+					<div class="sorting mr-auto"></div>
 					<div class="pagination">
 					{% for page_num in page_numbers %}
 						{% if page_obj.number == page_num %}
@@ -199,5 +187,6 @@
 <!--        </div>-->
 <!--    </div>-->
 <!--    {% endfor %}-->
+
 
 {% endblock content %}

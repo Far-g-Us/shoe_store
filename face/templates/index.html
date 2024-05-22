@@ -309,7 +309,7 @@
                                     {% endif %}
 								</div>
 								{% if user.is_staff %}
-                                <a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.id %}">Удалить продукт</a>
+                                <a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.url shoe.id %}">Удалить продукт</a>
 								{% endif %}
 								<div class="prd-bottom">
 									<a href="#" class="social-info">

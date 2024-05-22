@@ -26,7 +26,7 @@ class indexView(ListView):
         # Выбираем последние добавленные товары
         latest_products = Shoes.objects.order_by('-created_at')[:6]
 
-        # Выбираем только товары, доступные для продажи
+        # Выбираем только товары, не доступные для продажи
         available_products = Shoes.objects.filter(available=False)[:6]
 
         # Выбираем только товары у которых есть скидка

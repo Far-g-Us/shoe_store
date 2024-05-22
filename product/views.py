@@ -8,9 +8,8 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count, Sum
 from django.core.paginator import Paginator
 from django.shortcuts import render
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.urls import reverse_lazy
-
 
 
 class ProductListView(FilterView):
@@ -18,7 +17,7 @@ class ProductListView(FilterView):
     filterset_class = ShoesFilter
     context_object_name = 'shoes'
     template_name = 'product_list.html'
-    paginate_by = 9
+    paginate_by = 12
 
 
     def get_queryset(self):
