@@ -1,24 +1,64 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-<div class="container">
-    <div>
-        <h2 class="custom_h2">Созданние продукта</h2>
-            <form class="custom_p1" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button class="btn btn-success" type="submit">Create</button>
-           </form>
-            {% for shoe in shoes %}
-<!--            <div>-->
-<!--                <h2 class="custom_h2">{{ shoe.name }}</h2>-->
-<!--                <p class="custom_p">{{ shoe.color }}</p>-->
-<!--                <p class="custom_p">{{ shoe.size }}</p>-->
-<!--                <h4 class="custom_h4">{{ shoe.price }}</h4>-->
-<!--                <p class="custom_p">{{ shoe.volume }}</p>-->
-<!--                <p class="custom_p">{{ shoe.collection }}</p>-->
-<!--                <h4 class="custom_h4">{{ shoe.description }}</h4>-->
-<!--            </div>-->
-            {% endfor %}
+
+    <!-- Start Banner Area -->
+    <section class="banner-area organic-breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+                <div class="col-first">
+                    <h1>Product Details Page</h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="{% url 'product_detail' shoe.url shoe.id %}">Product-Details</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Banner Area -->
+
+    <!-- Start Create From -->
+    <div class="col-lg-6">
+        <div class="review_box">
+            <h4>Создание продукта</h4>
+            <form method="post" action="{% url 'create_form' shoe.url shoe.id %}" enctype="multipart/form-data"
+                class="row contact_form" novalidate="novalidate" onsubmit="console.log('Form submitted')">
+                {% csrf_token %}
+                <div class="col-md-12">
+                    <div class="form-group">
+                        {{ form.as_p }}
+                    </div>
+                </div>
+                <div class="col-md-12 text-right">
+                    <button type="submit" value="submit" class="primary-btn">Submit Now</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+    <!-- End Create From -->
+
 {% endblock content %}
+
+<script>
+const form = document.querySelector('.contact_form');
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault(); // Отменяем стандартное поведение отправки формы
+
+  const formData = new FormData(form); // Создаем объект FormData из формы
+
+  const response = await fetch(`{% url 'create_form' shoe.id %}`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}' // Добавляем CSRF-токен в заголовок запроса
+    },
+    body: formData, // Отправляем FormData напрямую в теле запроса
+  });
+
+  const result = await response.json(); // Получаем ответ сервера в формате JSON
+
+  console.log(result); // Выводим ответ сервера в консоль
+});
+</script>

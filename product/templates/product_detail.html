@@ -268,20 +268,20 @@
 						<div class="col-lg-6">
 							<div class="review_box">
 								<h4>Post a comment</h4>
-								<form class="row contact_form" action="contact_process.php" method="post" id="contactForm" novalidate="novalidate">
+								<form class="row contact_form" method="post" id="contactForm" novalidate="novalidate">
 									<div class="col-md-12">
 										<div class="form-group">
-											<input type="text" class="form-control" id="name" name="name" placeholder="Your Full name">
+											<input type="text" class="form-control" name="name" id="name" placeholder="Your Full name">
 										</div>
 									</div>
 									<div class="col-md-12">
 										<div class="form-group">
-											<input type="email" class="form-control" id="email" name="email" placeholder="Email Address">
+											<input type="email" class="form-control" name="email" id="email" placeholder="Email Address">
 										</div>
 									</div>
 									<div class="col-md-12">
 										<div class="form-group">
-											<textarea class="form-control" name="message" id="message" rows="1" placeholder="Message"></textarea>
+											<textarea class="form-control" name="text" id="text" rows="1" placeholder="Message"></textarea>
 										</div>
 									</div>
 									<div class="col-md-12 text-right">
@@ -447,28 +447,6 @@
 	</section>
 <!--	 End related-product Area -->
 {% endblock content %}
-<!--<script>-->
-<!--const form = document.querySelector('.contact_form');-->
-
-<!--form.addEventListener('submit', async (event) => {-->
-<!--  event.preventDefault(); // Отменяем стандартное поведение отправки формы-->
-
-<!--  const formData = new FormData(form); // Создаем объект FormData из формы-->
-
-<!--  const response = await fetch(`{% url 'review_create' shoe.id %}`, {-->
-<!--    method: 'POST',-->
-<!--    headers: {-->
-<!--      'Content-Type': 'application/json',-->
-<!--      'X-CSRFToken': '{{ csrf_token }}' // Добавляем CSRF-токен в заголовок запроса-->
-<!--    },-->
-<!--    body: JSON.stringify(Object.fromEntries(formData.entries())), // Преобразуем FormData в JSON-строку и отправляем в теле запроса-->
-<!--  });-->
-
-<!--  const result = await response.json(); // Получаем ответ сервера в формате JSON-->
-
-<!--  console.log(result); // Выводим ответ сервера в консоль-->
-<!--});-->
-<!--</script>-->
 <script>
 const form = document.querySelector('.contact_form');
 

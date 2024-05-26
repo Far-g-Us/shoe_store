@@ -11,6 +11,7 @@ from django.urls import reverse_lazy
 from urllib.parse import urlencode
 
 
+
 class ProductListView(FilterView):
     model = Shoes
     filterset_class = ShoesFilter

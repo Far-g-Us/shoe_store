@@ -4436,10 +4436,10 @@ label {
       margin-right: 10px;
       border-radius: 2px;
       border: none; }
-    .returning_customer .contact_form .form-group .creat_account {
+    .returning_customer .contact_form .form-group .create_account {
       display: inline-block;
       margin-left: 15px; }
-      .returning_customer .contact_form .form-group .creat_account input {
+      .returning_customer .contact_form .form-group .create_account input {
         height: auto;
         margin-right: 10px; }
     .returning_customer .contact_form .form-group .lost_pass {
@@ -4542,11 +4542,11 @@ label {
         font-size: 14px;
         font-family: "Roboto", sans-serif;
         font-weight: normal; }
-  .billing_details .contact_form .form-group .creat_account #f-option2 {
+  .billing_details .contact_form .form-group .create_account #f-option2 {
     margin-right: 5px; }
-  .billing_details .contact_form .form-group .creat_account #f-option3 {
+  .billing_details .contact_form .form-group .create_account #f-option3 {
     margin-right: 5px; }
-  .billing_details .contact_form .form-group .creat_account a {
+  .billing_details .contact_form .form-group .create_account a {
     color: #ffba00; }
 
 .order_box {
@@ -4624,13 +4624,13 @@ label {
   .order_box .payment_item.active h4:before {
     background: #ffba00;
     border-color: #ffba00; }
-  .order_box .creat_account {
+  .order_box .create_account {
     margin-bottom: 15px; }
-    .order_box .creat_account label {
+    .order_box .create_account label {
       padding-left: 10px;
       font-size: 12px;
       color: #222222; }
-    .order_box .creat_account a {
+    .order_box .create_account a {
       color: #c5322d; }
   .order_box .primary-btn {
     display: block;
@@ -4769,11 +4769,11 @@ label {
   border-radius: 0px;
   outline: none;
   box-shadow: none; }
-.login_form .form-group .creat_account {
+.login_form .form-group .create_account {
   margin-top: 10px;
   margin-bottom: 15px;
   text-align: left; }
-  .login_form .form-group .creat_account input {
+  .login_form .form-group .create_account input {
     height: auto;
     margin-right: 10px; }
 .login_form .form-group .primary-btn {
