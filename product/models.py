@@ -164,7 +164,8 @@ class Shoes(models.Model):
         return round(discounted_price)
 
     class Meta:
-        verbose_name_plural = 'Обувь'
+        verbose_name = 'Обувь'
+        verbose_name_plural = 'Обуви'
 
 
 class Confirm(models.Model):

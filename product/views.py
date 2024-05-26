@@ -1,5 +1,4 @@
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, FormView
-from django.views.generic import View
 from django_filters.views import FilterView
 from product.models import Shoes, Category, Confirm, Review
 from product.forms import ShoesForm, ReviewForm
@@ -7,9 +6,9 @@ from product.filters import ShoesFilter
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Sum
 from django.core.paginator import Paginator
-from django.shortcuts import render
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse
 from django.urls import reverse_lazy
+from urllib.parse import urlencode
 
 
 class ProductListView(FilterView):
@@ -17,7 +16,7 @@ class ProductListView(FilterView):
     filterset_class = ShoesFilter
     context_object_name = 'shoes'
     template_name = 'product_list.html'
-    paginate_by = 12
+    paginate_by = 6
 
 
     def get_queryset(self):
@@ -53,6 +52,11 @@ class ProductListView(FilterView):
         page_numbers = [n for n in paginator.page_range if n > page_obj.number - 4 and n < page_obj.number + 4]
         context['page_numbers'] = page_numbers
         #######################################
+        # Добавление параметров фильтрации в URL-адрес
+        filter_params = self.request.GET.copy()
+        filter_params._mutable = True
+        filter_params.pop('page', None)
+        context['filter_params'] = urlencode(filter_params)
         # Выбираем все товары
         context['show_products'] = Shoes.objects.all()[:12]
         # Выбираем только товары у которых есть скидка
@@ -126,10 +130,6 @@ class ProductDetailView(DetailView):
         # context['discounted_products'] = discounted_products
         context['discounted_products'] = Shoes.objects.filter(discount__gt=0, available=True)[:9]
 
-        # price_decimal = Decimal(str(shoe.price))
-        # discount_decimal = Decimal(str(shoe.discount))
-        # discounted_price = price_decimal * (1 - discount_decimal / 100)
-        # context['discounted_price'] = str(round(discounted_price))
         return context
 
 
@@ -228,3 +228,4 @@ class DeleteProductReview(DeleteView):
         product_url = self.kwargs.get('url')
         product_id = self.kwargs.get('id')
         return reverse_lazy('product_detail', kwargs={'url': product_url, 'id': product_id})
+

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "mptt",
     "face",
     "product",
+    "reguser",
 ]
 
 MIDDLEWARE = [

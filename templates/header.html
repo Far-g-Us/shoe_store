@@ -48,9 +48,17 @@
 								 aria-expanded="false">Shop</a>
 								<ul class="dropdown-menu">
 									<li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}">Shop Category</a></li>
-<!--									<li class="nav-item"><a class="nav-link" href="#">Product Details</a></li>-->
+<!--									<li class="nav-item"><a class="nav-link" href="#">Product Checkout</a></li>-->
 									<li class="nav-item"><a class="nav-link" href="{% url 'cart' %}">Shopping Cart</a></li>
-<!--									<li class="nav-item"><a class="nav-link" href="{% url 'product_confirm' %}">Basket</a></li>-->
+									<li class="nav-item"><a class="nav-link" href="{% url 'confirmation' %}">Shopping Confirm</a></li>
+								</ul>
+							</li>
+							<li class="nav-item submenu dropdown">
+								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+								 aria-expanded="false">Pages</a>
+								<ul class="dropdown-menu">
+									<li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+<!--									<li class="nav-item"><a class="nav-link" href="#">Tracking</a></li>-->
 								</ul>
 							</li>
 							<li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
