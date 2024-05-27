@@ -92,20 +92,29 @@ body .filter-value  {
   margin-top: 10px;
 }
 
-.register_container {
+.row > .text-center h4 {
   display: flex;
   align-items: center;
   justify-content: center;
-  
+  height: 100%;
 }
+
+/* form Area css
+============================================================================================ */
 @media (min-width: 992px) {
   .my-col-lg-6 {
     max-width: 100%;
     flex: 0 0 100%;
   }
 }
-/* form Area css
-============================================================================================ */
+
+.register_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+
 .register_box_area .register_box_img {
   margin-right: -30px;
   position: relative; }

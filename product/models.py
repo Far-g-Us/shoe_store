@@ -139,7 +139,7 @@ class Shoes(models.Model):
     lining_material = models.ManyToManyField(LiningMaterialProduct, max_length=50, verbose_name='Материал подкладки', related_name='lining_material_product')
     outsole_material = models.ManyToManyField(OutsoleMaterialProduct, max_length=50, verbose_name='Материал подошвы', related_name='outsole_material_product')
     insole_material = models.ManyToManyField(InsoleMaterialProduct, max_length=50, verbose_name='Материал стельки', related_name='insole_material_product')
-    main_image = models.ImageField(verbose_name='Основное фото', upload_to='content/%Y/%m', blank=True)
+    main_image = models.ImageField(verbose_name='Основное фото', upload_to='product/%Y/%m', blank=True)
     image_1 = models.ImageField(verbose_name='Фото №1', upload_to='content/%Y/%m', blank=True, null=True)
     image_2 = models.ImageField(verbose_name='Фото №2', upload_to='content/%Y/%m', blank=True, null=True)
     image_3 = models.ImageField(verbose_name='Фото №3', upload_to='content/%Y/%m', blank=True, null=True)

@@ -9,6 +9,7 @@ from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse
 from django.urls import reverse_lazy
 from urllib.parse import urlencode
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 
@@ -89,10 +90,12 @@ class ProductListView(FilterView):
 #         return context
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Shoes
     template_name = 'product_detail.html'
     context_object_name = 'shoe'
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
 
 
     def get_queryset(self):
@@ -229,4 +232,5 @@ class DeleteProductReview(DeleteView):
         product_url = self.kwargs.get('url')
         product_id = self.kwargs.get('id')
         return reverse_lazy('product_detail', kwargs={'url': product_url, 'id': product_id})
+
 
