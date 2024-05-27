@@ -1,15 +1,10 @@
-from datetime import date
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from reguser.models import CustomUser
+from datetime import date
 
 
 class CustomUserCreationForm(UserCreationForm):
-    full_name = forms.CharField(required=False)
-    birthday = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=False)
-    email = forms.EmailField(required=False)
-    image = forms.ImageField(required=False)
-
     def clean_birthday(self):
         birthday = self.cleaned_data.get('birthday')
         if birthday and birthday > date.today():

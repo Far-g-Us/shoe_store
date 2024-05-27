@@ -171,7 +171,7 @@ class ProductDeleteView(DeleteView):
 class ConfirmView(DetailView):
     model = Confirm
     fields = '__all__'
-    template_name = 'product_confirm.html'
+    template_name = 'confirmation.html'
 
     def get_queryset(self):
         return Shoes.objects.all()
