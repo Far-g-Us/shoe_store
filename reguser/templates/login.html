@@ -11,7 +11,7 @@
 					<h1>Login/Register</h1>
 					<nav class="d-flex align-items-center">
 						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
-						<a href="{% url 'login' %}">Login/Register</a>
+						<a href="{% url 'login' %}">Login</a>
 					</nav>
 				</div>
 			</div>
@@ -36,12 +36,13 @@
 				<div class="col-lg-6">
 					<div class="login_form_inner">
 						<h3>Log in to enter</h3>
-						<form class="row login_form" method="post" id="contactForm" novalidate="novalidate">
+						<form class="row login_form" action="{% url 'login' %}" method="post" id="contactForm" novalidate="novalidate">
+							{% csrf_token %}
 							<div class="col-md-12 form-group">
 								<input type="text" class="form-control" #id="name" name="name" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'">
 							</div>
 							<div class="col-md-12 form-group">
-								<input type="text" class="form-control" #id="name" name="name" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+								<input type="password" class="form-control" #id="name" name="name" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
 							</div>
 							<div class="col-md-12 form-group">
 								<div class="create_account">

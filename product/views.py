@@ -90,12 +90,12 @@ class ProductListView(FilterView):
 #         return context
 
 
-class ProductDetailView(LoginRequiredMixin, DetailView):
+class ProductDetailView(DetailView): #LoginRequiredMixin,
     model = Shoes
     template_name = 'product_detail.html'
     context_object_name = 'shoe'
-    login_url = '/login/'
-    redirect_field_name = 'redirect_to'
+    # login_url = '/login/'
+    # redirect_field_name = 'redirect_to'
 
 
     def get_queryset(self):
