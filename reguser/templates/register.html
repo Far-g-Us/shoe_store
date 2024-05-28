@@ -24,6 +24,15 @@
 		<div class="register_container">
 			<div class="row">
 				<div class="my-col-lg-6">
+					{% if formuser.is_bound %}
+						{% for field in formuser %}
+							{% for error in field.errors %}
+								<div class="alert alert-danger">
+									<h4 style="color: red">{{ error }}</h4>
+								</div>
+							{% endfor %}
+						{% endfor %}
+					{% endif %}
 					<div class="register_form_inner">
 						<h3>Register to enter</h3>
 						<form class="row register_form" action="{% url 'register' %}" method="post" id="contactForm" novalidate="novalidate" enctype="multipart/form-data">
@@ -32,11 +41,14 @@
 								<input type="text" class="form-control" id="username" name="username" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'">
 							</div>
 							<div class="col-md-12 form-group">
-								<input type="password" class="form-control" id="password" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+								<input type="password" class="form-control" id="password1" name="password1" placeholder="Пароль" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Пароль'" required>
+							</div>
+							<div class="col-md-12 form-group">
+								<input type="password" class="form-control" id="password2" name="password2" placeholder="Подтверждение пароля" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Подтверждение пароля'" required>
 							</div>
 							<div class="col-md-12">
 								<div class="form-group">
-									<input type="text" class="form-control" id="name" name="name" placeholder="Your Full name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Full Name'">
+									<input type="text" class="form-control" id="full_name" name="full_name" placeholder="Your Full name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Full Name'">
 								</div>
 							</div>
 							<div class="col-md-12">

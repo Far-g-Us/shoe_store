@@ -4,6 +4,7 @@ from .forms import CustomUserCreationForm
 from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
 from .models import CustomUser
+# from datetime import datetime
 # from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 
@@ -29,59 +30,31 @@ class RegisterView(CreateView):
     model = CustomUser
     form_class = CustomUserCreationForm
     template_name = 'register.html'
-    success_url = '/'
-    # success_url = reverse_lazy('login')
+    success_url = reverse_lazy('login')
 
     def form_valid(self, form):
         user = form.save(commit=False)
+        user.username = form.cleaned_data['username']
         user.set_password(form.cleaned_data['password1'])
         user.save()
-        userprofile = CustomUser()
-        userprofile.full_name = ''
-        userprofile.birthday = 0
-        userprofile.image = "image.png"
+        userprofile = CustomUser.objects.get(username=user.username)
+        userprofile.full_name = form.cleaned_data['full_name']
+        userprofile.birthday = form.cleaned_data['birthday']
+        userprofile.image = form.cleaned_data['image']
+        userprofile.email = form.cleaned_data['email']
         userprofile.user = user
         userprofile.save()
+        print(userprofile)
         login(self.request, user)
-        return redirect('home')
+        return redirect('login')
 
     def form_invalid(self, form):
-        if 'password1' in form.errors and 'password2' in form.errors:
-            error_message = 'Пароли должны совпадать'
-        elif 'username' in form.errors:
-            error_message = 'Это имя уже используется'
-        else:
-            error_message = 'Форма заполнена неверно'
-        return render(self.request, self.template_name, {'formuser': form, 'error': error_message})
-
-    # def reguser(request):
-    #     if request.method == 'GET':
-    #         return render(request, 'reguser/reguser.html', {'formuser': UserCreationForm()})
-    #     else:
-    #         if request.POST['password1'] == request.POST['password2']:
-    #             try:
-    #                 user = User.objects.create_user(request.POST['username'], password=request.POST['password1'])
-    #                 user.save()
-    #                 userprofile = CustomUser()
-    #                 userprofile.first_name = ''
-    #                 userprofile.last_name = ''
-    #                 userprofile.age = 0
-    #                 userprofile.image_profile = "image.png"
-    #                 userprofile.about_me = ''
-    #                 userprofile.user = user
-    #                 userprofile.save()
-    #                 login(request, user)
-    #                 return redirect('home')
-    #             except IntegrityError:
-    #                 return render(request, 'reguser/reguser.html',
-    #                               {'formuser': UserCreationForm(), 'error': 'Это имя уже используется'})
-    #         else:
-    #             return render(request, 'reguser/reguser.html',
-    #                           {'formuser': UserCreationForm(), 'error': 'Пароли должны совпадать'})
+        print(form.errors)
+        return render(self.request, self.template_name, {'formuser': form, 'error': 'Пароли должны совпадать'})
 
 
 class LogoutView(RedirectView):
-    success_url = '/'
+    success_url = reverse_lazy('home')
 
     def get(self, request, *args, **kwargs):
         logout(request)
