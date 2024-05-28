@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+				<div class="col-first">
+					<h1>User Profile Update</h1>
+					<nav class="d-flex align-items-center">
+						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
+						<a href="{% url 'profile_update' %}">User Profile Update</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+	<!--================Profile Update Box Area =================-->
+
+	<section class="register_box_area section_gap">
+		<div class="register_container">
+			<div class="row">
+				<div class="my-col-lg-6">
+					<div class="register_form_inner">
+						<h2>Профиль</h2>
+						<form method="post" action="{% url 'profile_update' %}" enctype="multipart/form-data">
+							{% csrf_token %}
+							{{ form.as_p }}
+							<button type="submit" class="primary-btn">Update</button>
+						</form>
+<!--						<form id="image_change_form" action="{% url 'profile_update' %}" method="post" enctype="multipart/form-data">-->
+<!--							{% csrf_token %}-->
+<!--							<div class="col-md-12 form-group">-->
+<!--								{% if user.image %}-->
+<!--									<img class="img-fluid" src="{{ user.image.url }}" alt="{{ user.username }}">-->
+<!--								{% endif %}-->
+<!--								<input type="file" class="form-control" id="image" name="image" placeholder="Your Image">-->
+<!--							</div>-->
+<!--							<a style="text-decorator: none"><button type="submit" class="primary-btn">Сохранить изменения</button></a>-->
+<!--						</form>-->
+<!--						<form id="password_change_form" action="{% url 'profile_update' %}" method="post" enctype="multipart/form-data">-->
+<!--							{% csrf_token %}-->
+<!--							<div class="col-md-12 form-group">-->
+<!--								<label for="new_password1">Пароль</label>-->
+<!--								<input type="password" class="form-control" id="new_password1" name="new_password1" placeholder="Пароль">-->
+<!--							</div>-->
+<!--							<div class="col-md-12 form-group">-->
+<!--								<label for="new_password2">Подтверждение пароля</label>-->
+<!--								<input type="password" class="form-control" id="new_password2" name="new_password2" placeholder="Подтверждение пароля">-->
+<!--							</div>-->
+<!--							<a style="text-decorator: none"><button type="submit" class="primary-btn">Сохранить изменения</button></a>-->
+<!--						</form>-->
+<!--						<form id="personal_change_form" action="{% url 'profile_update' %}" method="post" enctype="multipart/form-data">-->
+<!--							{% csrf_token %}-->
+<!--							<div class="col-md-12 form-group">-->
+<!--								<h4>ФИО: {{ user.full_name }}</h4>-->
+<!--								 <label for="full_name">ФИО</label>-->
+<!--								<input type="text" class="form-control" id="full_name" name="full_name" placeholder="Your Full name">-->
+<!--							</div>-->
+<!--							<div class="col-md-12 form-group">-->
+<!--								{% if user.birthday %}-->
+<!--									<h4>День рождения: {{ user.birthday }}</h4>-->
+<!--								{% endif %}-->
+<!--								<label for="birthday">День рождения</label>-->
+<!--								<input type="date" class="form-control" id="birthday" name="birthday" placeholder="Your Birthday">-->
+<!--							</div>-->
+<!--							<div class="col-md-12 form-group">-->
+<!--								{% if user.email %}-->
+<!--									<h4>Почта: {{ user.email }}</h4>-->
+<!--								{% endif %}-->
+<!--								<label for="email">Почта</label>-->
+<!--								<input type="email" class="form-control" id="email" name="email" placeholder="Email Address">-->
+<!--							</div>-->
+<!--							<a style="text-decorator: none"><button type="submit" class="primary-btn">Сохранить изменения</button></a>-->
+<!--						</form>-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!--================End Profile Update Box Area =================-->
+
+{% endblock content %}

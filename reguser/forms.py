@@ -1,5 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, PasswordChangeForm
+from django.contrib.auth import authenticate
 from reguser.models import CustomUser
 from django.contrib.auth.password_validation import validate_password
 from datetime import date
@@ -17,6 +18,13 @@ class CustomUserCreationForm(UserCreationForm):
     password1 = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
 
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password1'])
+        if commit:
+            user.save()
+        return user
+
     def clean_password1(self):
         password = self.cleaned_data.get('password1')
         try:
@@ -24,13 +32,6 @@ class CustomUserCreationForm(UserCreationForm):
         except forms.ValidationError as error:
             self.add_error('password1', error)
         return password
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password1'])
-        if commit:
-            user.save()
-        return user
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -54,3 +55,37 @@ class CustomUserCreationForm(UserCreationForm):
         if CustomUser.objects.filter(username=username).exists():
             raise forms.ValidationError('User с таким username уже существует.')
         return username
+
+
+class LoginForm(AuthenticationForm):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        password = cleaned_data.get('password')
+
+        if username and password:
+            user = authenticate(username=username, password=password)
+            if not user or not user.is_active:
+                raise forms.ValidationError('Неверное имя пользователя или пароль.')
+        return cleaned_data
+
+
+# class UserProfileUpdateForm(forms.ModelForm):
+#     password = forms.CharField(widget=forms.PasswordInput)
+#     email = forms.EmailField(widget=forms.EmailInput)
+#     full_name = forms.CharField(widget=forms.TextInput)
+#
+#     class Meta:
+#         model = CustomUser
+#         fields = ('email', 'full_name', 'birthday', 'image', 'password')
+#
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.fields['email'].required = False
+#         self.fields['full_name'].required = False
+#         self.fields['birthday'].required = False
+#         self.fields['image'].required = False
+#         self.fields['password'].required = False

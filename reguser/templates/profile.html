@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+				<div class="col-first">
+					<h1>User Profile</h1>
+					<nav class="d-flex align-items-center">
+						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
+						<a href="{% url 'profile' %}">User Profile</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+	<!--================Profile Box Area =================-->
+
+	<section class="register_box_area section_gap">
+		<div class="register_container">
+			<div class="row">
+				<div class="my-col-lg-6">
+					<div class="register_form_inner">
+						<h2>Профиль</h2>
+						<div class="col-md-12 form-group">
+							{% if user.image %}
+								<img class="img-fluid" src="{{ user.image.url }}" alt="{{ user.username }}">
+							{% endif %}
+						</div>
+						<div class="col-md-12 form-group">
+							<h4>username: {{ user.username }}</h4>
+						</div>
+						<div class="col-md-12 form-group">
+							<h4>ФИО: {{ user.full_name }}</h4>
+						</div>
+						<div class="col-md-12 form-group">
+							{% if user.birthday %}
+								<h4>День рождения: {{ user.birthday }}</h4>
+							{% endif %}
+						</div>
+						<div class="col-md-12 form-group">
+							{% if user.email %}
+								<h4>Почта: {{ user.email }}</h4>
+							{% endif %}
+						</div>
+						<div class="col-md-12 form-group">
+							<h4>Аккаунт создан: {{ user.created_at }}</h4>
+						</div>
+						<a href="{% url 'profile_update' %}" style="text-decorator: none"><button class="primary-btn">Редактировать профиль</button></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!--================End Profile Box Area =================-->
+
+{% endblock content %}

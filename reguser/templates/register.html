@@ -33,9 +33,10 @@
 							{% endfor %}
 						{% endfor %}
 					{% endif %}
+
 					<div class="register_form_inner">
-						<h3>Register to enter</h3>
-						<form class="row register_form" action="{% url 'register' %}" method="post" id="contactForm" novalidate="novalidate" enctype="multipart/form-data">
+						<h3>Register to enter</h3>                                          <!--id="contactForm"-->
+						<form class="row register_form" action="{% url 'register' %}" method="post" novalidate="novalidate" enctype="multipart/form-data">
 							{% csrf_token %}
 							<div class="col-md-12 form-group">
 								<input type="text" class="form-control" id="username" name="username" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'">
@@ -74,4 +75,5 @@
 		</div>
 	</section>
 	<!--================End Register Box Area =================-->
+
 {% endblock content %}
