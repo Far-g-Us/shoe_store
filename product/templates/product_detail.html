@@ -281,7 +281,7 @@
 									</div>
 									<div class="col-md-12">
 										<div class="form-group">
-											<textarea class="form-control" name="text" id="text" rows="1" placeholder="Message"></textarea>
+<!--											<textarea class="form-control" name="text" id="text" rows="1" placeholder="Message"></textarea>-->
 										</div>
 									</div>
 									<div class="col-md-12 text-right">
@@ -327,22 +327,22 @@
 								<div class="review_item">
 									<div class="media">
 										<div class="d-flex">
-											{% if review.image %}
-												<img class="img-fluid reviewer-image" src="{{ review.image.url }}" alt="{{ review.name }}">
+											{% if review.user.image %}
+												<img class="img-fluid reviewer-image" src="{{ review.user.image.url }}" alt="{{ review.user.username }}">
 											{% endif %}
 										</div>
 										<div class="media-body">
 											<div class="container-comment">
 												<div class="column-comment">
-													<h4 >{{ review.name }}</h4>
-													<a>{{ review.created_at }}</a>
+													<h4>{{ review.user.username }}</h4>
+													<a>{{ review.created_at|date:"d M Y" }}</a>
 												</div>
 												<div class="row-comment">
-													<i class="fa fa-star"></i>
-													<i class="fa fa-star"></i>
-													<i class="fa fa-star"></i>
-													<i class="fa fa-star"></i>
-													<i class="fa fa-star"></i>
+													{% for star in stars %}
+														<i class="fa fa-star"></i>
+													{% empty %}
+														<i class="fa fa-star-o"></i>
+													{% endfor %}
 												</div>
 											</div>
 										</div>
@@ -369,32 +369,20 @@
 									<li><a href="#"><i class="fa fa-star"></i></a></li>
 								</ul>
 								<p>Outstanding</p>
-								<form method="post" action="{% url 'create_review' shoe.url shoe.id %}" enctype="multipart/form-data" class="row contact_form" novalidate="novalidate" onsubmit="console.log('Form submitted')">
-									{% csrf_token %}
-									<div class="col-md-12">
-										<div class="form-group">
-											<input type="file" class="form-control" id="image" name="image" placeholder="Your Image">
+								{% if user.is_authenticated %}
+									<form method="post" action="{% url 'create_review' shoe.url shoe.id %}" enctype="multipart/form-data" class="row contact_form" novalidate="novalidate" onsubmit="console.log('Form submitted')">
+										{% csrf_token %}
+										<div class="col-md-12">
+											<div class="form-group">
+												<textarea class="form-control" id="text" name="text" placeholder="Review"></textarea>
+											</div>
 										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="form-group">
-											<input type="text" class="form-control" id="name" name="name" placeholder="Your Full name">
+										<input type="hidden" name="user" value="{{ request.user.id }}">
+										<div class="col-md-12 text-right">
+											<button type="submit" value="submit" class="primary-btn">Submit Now</button>
 										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="form-group">
-											<input type="email" class="form-control" id="email" name="email" placeholder="Email Address">
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="form-group">
-											<textarea class="form-control" id="text" name="text" placeholder="Review"></textarea>
-										</div>
-									</div>
-									<div class="col-md-12 text-right">
-										<button type="submit" value="submit" class="primary-btn">Submit Now</button>
-									</div>
-								</form>
+									</form>
+								{% endif %}
 							</div>
 						</div>
 					</div>

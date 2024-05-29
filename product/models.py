@@ -2,6 +2,7 @@ from django.db import models
 from decimal import Decimal
 from mptt.models import MPTTModel, TreeForeignKey
 from django.urls import reverse
+from django.conf import settings
 
 
 class Gender(models.Model):
@@ -163,6 +164,11 @@ class Shoes(models.Model):
         discounted_price = price_decimal * (1 - discount_decimal / 100)
         return round(discounted_price)
 
+    def get_average_rating(self):
+        reviews = self.review_set.all()
+        total_rating = sum([review.rating.star.value for review in reviews])
+        return total_rating / len(reviews) if len(reviews) > 0 else 0
+
     class Meta:
         verbose_name = 'Обувь'
         verbose_name_plural = 'Обуви'
@@ -183,7 +189,7 @@ class RatingStar(models.Model):
 
 class Rating(models.Model):
     star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='звезда')
-    shoes = models.ForeignKey(Shoes, on_delete=models.CharField, verbose_name='обувь')
+    shoes = models.ForeignKey(Shoes, on_delete=models.CASCADE, verbose_name='обувь')
 
     def __str__(self):
         return f"{self.star} - {self.shoes}"
@@ -193,16 +199,15 @@ class Rating(models.Model):
         verbose_name_plural = 'Рейтинги'
 
 class Review(models.Model):
-    email = models.EmailField(blank=True)
-    name = models.CharField(verbose_name='Имя', max_length=100, blank=True)
-    image = models.ImageField(verbose_name='фото', upload_to='comment/%Y/%m', blank=True)
     text = models.TextField(verbose_name='Сообщение', max_length=5000, blank=True)
     parent = models.ForeignKey('self', verbose_name='Родитель', on_delete=models.SET_NULL, blank=True, null=True)
     shoes = models.ForeignKey(Shoes, verbose_name='Комментарий', on_delete=models.CASCADE)
+    rating = models.ForeignKey(Rating, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.name} - {self.shoes}"
+        return f"{self.user} - {self.shoes}"
 
     class Meta:
         verbose_name = 'Отзыв'

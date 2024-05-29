@@ -1,6 +1,6 @@
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, FormView
 from django_filters.views import FilterView
-from product.models import Shoes, Category, Confirm, Review
+from product.models import Shoes, Category, Confirm, Review, Rating, RatingStar
 from product.forms import ShoesForm, ReviewForm
 from product.filters import ShoesFilter
 from django.shortcuts import get_object_or_404
@@ -90,12 +90,10 @@ class ProductListView(FilterView):
 #         return context
 
 
-class ProductDetailView(DetailView): #LoginRequiredMixin,
+class ProductDetailView(DetailView):
     model = Shoes
     template_name = 'product_detail.html'
     context_object_name = 'shoe'
-    # login_url = '/login/'
-    # redirect_field_name = 'redirect_to'
 
 
     def get_queryset(self):
@@ -128,7 +126,7 @@ class ProductDetailView(DetailView): #LoginRequiredMixin,
         total_value = ratings.aggregate(Sum('value_sum'))['value_sum__sum'] or 0
         total_count = ratings.count() or 1
         context['average_rating'] = total_value / total_count
-
+        context['shoe'] = shoe
         # Выбираем только товары у которых есть скидка
         # discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]
         # context['discounted_products'] = discounted_products
@@ -191,8 +189,9 @@ class ProductDetailReview(FormView):
     def form_valid(self, form):
         shoes = self.get_object()
         review = Review.objects.create(shoes=shoes, **form.cleaned_data)
+        if self.request.user.is_authenticated:
+            review.user = self.request.user
         review.save()
-        # print(review)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -207,11 +206,14 @@ class ProductDetailReview(FormView):
             return get_object_or_404(Shoes, url=url, id=product_id)
         except Shoes.DoesNotExist:
             raise Http404("Product does not exist")
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['shoes'] = self.get_object()
+        # context['shoes'] = self.get_object()
+        shoe = context['shoe']
+        context['stars'] = [i for i in range(1, int(shoe.average_rating) + 1)]
         return context
+
 
 class DeleteProductReview(DeleteView):
     model = Review
