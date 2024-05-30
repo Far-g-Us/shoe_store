@@ -103,6 +103,9 @@ body .filter-value  {
   color: #000;
 }
 
+.cart_inner .table tbody tr.bottom_button td .cupon_text {
+  justify-content: end;
+}
 
 /* form Area css
 ============================================================================================ */

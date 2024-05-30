@@ -47,7 +47,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                       <h5>{{ cart_item.shoes.price }}</h5>
+                                       <h5>{{ cart_item.shoes.price }} $</h5>
                                     </td>
                                     <td>
                                         <div class="product_count">
@@ -59,8 +59,17 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <h5>{{ cart_item.total_price }}</h5>
-                                        <h2>{{ cart.get_total_price }}</h2>
+<!--                                        <h5>{{ cart.total_price }}</h5>-->
+                                        <h5>{{ cart_item.get_total_price }} $</h5>
+                                    </td>
+                                    <td>
+                                            {% if cart_item.id %}
+                                                <form method="post" action="{% url 'remove_from_cart' cart_item.id %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="cart_item_id" value="{{ cart_item.cart_item_id }}">
+                                                    <a><button type="submit" class="gray_btn">Remove</button></a>
+                                                </form>
+                                            {% endif %}
                                     </td>
                                 </tr>
                             {% empty %}
@@ -70,32 +79,32 @@
                                     </td>
                                 </tr>
                             {% endfor %}
-                                <tr class="bottom_button">
-                                    <td>
+                            <tr class="bottom_button">
+
+                                <td>
 <!--                                        <a class="gray_btn" href="#">Update Cart</a>-->
-                                    </td>
-                                    <td>
+                                </td>
+                                <td>
 
-                                    </td>
-                                    <td>
+                                </td>
+                                <td>
 
-                                    </td>
-                                    <td>
-                                        <div class="cupon_text d-flex align-items-center">
-                                            <input type="text" placeholder="Coupon Code">
-                                            <a class="primary-btn" href="#">Apply</a>
-                                            {% if cart.cartitem_set.all %}
-                                                <form method="post" action="{% url 'remove_from_cart' cart_item.id %}">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="cart_item_id" value="{{ cart_item.cart_item_id }}">
-                                                    <a><button type="submit" class="gray_btn">Remove</button></a>
-                                                </form>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                </tr>
+                                </td>
+                                <td>
 
+                                </td>
+
+                                <td>
+                                    <div class="cupon_text d-flex align-items-center">
+                                        <input type="text" placeholder="Coupon Code">
+                                        <a class="primary-btn" href="#">Apply</a>
+                                    </div>
+                                </td>
+                            </tr>
                             <tr>
+                                <td>
+
+                                </td>
                                 <td>
 
                                 </td>
@@ -106,32 +115,38 @@
                                     <h5>Subtotal</h5>
                                 </td>
                                 <td>
-                                    <h5>$2160.00</h5>
+                                    <h5>{{ cart.get_total_price }} $</h5>
                                 </td>
                             </tr>
-                            <tr class="shipping_area">
-                                <td>
+<!--                            <tr class="shipping_area">-->
+<!--                                <td>-->
 
-                                </td>
-                                <td>
+<!--                                </td>-->
+<!--                                <td>-->
 
-                                </td>
-                                <td>
-                                    <h5>Shipping</h5>
-                                </td>
-                                <td>
-                                    <div class="shipping_box">
-                                        <ul class="list">
-                                            <li><a href="#">Flat Rate: $5.00</a></li>
-                                            <li><a href="#">Free Shipping</a></li>
-                                            <li><a href="#">Flat Rate: $10.00</a></li>
-                                            <li class="active"><a href="#">Local Delivery: $2.00</a></li>
-                                        </ul>
-                                        <a class="gray_btn" href="#">Update Details</a>
-                                    </div>
-                                </td>
-                            </tr>
+<!--                                </td>-->
+<!--                                <td>-->
+
+<!--                                </td>-->
+<!--                                <td>-->
+<!--                                    <h5>Shipping</h5>-->
+<!--                                </td>-->
+<!--                                <td>-->
+<!--                                    <div class="shipping_box">-->
+<!--                                        <ul class="list">-->
+<!--                                            <li><a href="#">Flat Rate: $5.00</a></li>-->
+<!--                                            <li><a href="#">Free Shipping</a></li>-->
+<!--                                            <li><a href="#">Flat Rate: $10.00</a></li>-->
+<!--                                            <li class="active"><a href="#">Local Delivery: $2.00</a></li>-->
+<!--                                        </ul>-->
+<!--                                        <a class="gray_btn" href="#">Update Details</a>-->
+<!--                                    </div>-->
+<!--                                </td>-->
+<!--                            </tr>-->
                             <tr class="out_button_area">
+                                <td>
+
+                                </td>
                                 <td>
 
                                 </td>

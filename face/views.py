@@ -58,6 +58,7 @@ class indexView(ListView):
     #             'shoes': shoes
     #         }
 
+
 class cartView(ListView):
     model = CartItem
     fields = '__all__'
@@ -75,7 +76,12 @@ class cartView(ListView):
         cart_item_id = kwargs.get('cart_item_id')
         if cart_item_id:
             context['cart_item'] = CartItem.objects.get(id=cart_item_id)
+        # добавляем эти строчки кода
+        for cart_item in context['cart_items']:
+            cart_item.total_price = cart_item.get_total_price
+
         return context
+
 
 def add_to_cart(request, product_id):
     shoes = get_object_or_404(Shoes, id=product_id)
@@ -95,26 +101,29 @@ def add_to_cart(request, product_id):
         return redirect('home')
 
 
+def update_cart(request, product_id):
+    shoes = Shoes.objects.get(id=product_id)
+    cart = Cart.objects.get(user=request.user)
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, shoes=shoes)
+
+    if request.method == 'POST':
+        quantity = request.POST.get('quantity')
+        if quantity:
+            cart_item.quantity = int(quantity)
+            cart_item.save()
+
+    context = {'cart': cart}
+    return render(request, 'cart.html', context)
+
+
 def remove_from_cart(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id)
     cart_item.delete()
     return redirect('cart')
-# def update_cart(request, product_id):
-#     shoes = Shoes.objects.get(id=product_id)
-#     if request.method == 'POST':
-#         quantity = request.POST.get('quantity')
-#         if quantity:
-#             cart_item, created = CartItem.objects.get_or_create(shoes=shoes, user=request.user)
-#             cart_item.quantity = int(quantity)
-#             cart_item.save()
-#     context = {'cart': Cart.objects.get(user=request.user)}
-#     return render(request, 'cart.html', context)
-
-
-def remove_from_cart(request, cart_item_id):
-    cart_item = CartItem.objects.get(id=cart_item_id)
-    cart_item.delete()
-    return redirect('cart')
+# def remove_from_cart(request, cart_item_id):
+#     cart_item = CartItem.objects.get(id=cart_item_id)
+#     cart_item.delete()
+#     return redirect('cart')
 
 
 
