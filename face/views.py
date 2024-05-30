@@ -95,16 +95,20 @@ def add_to_cart(request, product_id):
         return redirect('home')
 
 
-def update_cart(request, product_id):
-    shoes = Shoes.objects.get(id=product_id)
-    if request.method == 'POST':
-        quantity = request.POST.get('quantity')
-        if quantity:
-            cart_item, created = CartItem.objects.get_or_create(shoes=shoes, user=request.user)
-            cart_item.quantity = int(quantity)
-            cart_item.save()
-    context = {'cart': Cart.objects.get(user=request.user)}
-    return render(request, 'cart.html', context)
+def remove_from_cart(request, cart_item_id):
+    cart_item = get_object_or_404(CartItem, id=cart_item_id)
+    cart_item.delete()
+    return redirect('cart')
+# def update_cart(request, product_id):
+#     shoes = Shoes.objects.get(id=product_id)
+#     if request.method == 'POST':
+#         quantity = request.POST.get('quantity')
+#         if quantity:
+#             cart_item, created = CartItem.objects.get_or_create(shoes=shoes, user=request.user)
+#             cart_item.quantity = int(quantity)
+#             cart_item.save()
+#     context = {'cart': Cart.objects.get(user=request.user)}
+#     return render(request, 'cart.html', context)
 
 
 def remove_from_cart(request, cart_item_id):

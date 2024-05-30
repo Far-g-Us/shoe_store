@@ -18,7 +18,7 @@ class Cart(models.Model):
 class CartItem(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    shoes = models.ForeignKey(Shoes, on_delete=models.CASCADE)
+    shoes = models.ForeignKey(Shoes, on_delete=models.CASCADE, related_name='cart_items')
     quantity = models.PositiveIntegerField(default=1)
 
 class Contact(models.Model):
