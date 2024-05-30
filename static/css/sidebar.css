@@ -99,6 +99,10 @@ body .filter-value  {
   height: 100%;
 }
 
+.cart_inner .table tbody tr.bottom_button td .cupon_text input::placeholder {
+  color: #000;
+}
+
 /* form Area css
 ============================================================================================ */
 @media (min-width: 992px) {

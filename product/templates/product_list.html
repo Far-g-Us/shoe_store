@@ -112,7 +112,7 @@
 										<a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.url shoe.id %}">Удалить продукт</a>
 									{% endif %}
 									<div class="prd-bottom">
-										<a href="#" class="social-info">
+										<a href="{% url 'add_to_cart' shoe.id %}" class="social-info">
 											<span class="ti-bag"></span>
 											<p class="hover-text">add to bag</p>
 										</a>

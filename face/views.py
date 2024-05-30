@@ -1,8 +1,10 @@
-from django.shortcuts import get_object_or_404
+from django.http import Http404
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from face.models import Face, Cart, Contact
 from product.models import Category, Shoes
-
+from face.models import Cart, CartItem
+from django.shortcuts import redirect, get_object_or_404, render
 
 
 class indexView(ListView):
@@ -10,9 +12,6 @@ class indexView(ListView):
     fields = '__all__'
     template_name = 'index.html'
     context_object_name = 'shoes'
-
-
-
 
     def __init__(self, url=None):
         self.url = url
@@ -46,27 +45,52 @@ class indexView(ListView):
         context['discounted_products'] = discounted_products
         return context
 
-    def get_products(self):
-        category = None
-        categories = Category.objects.all()
-        shoes = Shoes.objects.filter(available=True)
-
-        if self.url:
-            category = get_object_or_404(Category, url=self.url)
-            shoes = shoes.filter(category=category)
-            return {
-                'category': category,
-                'categories': categories,
-                'shoes': shoes
-            }
+    # def get_products(self):
+    #     category = None
+    #     categories = Category.objects.all()
+    #     shoes = Shoes.objects.filter(available=True)
+    #
+    #     if self.url:
+    #         category = get_object_or_404(Category, url=self.url)
+    #         shoes = shoes.filter(category=category)
+    #         return {
+    #             'category': category,
+    #             'categories': categories,
+    #             'shoes': shoes
+    #         }
 
 class cartView(ListView):
-    model = Cart
+    model = CartItem
     fields = '__all__'
     template_name = 'cart.html'
+    context_object_name = 'cart_items'
 
     def get_queryset(self):
-        return Cart.objects.all()
+        cart, created = Cart.objects.get_or_create(user=self.request.user)
+        return CartItem.objects.filter(cart=cart)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cart, created = Cart.objects.get_or_create(user=self.request.user)
+        context['cart'] = cart
+        return context
+
+def add_to_cart(request, product_id):
+    shoes = get_object_or_404(Shoes, id=product_id)
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, shoes=shoes)
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+    context = {'cart': cart, 'cart_item': cart_item}
+    return render(request, 'cart.html', context)
+
+
+def remove_from_cart(request, cart_item_id):
+    cart_item = get_object_or_404(CartItem, id=cart_item_id)
+    cart_item.delete()
+    return redirect('cart')
+
 
 class contactView(ListView):
     model = Contact

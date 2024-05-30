@@ -49,9 +49,9 @@
 							{% endif %}
 						</div>
 						<div class="col-md-12 form-group">
-							<h4>Аккаунт создан: {{ user.created_at }}</h4>
+							<h4>Аккаунт создан: {{ user.created_at|date:"d.m.Y" }}</h4>
 						</div>
-						<a href="{% url 'profile_update' %}" style="text-decorator: none"><button class="primary-btn">Редактировать профиль</button></a>
+<!--						<a href="#" style="text-decorator: none"><button class="primary-btn">Редактировать профиль</button></a>-->
 					</div>
 				</div>
 			</div>
