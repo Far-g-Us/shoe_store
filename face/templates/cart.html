@@ -51,9 +51,9 @@
                                     </td>
                                     <td>
                                         <div class="product_count">
-                                            <form method="post" action="{% url 'update_cart' cart_item.id %}">
+                                            <form method="post" action="{% url 'update_cart' cart_item.shoes.id %}">
                                                 {% csrf_token %}
-                                                <input type="number" name="quantity" value="{{ cart_item.quantity }}" min="1">
+                                                <input type="number" name="quantity" value="{{ cart_item.quantity }}" min="1" max="10">
                                                 <button type="submit" class="gray_btn">Update</button>
                                             </form>
                                         </div>

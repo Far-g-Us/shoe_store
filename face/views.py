@@ -1,5 +1,4 @@
-from django.http import Http404
-from django.urls import reverse_lazy
+from django.contrib import messages
 from django.views.generic import ListView, DetailView
 from face.models import Face, Cart, Contact
 from product.models import Category, Shoes
@@ -73,27 +72,38 @@ class cartView(ListView):
         context = super().get_context_data(**kwargs)
         cart, created = Cart.objects.get_or_create(user=self.request.user)
         context['cart'] = cart
+        cart_item_id = kwargs.get('cart_item_id')
+        if cart_item_id:
+            context['cart_item'] = CartItem.objects.get(id=cart_item_id)
         return context
 
 def add_to_cart(request, product_id):
     shoes = get_object_or_404(Shoes, id=product_id)
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    cart_item, created = CartItem.objects.get_or_create(cart=cart, shoes=shoes)
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
-    context = {'cart': cart, 'cart_item': cart_item}
-    return render(request, 'cart.html', context)
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, shoes=shoes, user=request.user)
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+        else:
+            cart_item.quantity = 1
+            cart_item.save()
+        messages.success(request, 'Товар успешно добавлен в корзину')
+        return redirect('cart')
+    else:
+        messages.info(request, 'Войдите в свой аккаунт, чтобы добавить товар в корзину')
+        return redirect('home')
 
 
-def update_cart(request, cart_item_id):
-    cart_item = CartItem.objects.get(id=cart_item_id)
+def update_cart(request, product_id):
+    shoes = Shoes.objects.get(id=product_id)
     if request.method == 'POST':
         quantity = request.POST.get('quantity')
         if quantity:
+            cart_item, created = CartItem.objects.get_or_create(shoes=shoes, user=request.user)
             cart_item.quantity = int(quantity)
             cart_item.save()
-    context = {'cart_item': cart_item}
+    context = {'cart': Cart.objects.get(user=request.user)}
     return render(request, 'cart.html', context)
 
 
@@ -101,6 +111,7 @@ def remove_from_cart(request, cart_item_id):
     cart_item = CartItem.objects.get(id=cart_item_id)
     cart_item.delete()
     return redirect('cart')
+
 
 
 class contactView(ListView):
