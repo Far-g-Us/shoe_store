@@ -7,10 +7,10 @@
 		<div class="container">
 			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 				<div class="col-first">
-					<h1>Basket</h1>
+					<h1>Shopping Confirm</h1>
 					<nav class="d-flex align-items-center">
 						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
-						<a href="{% url 'confirmation' %}">Basket</a>
+						<a href="{% url 'confirm' %}">Shopping Confirm</a>
 					</nav>
 				</div>
 			</div>
@@ -21,7 +21,7 @@
 	<!--================Order Details Area =================-->
 	<section class="order_details section_gap">
 		<div class="container">
-			<h3 class="title_confirmation">Thank you. Your order has been received.</h3>
+<!--			<h3 class="title_confirmation">Thank you. Your order has been received.</h3>-->
 			<div class="row order_d_inner">
 				<div class="col-lg-4">
 					<div class="details_item">
@@ -75,12 +75,13 @@
 										<p>{{ cart_item.shoes.name }}</p>
 									</td>
 									<td>
-										<h5>{{ cart_item.quantity }}</h5>
+										<h5>x{{ cart_item.quantity }}</h5>
 									</td>
 									<td>
 										<p>{{ cart_item.get_total_price }} $</p>
 									</td>
 								</tr>
+							{% endfor %}
 								<tr>
 									<td>
 										<h4>Subtotal</h4>
@@ -92,17 +93,17 @@
 										<p>{{ cart.get_total_price }} $</p>
 									</td>
 								</tr>
-								<tr>
-									<td>
-										<h4>Shipping</h4>
-									</td>
-									<td>
-										<h5></h5>
-									</td>
-									<td>
-										<p>Flat rate: $50.00</p>
-									</td>
-								</tr>
+<!--								<tr>-->
+<!--									<td>-->
+<!--										<h4>Shipping</h4>-->
+<!--									</td>-->
+<!--									<td>-->
+<!--										<h5></h5>-->
+<!--									</td>-->
+<!--									<td>-->
+<!--										<p>Flat rate: $50.00</p>-->
+<!--									</td>-->
+<!--								</tr>-->
 								<tr>
 									<td>
 										<h4>Total</h4>
@@ -114,13 +115,36 @@
 										<p>{{ cart.get_total_price }} $</p>
 									</td>
 								</tr>
-							{% endfor %}
 						</tbody>
 					</table>
+					<button type="button" class="btn btn-success" onclick="sendEmail()">Подтвердить</button>
 				</div>
 			</div>
 		</div>
 	</section>
 	<!--================End Order Details Area =================-->
+
+<script>
+  function sendEmail() {
+    $.ajax({
+      type: 'POST',
+      url: '{% url "send_email" %}',
+      data: {
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        email: '{{ user.email }}',
+      },
+      success: function(response) {
+        console.log(response);
+        // Отобразить сообщение об успешной отправке сообщения на почту
+        alert('Сообщение успешно отправлено на почту!');
+      },
+      error: function(error) {
+        console.log(error);
+        // Отобразить сообщение об ошибке при отправке сообщения на почту
+        alert('Произошла ошибка при отправке сообщения на почту.');
+      },
+    });
+  }
+</script>
 
 {% endblock content %}

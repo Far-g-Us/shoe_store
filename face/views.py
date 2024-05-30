@@ -1,9 +1,10 @@
 from django.views.generic import ListView, DetailView
-from face.models import Face, Cart, Contact, Confirm
+from face.models import Face, Contact, Confirm, Cart, CartItem
 from product.models import Shoes
-from face.models import Cart, CartItem
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.http import JsonResponse
 
 
 class indexView(ListView):
@@ -134,9 +135,13 @@ class contactView(ListView):
         return Contact.objects.all()
 
 
-class ConfirmView(DetailView):
+# class ConfirmView(DetailView):
+#     model = CartItem
+#     fields = '__all__'
+#     template_name = 'confirm.html'
+
+class ConfirmView(ListView):
     model = CartItem
-    fields = '__all__'
     template_name = 'confirm.html'
     context_object_name = 'cart_items'
 
@@ -148,16 +153,27 @@ class ConfirmView(DetailView):
         context = super().get_context_data(**kwargs)
         cart, created = Cart.objects.get_or_create(user=self.request.user)
         context['cart'] = cart
+        cart_item_id = kwargs.get('cart_item_id')
+        if cart_item_id:
+            context['cart_item'] = CartItem.objects.get(id=cart_item_id)
         # добавляем эти строчки кода
         for cart_item in context['cart_items']:
             cart_item.total_price = cart_item.get_total_price
         return context
 
-    def post(self, request, *args, **kwargs):
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        # создаем объект заказа
-        confirm = Confirm.objects.create(user=request.user, cart=cart)
-        # очищаем корзину
-        cart.clear()
-        # перенаправляем пользователя на страницу с подтверждением заказа
-        return redirect('confirm', pk=confirm.pk)
+
+def send_email(request):
+    if request.method == 'POST':
+        # Получить адрес электронной почты текущего пользователя из запроса POST
+        recipient_email = request.POST.get('email')
+        # Отправить сообщение на почту
+        subject = 'Подтверждение покупки'
+        message = 'Спасибо за вашу покупку! Мы подтвердили ее и свяжемся с вами в ближайшее время.'
+        from_email = 'info@example.com'
+        recipient_list = [recipient_email]
+        send_mail(subject, message, from_email, recipient_list)
+        # Вернуть JSON-ответ с результатом отправки сообщения на почту
+        return JsonResponse({'success': True})
+    else:
+        # Вернуть JSON-ответ с ошибкой, если запрос не является POST-запросом
+        return JsonResponse({'success': False})
