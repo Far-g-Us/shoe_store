@@ -69,72 +69,52 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td>
-									<p>Pixelstore fresh Blackberry</p>
-								</td>
-								<td>
-									<h5>x 02</h5>
-								</td>
-								<td>
-									<p>$720.00</p>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<p>Pixelstore fresh Blackberry</p>
-								</td>
-								<td>
-									<h5>x 02</h5>
-								</td>
-								<td>
-									<p>$720.00</p>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<p>Pixelstore fresh Blackberry</p>
-								</td>
-								<td>
-									<h5>x 02</h5>
-								</td>
-								<td>
-									<p>$720.00</p>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<h4>Subtotal</h4>
-								</td>
-								<td>
-									<h5></h5>
-								</td>
-								<td>
-									<p>$2160.00</p>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<h4>Shipping</h4>
-								</td>
-								<td>
-									<h5></h5>
-								</td>
-								<td>
-									<p>Flat rate: $50.00</p>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<h4>Total</h4>
-								</td>
-								<td>
-									<h5></h5>
-								</td>
-								<td>
-									<p>$2210.00</p>
-								</td>
-							</tr>
+							{% for cart_item in cart.cartitem_set.all %}
+								<tr>
+									<td>
+										<p>{{ cart_item.shoes.name }}</p>
+									</td>
+									<td>
+										<h5>{{ cart_item.quantity }}</h5>
+									</td>
+									<td>
+										<p>{{ cart_item.get_total_price }} $</p>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h4>Subtotal</h4>
+									</td>
+									<td>
+										<h5></h5>
+									</td>
+									<td>
+										<p>{{ cart.get_total_price }} $</p>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h4>Shipping</h4>
+									</td>
+									<td>
+										<h5></h5>
+									</td>
+									<td>
+										<p>Flat rate: $50.00</p>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h4>Total</h4>
+									</td>
+									<td>
+										<h5></h5>
+									</td>
+									<td>
+										<p>{{ cart.get_total_price }} $</p>
+									</td>
+								</tr>
+							{% endfor %}
 						</tbody>
 					</table>
 				</div>

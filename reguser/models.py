@@ -41,6 +41,5 @@ def create_user_profile(sender, instance, created, **kwargs):
         CustomUser.objects.create(username=instance.username, email=instance.email, full_name=instance.full_name, birthday=instance.birthday, image=instance.image)
 
 
-
 def save_user_profile(sender, instance, **kwargs):
     instance.customuser.save()

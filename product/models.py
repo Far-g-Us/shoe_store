@@ -174,9 +174,6 @@ class Shoes(models.Model):
         verbose_name_plural = 'Обуви'
 
 
-class Confirm(models.Model):
-    pass
-
 class RatingStar(models.Model):
     value = models.PositiveSmallIntegerField(verbose_name='Значение', default=0)
 

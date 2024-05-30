@@ -1,15 +1,14 @@
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, FormView
 from django_filters.views import FilterView
-from product.models import Shoes, Category, Confirm, Review, Rating, RatingStar
+from product.models import Shoes, Category, Review, Rating, RatingStar
 from product.forms import ShoesForm, ReviewForm
 from product.filters import ShoesFilter
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Count, Sum
 from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse
 from django.urls import reverse_lazy
 from urllib.parse import urlencode
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 
@@ -164,23 +163,6 @@ class ProductDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('product_list')
-
-
-class ConfirmView(DetailView):
-    model = Confirm
-    fields = '__all__'
-    template_name = 'confirmation.html'
-
-    def get_queryset(self):
-        return Shoes.objects.all()
-
-    def get_object(self, queryset=None):
-        product_id = self.kwargs.get('product_id')
-        try:
-            return Confirm.objects.get(id=product_id)
-        except Confirm.DoesNotExist:
-            product_id = None
-
 
 class ProductDetailReview(FormView):
     template_name = 'product_detail.html'

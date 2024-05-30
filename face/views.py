@@ -1,9 +1,9 @@
-from django.contrib import messages
 from django.views.generic import ListView, DetailView
-from face.models import Face, Cart, Contact
-from product.models import Category, Shoes
+from face.models import Face, Cart, Contact, Confirm
+from product.models import Shoes
 from face.models import Cart, CartItem
 from django.shortcuts import redirect, get_object_or_404, render
+from django.contrib import messages
 
 
 class indexView(ListView):
@@ -79,7 +79,6 @@ class cartView(ListView):
         # добавляем эти строчки кода
         for cart_item in context['cart_items']:
             cart_item.total_price = cart_item.get_total_price
-
         return context
 
 
@@ -126,7 +125,6 @@ def remove_from_cart(request, cart_item_id):
 #     return redirect('cart')
 
 
-
 class contactView(ListView):
     model = Contact
     fields = '__all__'
@@ -135,3 +133,31 @@ class contactView(ListView):
     def get_queryset(self):
         return Contact.objects.all()
 
+
+class ConfirmView(DetailView):
+    model = CartItem
+    fields = '__all__'
+    template_name = 'confirm.html'
+    context_object_name = 'cart_items'
+
+    def get_queryset(self):
+        cart, created = Cart.objects.get_or_create(user=self.request.user)
+        return CartItem.objects.filter(cart=cart)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cart, created = Cart.objects.get_or_create(user=self.request.user)
+        context['cart'] = cart
+        # добавляем эти строчки кода
+        for cart_item in context['cart_items']:
+            cart_item.total_price = cart_item.get_total_price
+        return context
+
+    def post(self, request, *args, **kwargs):
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        # создаем объект заказа
+        confirm = Confirm.objects.create(user=request.user, cart=cart)
+        # очищаем корзину
+        cart.clear()
+        # перенаправляем пользователя на страницу с подтверждением заказа
+        return redirect('confirm', pk=confirm.pk)
