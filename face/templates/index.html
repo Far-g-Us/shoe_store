@@ -494,8 +494,8 @@
 				</div>
 				<div class="col-lg-3">
 					<div class="ctg-right">
-						<a href="#" target="_blank">
-							<img class="img-fluid d-block mx-auto" src="{% static 'img/category/c5.jpg' %}" alt="">
+						<a href="{% url 'product_list' %}?discount=5">
+							<img class="img-fluid d-block mx-auto" href="{% url 'product_list' %}?discount=5" src="{% static 'img/category/c5.jpg' %}" alt="">
 						</a>
 					</div>
 				</div>

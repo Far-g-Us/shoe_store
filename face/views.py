@@ -120,10 +120,6 @@ def remove_from_cart(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id)
     cart_item.delete()
     return redirect('cart')
-# def remove_from_cart(request, cart_item_id):
-#     cart_item = CartItem.objects.get(id=cart_item_id)
-#     cart_item.delete()
-#     return redirect('cart')
 
 
 class contactView(ListView):
@@ -169,7 +165,7 @@ def send_email(request):
         # Отправить сообщение на почту
         subject = 'Подтверждение покупки'
         message = 'Спасибо за вашу покупку! Мы подтвердили ее и свяжемся с вами в ближайшее время.'
-        from_email = 'info@example.com'
+        from_email = 'adskya-droshilnay@mail.ru'
         recipient_list = [recipient_email]
         send_mail(subject, message, from_email, recipient_list)
         # Вернуть JSON-ответ с результатом отправки сообщения на почту

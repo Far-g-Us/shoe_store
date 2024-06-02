@@ -107,6 +107,21 @@ body .filter-value  {
   justify-content: end;
 }
 
+.header_area .navbar .nav.navbar-nav li {
+  line-height: 60px;
+}
+
+@media (min-width: 992px) {
+  .header_area .navbar .nav .nav-item.submenu ul {
+    top: 100%;
+  }
+}
+
+.mapRow {
+  margin-top: 80px;
+  margin-bottom: 100px;
+}
+
 /* form Area css
 ============================================================================================ */
 @media (min-width: 992px) {
