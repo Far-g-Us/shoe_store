@@ -1,12 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, RedirectView, FormView, TemplateView, UpdateView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.views.generic import CreateView, FormView, TemplateView, UpdateView, DeleteView
 from reguser.forms import CustomUserCreationForm, LoginForm
 from reguser.models import CustomUser
 from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-
 from django.db import transaction
 from django.core.files.base import ContentFile
 from io import BytesIO
@@ -24,19 +23,35 @@ def resize_image(image):
     return ContentFile(image_data)
 
 
+# class LoginView(FormView):
+#     template_name = 'login.html'
+#     form_class = LoginForm
+#     success_url = reverse_lazy('home')
+#
+#     def form_valid(self, form):
+#         user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+#         if user is not None:
+#             login(self.request, user)
+#             return super().form_valid(form)
+#         else:
+#             form.add_error(None, 'Неверный логин или пароль')
+#             return super().form_invalid(form)
+
 class LoginView(FormView):
     template_name = 'login.html'
     form_class = LoginForm
-    success_url = reverse_lazy('home')
 
     def form_valid(self, form):
         user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
         if user is not None:
             login(self.request, user)
-            return super().form_valid(form)
+            return redirect('profile')  # Перенаправляем пользователя на страницу профиля после успешного входа
         else:
             form.add_error(None, 'Неверный логин или пароль')
             return super().form_invalid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('profile')  # Если не используете метод form_valid для перенаправления
 
 
 class RegisterView(CreateView):
@@ -68,6 +83,14 @@ class RegisterView(CreateView):
         print(form.errors)
         return render(self.request, self.template_name, {'formuser': form, 'error': 'Поля должны быть заполнены.'})
 
+
+class DeleteUserProfile(SuccessMessageMixin, DeleteView):
+    model = CustomUser
+    success_message = "User has been deleted"
+    template_name = 'delete_user_confirm.html'
+    success_url = reverse_lazy("home")
+
+
 def LogoutView(request):
     logout(request)
     return redirect('home')
@@ -86,7 +109,6 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 # class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 #     form_class = UserProfileUpdateForm
 #     template_name = 'profile_update.html'
-#     # success_url = reverse_lazy('profile')
 #
 #     def get_object(self, queryset=None):
 #         return self.request.user
@@ -99,7 +121,6 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 #     def get_success_url(self):
 #         return reverse_lazy('profile')
 #
-#
 # @login_required
 # def update_profile(request):
 #     if request.method == 'POST':
@@ -107,7 +128,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 #
 #         if form.is_valid():
 #             form.save()
-#             return reverse_lazy('profile')  # Replace 'profile' with the appropriate URL name for the user profile page
+#             return redirect('profile')  # Replace 'profile' with the appropriate URL name for the user profile page
 #     else:
 #         form = UserProfileUpdateForm(instance=request.user.userprofile)
 #
@@ -116,3 +137,27 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 #     }
 #
 #     return render(request, 'profile_update.html', context)
+
+# class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+#     model = CustomUser
+#     form_class = UserProfileUpdateForm
+#     template_name = 'profile_update.html'
+#
+#     def get_object(self, queryset=None):
+#         obj = super().get_object(queryset)
+#
+#         if obj != self.request.user:
+#             raise PermissionDenied
+#
+#         return obj
+#
+#     def get_success_url(self):
+#         return reverse_lazy('profile')
+
+# def update_user_field(request):
+#     user = CustomUser.objects.get(id=request.user.id)  # получаем объект пользователя
+#
+#     if request.method == 'POST':
+#         form = UserProfileUpdateForm(request.POST, instance=user)  # создаем форму с переданными данными пользователя
+#         if form.is_valid():
+#             form.save()  # сохраняем изменения только для указанного поля

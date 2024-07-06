@@ -1,10 +1,11 @@
 from django.views.generic import ListView, DetailView
-from face.models import Face, Contact, Confirm, Cart, CartItem
+from face.models import Face, Contact, Cart, CartItem
 from product.models import Shoes
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.http import JsonResponse
+
 
 
 class indexView(ListView):
@@ -77,7 +78,6 @@ class cartView(ListView):
         cart_item_id = kwargs.get('cart_item_id')
         if cart_item_id:
             context['cart_item'] = CartItem.objects.get(id=cart_item_id)
-        # добавляем эти строчки кода
         for cart_item in context['cart_items']:
             cart_item.total_price = cart_item.get_total_price
         return context
@@ -120,6 +120,7 @@ def remove_from_cart(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id)
     cart_item.delete()
     return redirect('cart')
+
 
 
 class contactView(ListView):

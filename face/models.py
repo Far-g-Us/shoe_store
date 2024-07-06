@@ -33,6 +33,7 @@ class CartItem(models.Model):
             return quantity * price
         return 0
 
+
 class Contact(models.Model):
     pass
 

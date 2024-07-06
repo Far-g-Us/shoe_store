@@ -11,7 +11,7 @@
 					<h1>User Profile Update</h1>
 					<nav class="d-flex align-items-center">
 						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
-						<a href="{% url 'profile_update' %}">User Profile Update</a>
+						<a href="{% url 'profile_update' pk=user.id %}">User Profile Update</a>
 					</nav>
 				</div>
 			</div>
@@ -27,12 +27,12 @@
 				<div class="my-col-lg-6">
 					<div class="register_form_inner">
 						<h2>Профиль</h2>
-						<form method="post" action="{% url 'profile_update' %}" enctype="multipart/form-data">
+						<form method="post" action="" enctype="multipart/form-data">
 							{% csrf_token %}
 							{{ form.as_p }}
 							<button type="submit" class="primary-btn">Update</button>
 						</form>
-<!--						<form id="image_change_form" action="{% url 'profile_update' %}" method="post" enctype="multipart/form-data">-->
+<!--						<form id="image_change_form" action="" method="post" enctype="multipart/form-data">-->
 <!--							{% csrf_token %}-->
 <!--							<div class="col-md-12 form-group">-->
 <!--								{% if user.image %}-->
@@ -42,7 +42,7 @@
 <!--							</div>-->
 <!--							<a style="text-decorator: none"><button type="submit" class="primary-btn">Сохранить изменения</button></a>-->
 <!--						</form>-->
-<!--						<form id="password_change_form" action="{% url 'profile_update' %}" method="post" enctype="multipart/form-data">-->
+<!--						<form id="password_change_form" action="" method="post" enctype="multipart/form-data">-->
 <!--							{% csrf_token %}-->
 <!--							<div class="col-md-12 form-group">-->
 <!--								<label for="new_password1">Пароль</label>-->
@@ -54,7 +54,7 @@
 <!--							</div>-->
 <!--							<a style="text-decorator: none"><button type="submit" class="primary-btn">Сохранить изменения</button></a>-->
 <!--						</form>-->
-<!--						<form id="personal_change_form" action="{% url 'profile_update' %}" method="post" enctype="multipart/form-data">-->
+<!--						<form id="personal_change_form" action="" method="post" enctype="multipart/form-data">-->
 <!--							{% csrf_token %}-->
 <!--							<div class="col-md-12 form-group">-->
 <!--								<h4>ФИО: {{ user.full_name }}</h4>-->

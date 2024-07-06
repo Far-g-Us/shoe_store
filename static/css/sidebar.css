@@ -122,6 +122,23 @@ body .filter-value  {
   margin-bottom: 100px;
 }
 
+.gray_btn{
+  padding: 0px 30px;
+}
+
+.image-profile{
+  border: 0.5px solid rgb(180, 180, 180);
+  box-shadow: 0px 10px 30px 0px rgba(0, 0, 0, 0.30);
+  padding: 10px;
+}
+.col-md-12-1{
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 30px;
+  padding-left: 30px;
+}
+
 /* form Area css
 ============================================================================================ */
 @media (min-width: 992px) {
@@ -175,10 +192,11 @@ body .filter-value  {
         left: 260px; }
 
 .register_form_inner {
-  box-shadow: 0px 10px 30px 0px rgba(0, 0, 0, 0.07);
+  box-shadow: 0px 10px 30px 0px rgba(0, 0, 0, 0.25);
   height: 100%;
   text-align: center;
-  padding-top: 115px; }
+  padding-top: 30px;
+  padding-bottom: 30px; }
   .register_form_inner h3 {
     color: #222222;
     text-transform: uppercase;

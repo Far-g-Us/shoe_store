@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+				<div class="col-first">
+					<h1>Delete User</h1>
+					<nav class="d-flex align-items-center">
+						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
+						<a href="{% url 'profile' %}">User Profile</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+	<!--================Profile Box Area =================-->
+	<h3>Confirm delete user</h3>
+	<div class="text-center justify-content-center">
+		<form method="post">
+			{% csrf_token %}
+			<button type="submit" class="btn btn-danger">Delete user</button>
+		</form>
+	</div>
+
+	<!--================End Profile Box Area =================-->
+
+{% endblock content %}

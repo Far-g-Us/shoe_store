@@ -5,11 +5,10 @@ from product.forms import ShoesForm, ReviewForm
 from product.filters import ShoesFilter
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Count, Sum
-from django.core.paginator import Paginator
+# from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse
 from django.urls import reverse_lazy
 from urllib.parse import urlencode
-
 
 
 class ProductListView(FilterView):
@@ -28,7 +27,7 @@ class ProductListView(FilterView):
             category = Category.objects.get(url=category_url)
             queryset = filter.qs.filter(category__in=category.get_descendants(include_self=True))
         queryset = queryset.annotate(num_products=Count('category__shoes')).order_by('id')
-        #### НЕ ТРОГАЙ ПОКА РАБОТАЕТ ####
+        ##------------------------------------------------------##
         price_min = self.request.GET.get('price__gte')
         price_max = self.request.GET.get('price__lte')
 
@@ -39,11 +38,11 @@ class ProductListView(FilterView):
         elif price_max:
             queryset = queryset.filter(price__lte=price_max)
         # print(f'price_min: {price_min}, price_max: {price_max}')
-        ###################################
+        ##------------------------------------------------------##
         return queryset
 
     def get_context_data(self, **kwargs):
-        #### НЕ ТРОГАЙ ПОКА РАБОТАЕТ ####
+        ##------------------------------------------------------##
         # print(self.request.GET)
         context = super().get_context_data(**kwargs)
         # Обработка товаров для пагинации
@@ -52,7 +51,7 @@ class ProductListView(FilterView):
         page_obj = context['page_obj']
         page_numbers = [n for n in paginator.page_range if n > page_obj.number - 4 and n < page_obj.number + 4]
         context['page_numbers'] = page_numbers
-        #######################################
+        ##------------------------------------------------------##
         # Добавление параметров фильтрации в URL-адрес
         filter_params = self.request.GET.copy()
         filter_params._mutable = True

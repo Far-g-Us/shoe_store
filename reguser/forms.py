@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
 from reguser.models import CustomUser
 from django.contrib.auth.password_validation import validate_password
@@ -57,6 +57,7 @@ class CustomUserCreationForm(UserCreationForm):
         return username
 
 
+
 class LoginForm(AuthenticationForm):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
@@ -81,11 +82,3 @@ class LoginForm(AuthenticationForm):
 #     class Meta:
 #         model = CustomUser
 #         fields = ('email', 'full_name', 'birthday', 'image', 'password')
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields['email'].required = False
-#         self.fields['full_name'].required = False
-#         self.fields['birthday'].required = False
-#         self.fields['image'].required = False
-#         self.fields['password'].required = False

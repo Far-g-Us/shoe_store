@@ -26,32 +26,40 @@
 			<div class="row">
 				<div class="my-col-lg-6">
 					<div class="register_form_inner">
-						<h2>Профиль</h2>
-						<div class="col-md-12 form-group">
+						<div class="col-md-12-1 form-group">
 							{% if user.image %}
-								<img class="img-fluid" src="{{ user.image.url }}" alt="{{ user.username }}">
+								<img class="img-fluid image-profile" src="{{ user.image.url }}" alt="{{ user.username }}">
+							{% else %}
+								<h4>Пользователь не добавил фотографию</h4>
 							{% endif %}
 						</div>
-						<div class="col-md-12 form-group">
+						<div class="col-md-12-1 form-group">
 							<h4>username: {{ user.username }}</h4>
 						</div>
-						<div class="col-md-12 form-group">
-							<h4>ФИО: {{ user.full_name }}</h4>
-						</div>
-						<div class="col-md-12 form-group">
-							{% if user.birthday %}
-								<h4>День рождения: {{ user.birthday }}</h4>
+						<div class="col-md-12-1 form-group">
+							{% if user.full_name %}
+								<h4>ФИО: {{ user.full_name }}</h4>
+							{% else %}
+								<h4>Пользователь не указал своё ФИО</h4>
 							{% endif %}
 						</div>
-						<div class="col-md-12 form-group">
+						<div class="col-md-12-1 form-group">
+							{% if user.birthday %}
+								<h4>День рождения: {{ user.birthday }}</h4>
+							{% else %}
+								<h4>Пользователь не указал День рождения</h4>
+							{% endif %}
+						</div>
+						<div class="col-md-12-1 form-group">
 							{% if user.email %}
 								<h4>Почта: {{ user.email }}</h4>
 							{% endif %}
 						</div>
-						<div class="col-md-12 form-group">
+						<div class="col-md-12-1 form-group">
 							<h4>Аккаунт создан: {{ user.created_at|date:"d.m.Y" }}</h4>
 						</div>
-<!--						<a href="#" style="text-decorator: none"><button class="primary-btn">Редактировать профиль</button></a>-->
+<!--						<a href="#" style="text-decorator: none"><button class="btn btn-primary">Редактировать профиль</button></a>-->
+						<a href="{% url 'delete_user_confirm' pk=user.id %}" style="text-decorator: none"><button class="btn btn-danger">Удалить пользователя</button></a>
 					</div>
 				</div>
 			</div>
