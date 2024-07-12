@@ -7,20 +7,31 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect
 from django.db import transaction
-from django.core.files.base import ContentFile
+
+#from utils import resize_image
+
 from io import BytesIO
 from PIL import Image
+from django.core.files.base import ContentFile
 
 
-def resize_image(image):
+def resize_image(image, output_format='WEBP'):
     img = Image.open(image)
+
+    # Преобразуем изображение в режим RGB, если оно не в этом режиме и не является GIF
+    if img.mode != 'RGB' and img.format != 'GIF':
+        img = img.convert('RGB')
+
     img = img.resize((300, 300), Image.Resampling.LANCZOS)
 
     image_io = BytesIO()
-    img.save(image_io, format='JPEG')
+    img.save(image_io, format=output_format)
+
     image_data = image_io.getvalue()
 
-    return ContentFile(image_data)
+    # Возвращаем ContentFile с оригинальным именем файла, но с новым расширением
+    new_name = f"{image.name.rsplit('.', 1)[0]}.{output_format.lower()}"
+    return ContentFile(image_data, name=new_name)
 
 
 # class LoginView(FormView):
@@ -54,6 +65,35 @@ class LoginView(FormView):
         return reverse_lazy('profile')  # Если не используете метод form_valid для перенаправления
 
 
+# class RegisterView(CreateView):
+#     model = CustomUser
+#     form_class = CustomUserCreationForm
+#     template_name = 'register.html'
+#     success_url = reverse_lazy('login')
+#
+#     def form_valid(self, form):
+#         with transaction.atomic():
+#             user = form.save(commit=False)
+#             user.username = form.cleaned_data['username']
+#             user.set_password(form.cleaned_data['password1'])
+#             user.save()
+#
+#             customUser = CustomUser.objects.get(username=user.username)
+#             customUser.full_name = form.cleaned_data['full_name']
+#             customUser.birthday = form.cleaned_data['birthday']
+#             customUser.image = resize_image(form.cleaned_data['image'])
+#             customUser.email = form.cleaned_data['email']
+#             customUser.user = user
+#             customUser.save()
+#
+#             print(customUser)
+#             login(self.request, user)
+#             return redirect('login')
+#
+#     def form_invalid(self, form):
+#         print(form.errors)
+#         return render(self.request, self.template_name, {'formuser': form, 'error': 'Поля должны быть заполнены.'})
+
 class RegisterView(CreateView):
     model = CustomUser
     form_class = CustomUserCreationForm
@@ -63,25 +103,24 @@ class RegisterView(CreateView):
     def form_valid(self, form):
         with transaction.atomic():
             user = form.save(commit=False)
-            user.username = form.cleaned_data['username']
             user.set_password(form.cleaned_data['password1'])
             user.save()
 
-            customUser = CustomUser.objects.get(username=user.username)
-            customUser.full_name = form.cleaned_data['full_name']
-            customUser.birthday = form.cleaned_data['birthday']
-            customUser.image = resize_image(form.cleaned_data['image'])
-            customUser.email = form.cleaned_data['email']
-            customUser.user = user
-            customUser.save()
+            # Обновление дополнительных полей
+            user.full_name = form.cleaned_data['full_name']
+            user.birthday = form.cleaned_data['birthday']
+            if form.cleaned_data['image']:
+                user.image = resize_image(form.cleaned_data['image'], output_format='WEBP')
+                print(f"Image URL: {user.image.url}")  # Отладочное сообщение
+            user.email = form.cleaned_data['email']
+            user.save()
 
-            print(customUser)
             login(self.request, user)
             return redirect('login')
 
     def form_invalid(self, form):
         print(form.errors)
-        return render(self.request, self.template_name, {'formuser': form, 'error': 'Поля должны быть заполнены.'})
+        return render(self.request, self.template_name, {'form': form, 'error': 'Поля должны быть заполнены.'})
 
 
 class DeleteUserProfile(SuccessMessageMixin, DeleteView):

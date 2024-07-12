@@ -101,11 +101,11 @@
 									<div class="price">
 										{% if shoe.discount != 0 %}
 											{% if shoe.discounted_price != 0 %}
-												<h6 class="l-through">{{ shoe.price }}$</h6>
-												<h6>{{ shoe.discounted_price }}$</h6>
+												<h6 class="l-through">{{ shoe.price }}₽</h6>
+												<h6>{{ shoe.discounted_price }}₽</h6>
 											{% endif %}
 										{% else %}
-											<h6>{{ shoe.price }}$</h6>
+											<h6>{{ shoe.price }}₽</h6>
 										{% endif %}
 									</div>
 									{% if user.is_staff %}
@@ -244,8 +244,8 @@
 								<div class="desc">
 									<a href="{% url 'product_detail' shoe.url shoe.id %}" class="title">{{ shoe.name }}</a>
 									<div class="price">
-										<h6>{{ shoe.discounted_price }}$</h6>
-										<h6 class="l-through">{{ shoe.price }}$</h6>
+										<h6>{{ shoe.discounted_price }}₽</h6>
+										<h6 class="l-through">{{ shoe.price }}₽</h6>
 									</div>
 								</div>
 							</div>

@@ -23,8 +23,8 @@ class CustomUser(AbstractUser):
     username = models.CharField(max_length=35, unique=True)
     full_name = models.CharField(max_length=150, verbose_name='ФИО', blank=True, null=True)
     birthday = models.DateField(verbose_name='Дата рождения', blank=True, null=True)
-    email = models.EmailField(verbose_name='email', blank=True)
-    image = models.ImageField(verbose_name='фото', upload_to='profile/%Y/%m', blank=True)
+    email = models.EmailField(verbose_name='email', blank=True, unique=True)
+    image = models.ImageField(verbose_name='фото', upload_to='profile/%Y/%m', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     objects = CustomUserManager()

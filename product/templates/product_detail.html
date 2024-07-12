@@ -64,17 +64,17 @@
 <!--						{% if discounted_price %}-->
 <!--							{% if shoe.discount != 0 %}-->
 <!--                            	{% if shoe.discounted_price != 0 %}-->
-<!--									<h2>{{ discounted_price }}$</h2>-->
+<!--									<h2>{{ discounted_price }}₽</h2>-->
 <!--								{% endif %}-->
 <!--							{% else %}-->
-<!--                                <h2>{{ shoe.price }}$</h2>-->
+<!--                                <h2>{{ shoe.price }}₽</h2>-->
 <!--                            {% endif %}-->
 <!--						{% endif %}-->
 						{% if shoe.discounted_price %}
 							{% if shoe.discount != 0 %}
-								<h2>{{ shoe.discounted_price }}$</h2>
+								<h2>{{ shoe.discounted_price }}₽</h2>
 							{% else %}
-                                <h2>{{ shoe.price }}$</h2>
+                                <h2>{{ shoe.price }}₽</h2>
                             {% endif %}
 						{% endif %}
 						<ul class="list">
@@ -414,8 +414,8 @@
 								<div class="desc">
 									<a href="{% url 'product_detail' shoe.url shoe.id %}" class="title">{{ shoe.name }}</a>
 									<div class="price">
-										<h6>{{ shoe.discounted_price }}$</h6>
-										<h6 class="l-through">{{ shoe.price }}$</h6>
+										<h6>{{ shoe.discounted_price }}₽</h6>
+										<h6 class="l-through">{{ shoe.price }}₽</h6>
 									</div>
 								</div>
 							</div>

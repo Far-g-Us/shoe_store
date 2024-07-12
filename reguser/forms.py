@@ -9,7 +9,7 @@ from datetime import date
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
-        fields = ['username', 'full_name', 'birthday', 'email', 'image', 'password1', 'password2']
+        fields = UserCreationForm.Meta.fields + ('username', 'full_name', 'birthday', 'email', 'image', 'password1', 'password2')
 
     full_name = forms.CharField(required=True)
     birthday = forms.DateField(widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))

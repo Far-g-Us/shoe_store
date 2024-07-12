@@ -29,6 +29,7 @@
 						<div class="col-md-12-1 form-group">
 							{% if user.image %}
 								<img class="img-fluid image-profile" src="{{ user.image.url }}" alt="{{ user.username }}">
+								<p>Image URL: {{ user.image.url }}</p>
 							{% else %}
 								<h4>Пользователь не добавил фотографию</h4>
 							{% endif %}
