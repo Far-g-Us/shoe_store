@@ -199,11 +199,11 @@
 								<div class="price">
                                     {% if shoe.discount != 0 %}
                                         {% if shoe.discounted_price != 0 %}
-                                        <h6 class="l-through">{{ shoe.price }}₽</h6>
-                                       	<h6>{{ shoe.discounted_price }}₽</h6>
+                                        <h6 class="l-through">{{ shoe.price }} ₽</h6>
+                                       	<h6>{{ shoe.discounted_price }} ₽</h6>
                                         {% endif %}
                                     {% else %}
-									<h6>{{ shoe.price }}₽</h6>
+									<h6>{{ shoe.price }} ₽</h6>
                                     {% endif %}
 								</div>
 								{% if user.is_staff %}
@@ -284,19 +284,19 @@
 					<!-- single product -->
 					<div class="col-lg-4 col-md-6">
 						<div class="single-product">
-                               {% if shoe.main_image %}
-							<img class="img-fluid" src="{{ shoe.main_image.url }}" alt="{{ shoe.name }}">
-                                {% endif %}
+                            {% if shoe.main_image %}
+								<img class="img-fluid" src="{{ shoe.main_image.url }}" alt="{{ shoe.name }}">
+                            {% endif %}
 							<div class="product-details">
 								<h6>{{ shoe.name }}</h6>
 								<div class="price">
                                     {% if shoe.discount != 0 %}
                                         {% if shoe.discounted_price != 0 %}
-                                        <h6 class="l-through">{{ shoe.price }}₽</h6>
-                                        <h6>{{ shoe.discounted_price }}₽</h6>
+                                        <h6 class="l-through">{{ shoe.price }} ₽</h6>
+                                        <h6>{{ shoe.discounted_price }} ₽</h6>
                                         {% endif %}
                                     {% else %}
-									<h6>{{ shoe.price }}₽</h6>
+									<h6>{{ shoe.price }} ₽</h6>
                                     {% endif %}
 								</div>
 								{% if user.is_staff %}
@@ -401,8 +401,8 @@
 							<img class="img-fluid" src="{% static 'img/product/e-p1.png' %}" alt="">
 							<div class="product-details">
 								<div class="price">
-									<h6>150.00₽</h6>
-									<h6 class="l-through">210.00₽</h6>
+									<h6>150.00 ₽</h6>
+									<h6 class="l-through">210.00 ₽</h6>
 								</div>
 								<h4>addidas New Hammer sole
 									for Sports person</h4>
@@ -417,8 +417,8 @@
 							<img class="img-fluid" src="{% static 'img/product/e-p1.png' %}" alt="">
 							<div class="product-details">
 								<div class="price">
-									<h6>150.00₽</h6>
-									<h6 class="l-through">210.00₽</h6>
+									<h6>150.00 ₽</h6>
+									<h6 class="l-through">210.00 ₽</h6>
 								</div>
 								<h4>addidas New Hammer sole
 									for Sports person</h4>
@@ -481,8 +481,8 @@
 								<div class="desc">
 									<a href="{% url 'product_detail' shoe.url shoe.id %}" class="title">{{ shoe.name }}</a>
 									<div class="price">
-										<h6>{{ shoe.discounted_price }}₽</h6>
-										<h6 class="l-through">{{ shoe.price }}₽</h6>
+										<h6>{{ shoe.discounted_price }} ₽</h6>
+										<h6 class="l-through">{{ shoe.price }} ₽</h6>
 									</div>
 								</div>
 							</div>
