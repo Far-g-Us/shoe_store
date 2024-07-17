@@ -1,6 +1,6 @@
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, FormView
 from django_filters.views import FilterView
-from product.models import Shoes, Category, Review, Rating, RatingStar
+from product.models import Shoes, Category, Review, Rating, RatingStar, CountryOfManufacture
 from product.forms import ShoesForm, ReviewForm
 from product.filters import ShoesFilter
 from django.shortcuts import get_object_or_404, redirect
@@ -26,6 +26,10 @@ class ProductListView(FilterView):
         if category_url:
             category = Category.objects.get(url=category_url)
             queryset = filter.qs.filter(category__in=category.get_descendants(include_self=True))
+        country_name = self.kwargs.get('pk')
+        if country_name:
+            country = CountryOfManufacture.objects.get(pk=country_name)
+            queryset = filter.qs.filter(country__name=country.get_descendatns(include_self=True))
         queryset = queryset.annotate(num_products=Count('category__shoes')).order_by('id')
         ##------------------------------------------------------##
         price_min = self.request.GET.get('price__gte')
@@ -69,6 +73,8 @@ class ProductListView(FilterView):
             category = Category.objects.get(url=category_url)
             context['name'] = f'Обувь из категории: {category.name}'
         return context
+
+
 
 
 # class ProductByCategoryListView(ListView):

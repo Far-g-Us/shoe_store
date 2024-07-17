@@ -8,10 +8,10 @@
         <div class="container">
             <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
                 <div class="col-first">
-                    <h1>Shopping Cart</h1>
+                    <h1>Корзина</h1>
                     <nav class="d-flex align-items-center">
-                        <a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="{% url 'cart' %}">Cart</a>
+                        <a href="{% url 'home' %}">Главная<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="{% url 'cart' %}">Корзина</a>
                     </nav>
                 </div>
             </div>
@@ -27,10 +27,10 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th scope="col">Product</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">Total</th>
+                                <th scope="col">Продукт</th>
+                                <th scope="col">Цена</th>
+                                <th scope="col">Количество</th>
+                                <th scope="col">Итог</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -54,7 +54,7 @@
                                             <form method="post" action="{% url 'update_cart' cart_item.shoes.id %}">
                                                 {% csrf_token %}
                                                 <input type="number" name="quantity" value="{{ cart_item.quantity }}" min="1" max="10">
-                                                <button type="submit" class="gray_btn">Update</button>
+                                                <button type="submit" class="gray_btn">Обновить</button>
                                             </form>
                                         </div>
                                     </td>
@@ -67,7 +67,7 @@
                                                 <form method="post" action="{% url 'remove_from_cart' cart_item.id %}">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="cart_item_id" value="{{ cart_item.cart_item_id }}">
-                                                    <a><button type="submit" class="gray_btn">Remove</button></a>
+                                                    <a><button type="submit" class="gray_btn">Убрать</button></a>
                                                 </form>
                                             {% endif %}
                                     </td>
@@ -96,8 +96,8 @@
 
                                 <td>
                                     <div class="cupon_text d-flex align-items-center">
-                                        <input type="text" placeholder="Coupon Code">
-                                        <a class="primary-btn" href="#">Apply</a>
+                                        <input type="text" placeholder="Код купона">
+                                        <a class="primary-btn" href="#">Применить</a>
                                     </div>
                                 </td>
                             </tr>
@@ -112,7 +112,7 @@
 
                                 </td>
                                 <td>
-                                    <h5>Subtotal</h5>
+                                    <h5>Промежуточный итог</h5>
                                 </td>
                                 <td>
                                     <h5>{{ cart.get_total_price }} ₽</h5>
@@ -158,8 +158,8 @@
                                 </td>
                                 <td>
                                     <div class="checkout_btn_inner d-flex align-items-center">
-                                        <a class="gray_btn" href="{% url 'product_list' %}">Continue Shopping</a>
-                                        <a class="primary-btn" href="{% url 'confirm' %}">Proceed to checkout</a>
+                                        <a class="gray_btn" href="{% url 'product_list' %}">Продолжить покупки</a>
+                                        <a class="primary-btn" href="{% url 'confirm' %}">Перейти к оформлению заказа</a>
                                     </div>
                                 </td>
                             </tr>

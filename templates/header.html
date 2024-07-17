@@ -16,32 +16,36 @@
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
 						<ul class="nav navbar-nav menu_nav ml-auto">
-							<li class="nav-item active"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+							<li class="nav-item active"><a class="nav-link" href="{% url 'home' %}">Главная</a></li>
 							<li class="nav-item submenu dropdown">
 								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-								 aria-expanded="false">Shop</a>
+								 aria-expanded="false">Магазин</a>
 								<ul class="dropdown-menu">
-									<li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}">Shop Category</a></li>
+									<li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}">Категории Магазина</a></li>
 <!--									<li class="nav-item"><a class="nav-link" href="#">Product Checkout</a></li>-->
-									<li class="nav-item"><a class="nav-link" href="{% url 'cart' %}">Shopping Cart</a></li>
-									<li class="nav-item"><a class="nav-link" href="{% url 'confirm' %}">Shopping Confirm</a></li>
+									{% if not user.is_authenticated %}
+									{% endif %}
+									{% if user.is_authenticated %}
+										<li class="nav-item"><a class="nav-link" href="{% url 'cart' %}">Корзина</a></li>
+										<li class="nav-item"><a class="nav-link" href="{% url 'confirm' %}">Подтвердить Покупку</a></li>
+									{% endif %}
 								</ul>
 							</li>
 							<li class="nav-item submenu dropdown">
 								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-								 aria-expanded="false">Pages</a>
+								 aria-expanded="false">Страницы</a>
 								<ul class="dropdown-menu">
 									{% if not user.is_authenticated %}
-										<li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+										<li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Войти</a></li>
 									{% endif %}
 <!--									<li class="nav-item"><a class="nav-link" href="#">Tracking</a></li>-->
 									{% if user.is_authenticated %}
-										<li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
-										<li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+										<li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Профиль</a></li>
+										<li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Выйти</a></li>
 									{% endif %}
 								</ul>
 							</li>
-							<li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+							<li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Контакты</a></li>
 						</ul>
 						<ul class="nav navbar-nav navbar-right">
 							{% if user.is_authenticated %}

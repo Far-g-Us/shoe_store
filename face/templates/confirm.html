@@ -7,10 +7,10 @@
 		<div class="container">
 			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 				<div class="col-first">
-					<h1>Shopping Confirm</h1>
+					<h1>Подтвердить Покупку</h1>
 					<nav class="d-flex align-items-center">
-						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
-						<a href="{% url 'confirm' %}">Shopping Confirm</a>
+						<a href="{% url 'home' %}">Главная<span class="lnr lnr-arrow-right"></span></a>
+						<a href="{% url 'confirm' %}">Подтвердить Покупку</a>
 					</nav>
 				</div>
 			</div>
@@ -25,47 +25,47 @@
 			<div class="row order_d_inner">
 				<div class="col-lg-4">
 					<div class="details_item">
-						<h4>Order Info</h4>
+						<h4>Информация о заказе</h4>
 						<ul class="list">
-							<li><a href="#"><span>Order number</span> : 60235</a></li>
-							<li><a href="#"><span>Date</span> : Los Angeles</a></li>
-							<li><a href="#"><span>Total</span> : USD 2210</a></li>
-							<li><a href="#"><span>Payment method</span> : Check payments</a></li>
+							<li><a href="#"><span>Номер заказа</span> : 60235</a></li>
+							<li><a href="#"><span>Адрес</span> : Los Angeles</a></li>
+							<li><a href="#"><span>Цена</span> : USD 2210</a></li>
+							<li><a href="#"><span>Способ оплаты</span> : Check payments</a></li>
 						</ul>
 					</div>
 				</div>
 				<div class="col-lg-4">
 					<div class="details_item">
-						<h4>Billing Address</h4>
+						<h4>Адрес для выставления счета</h4>
 						<ul class="list">
-							<li><a href="#"><span>Street</span> : 56/8</a></li>
-							<li><a href="#"><span>City</span> : Los Angeles</a></li>
-							<li><a href="#"><span>Country</span> : United States</a></li>
-							<li><a href="#"><span>Postcode </span> : 36952</a></li>
+							<li><a href="#"><span>Улица</span> : 56/8</a></li>
+							<li><a href="#"><span>Город</span> : Los Angeles</a></li>
+							<li><a href="#"><span>Страна</span> : United States</a></li>
+							<li><a href="#"><span>Почтовый индекс</span> : 36952</a></li>
 						</ul>
 					</div>
 				</div>
 				<div class="col-lg-4">
 					<div class="details_item">
-						<h4>Shipping Address</h4>
+						<h4>Адрес доставки</h4>
 						<ul class="list">
-							<li><a href="#"><span>Street</span> : 56/8</a></li>
-							<li><a href="#"><span>City</span> : Los Angeles</a></li>
-							<li><a href="#"><span>Country</span> : United States</a></li>
-							<li><a href="#"><span>Postcode </span> : 36952</a></li>
+							<li><a href="#"><span>Улица</span> : 56/8</a></li>
+							<li><a href="#"><span>Город</span> : Los Angeles</a></li>
+							<li><a href="#"><span>Страна</span> : United States</a></li>
+							<li><a href="#"><span>Почтовый индекс</span> : 36952</a></li>
 						</ul>
 					</div>
 				</div>
 			</div>
 			<div class="order_details_table">
-				<h2>Order Details</h2>
+				<h2>Информация о заказе</h2>
 				<div class="table-responsive">
 					<table class="table">
 						<thead>
 							<tr>
-								<th scope="col">Product</th>
-								<th scope="col">Quantity</th>
-								<th scope="col">Total</th>
+								<th scope="col">Продукт</th>
+								<th scope="col">Количество</th>
+								<th scope="col">Цена</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -84,7 +84,7 @@
 							{% endfor %}
 								<tr>
 									<td>
-										<h4>Subtotal</h4>
+										<h4>Промежуточный итог</h4>
 									</td>
 									<td>
 										<h5></h5>
@@ -106,7 +106,7 @@
 <!--								</tr>-->
 								<tr>
 									<td>
-										<h4>Total</h4>
+										<h4>Итог</h4>
 									</td>
 									<td>
 										<h5></h5>

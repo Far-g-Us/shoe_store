@@ -26,11 +26,11 @@
 		<div class="container">
 			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 				<div class="col-first">
-					<h1>Product Details Page</h1>
+					<h1>Информаци о Продукте</h1>
 					<nav class="d-flex align-items-center">
-						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
-						<a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
-						<a href="{% url 'product_detail' shoe.url shoe.id %}">Product-Details</a>
+						<a href="{% url 'home' %}">Главная<span class="lnr lnr-arrow-right"></span></a>
+						<a href="#">Магазин<span class="lnr lnr-arrow-right"></span></a>
+						<a href="{% url 'product_detail' shoe.url shoe.id %}">Подробности о Продукте</a>
 					</nav>
 				</div>
 			</div>
@@ -72,25 +72,25 @@
 <!--						{% endif %}-->
 						{% if shoe.discounted_price %}
 							{% if shoe.discount != 0 %}
-								<h2>{{ shoe.discounted_price }}₽</h2>
+								<h2>{{ shoe.discounted_price }} ₽</h2>
 							{% else %}
                                 <h2>{{ shoe.price }}₽</h2>
                             {% endif %}
 						{% endif %}
 						<ul class="list">
-							<li><a class="active" href="#"><span>Category</span> : {{ shoe.category }}</a></li>
+							<li><a class="active" href="{% url 'product_by_category' shoe.category.url %}"><span>Категория</span> : {{ shoe.category }}</a></li>
 							{% if shoe.available == True %}
-								<li><a href="#"><span>Availibility</span> : Есть в наличии</a></li>
+								<li><a href="#"><span>Доступность</span> : Есть в наличии</a></li>
 							{% elif shoe.available == False %}
-								<li><a href="#"><span>Availibility</span> : Нет в наличии</a></li>
+								<li><a href="#"><span>Доступность</span> : Нет в наличии</a></li>
 							{% endif %}
-							<li><a href="#"><span>Осталось</span> : {{ shoe.stock }}</a></li>
+							<li><a href="#" style="pointer-events: none;"><span>Осталось</span> : {{ shoe.stock }}</a></li>
 							<li><a href="#"><span>Производитель</span> : {{ country_of_manufacture|join:'' }}</a></li>
-							<li><a href="#"><span>Код производителя</span> : {{ shoe.manufacturers_code }}</a></li>
+							<li><a href="#" style="pointer-events: none;"><span>Код производителя</span> : {{ shoe.manufacturers_code }}</a></li>
 						</ul>
-						<p>{{ shoe.description|truncatechars:150 }}</p>
+						<p>{{ shoe.description|truncatechars:250 }}</p>
 						<div class="product_count">
-							<label>Quantity:</label>
+							<label>Количество:</label>
 							<input type="text" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
 							<button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
 							 class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
@@ -98,7 +98,14 @@
 							 class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
 						</div>
 						<div class="card_area d-flex align-items-center">
-							<a class="primary-btn" href="{% url 'add_to_cart' shoe.id %}">Add to Cart</a>
+							{% if not user.is_authenticated %}
+								<a href="{% url 'login' %}" type="button">
+									<p class="warning-text">Для покупки пожалуйста&shy; авторизуйтесь</p>
+								</a>
+							{% endif %}
+							{% if user.is_authenticated %}
+								<a class="primary-btn" href="{% url 'add_to_cart' shoe.id %}">добавить в корзину</a>
+							{% endif %}
 							<a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
 							<a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
 						</div>
@@ -119,15 +126,15 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
-					 aria-selected="false">Specification</a>
+					 aria-selected="false">Описание</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"
-					 aria-selected="false">Comments</a>
+					 aria-selected="false">Комментарии</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab" aria-controls="review"
-					 aria-selected="false">Reviews</a>
+					 aria-selected="false">Отзывы</a>
 				</li>
 			</ul>
 			<div class="tab-content" id="myTabContent">
@@ -267,8 +274,8 @@
 						</div>
 						<div class="col-lg-6">
 							<div class="review_box">
-								<h4>Post a comment</h4>
-								<form class="row contact_form" method="post" id="contactForm" novalidate="novalidate">
+								<h4>Оставить комментарий</h4>
+								<form class="row contact_form" id="contactForm" novalidate="novalidate">
 									<div class="col-md-12">
 										<div class="form-group">
 											<input type="text" class="form-control" name="name" id="name" placeholder="Your Full name">
@@ -285,7 +292,7 @@
 										</div>
 									</div>
 									<div class="col-md-12 text-right">
-										<button type="submit" value="submit" class="btn primary-btn">Submit Now</button>
+										<button type="submit" value="submit" class="btn primary-btn">Отправить</button>
 									</div>
 								</form>
 							</div>
@@ -298,9 +305,9 @@
 							<div class="row total_rate">
 								<div class="col-6">
 									<div class="box_total">
-										<h5>Overall</h5>
+										<h5>Рейтинг</h5>
 										<h4>{{ average_rating }}</h4>
-										<h6>({{ num_comments }} Reviews)</h6>
+										<h6>({{ num_comments }} Отзывов)</h6>
 										<p>{{ shoe.get_latest_review }}</p>
 									</div>
 								</div>
@@ -353,14 +360,14 @@
 									{% endif %}
 								</div>
 							{% empty %}
-								<p>No reviews yet.</p>
+								<p>Пока нет отзывов</p>
   							{% endfor %}
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="review_box">
-								<h4>Add a Review</h4>
-								<p>Your Rating:</p>
+								<h4>Добавить отзыв</h4>
+								<p>Ваш рейтинг:</p>
 								<ul class="list">
 									<li><a href="#"><i class="fa fa-star"></i></a></li>
 									<li><a href="#"><i class="fa fa-star"></i></a></li>
@@ -368,7 +375,6 @@
 									<li><a href="#"><i class="fa fa-star"></i></a></li>
 									<li><a href="#"><i class="fa fa-star"></i></a></li>
 								</ul>
-								<p>Outstanding</p>
 								{% if user.is_authenticated %}
 									<form method="post" action="{% url 'create_review' shoe.url shoe.id %}" enctype="multipart/form-data" class="row contact_form" novalidate="novalidate" onsubmit="console.log('Form submitted')">
 										{% csrf_token %}
@@ -398,7 +404,7 @@
 			<div class="row justify-content-center">
 				<div class="col-lg-6 text-center">
 					<div class="section-title">
-						<h1>Deals of the Week</h1>
+						<h1>Предложения недели</h1>
 						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore
 							magna aliqua.</p>
 					</div>

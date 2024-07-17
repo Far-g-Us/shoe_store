@@ -1,6 +1,6 @@
 {% load mptt_tags %}
 	<div class="sidebar-categories">
-		<div class="head">Categories</div>
+		<div class="head">Категории</div>
 		<ul class="main-categories">
 		{% full_tree_for_model product.Category as categories %}
             {% recursetree categories %}
@@ -15,7 +15,7 @@
 		</ul>
 	</div>
 	<div class="sidebar-filter mt-50">
-		<div class="top-filter-head">Filters</div>
+		<div class="top-filter-head">Фильтры</div>
 		<div class="common-filter">
 			<div class="head"></div>
                 <form method="get">
@@ -92,7 +92,7 @@
                             <input type="number" name="price__lte" value="{{ filter.form.price__lte.value }}" class="form-control w-85">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary filter-button-confirm">Filter</button>
+                    <button type="submit" class="btn btn-primary filter-button-confirm">Фильтровать</button>
                 </form>
 		</div>
 	</div>

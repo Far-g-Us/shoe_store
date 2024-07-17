@@ -111,9 +111,25 @@ body .filter-value  {
   line-height: 60px;
 }
 
+.header_area .navbar .nav .nav-item.submenu ul .nav-item .nav-link{
+  padding: 0px 25px;
+}
+
 @media (min-width: 992px) {
   .header_area .navbar .nav .nav-item.submenu ul {
     top: 100%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .active-product-area .owl-nav .owl-next {
+    right: 26%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .active-product-area .owl-nav div {
+    left: 26%;
   }
 }
 
@@ -122,8 +138,109 @@ body .filter-value  {
   margin-bottom: 100px;
 }
 
+.cart_inner .table tbody tr.out_button_area .checkout_btn_inner {
+  margin-left: -460px;
+}
+
 .gray_btn{
-  padding: 0px 30px;
+  padding: 0px 20px;
+}
+
+.cart_inner .table tbody tr.out_button_area .checkout_btn_inner .primary-btn{
+  padding: 0px 20px;
+}
+
+@font-face {
+	font-family: 'PlayfairDisplay'; 
+  font-style: normal;
+	font-weight: normal;
+  src: local('static'),
+    url('/fonts/PlayfairDisplay/PlayfairDisplay-Regilar.ttf') fomat('ttf'),
+}
+
+@font-face {
+	font-family: 'themify'; 
+  font-style: normal;
+	font-weight: normal;
+  src: local('static'),
+    url('/fonts/themify.woff2') format('woff2'), 
+    url('/fonts/themify.woff') format('woff'),
+    url('/fonts/themify.ttf') fomat('ttf'),
+    url('/fonts/themify.eot') format('eot'); 
+}
+
+.warning-text{
+  font-size: 14px;
+	font-weight: 600;
+  font-family: "PlayfairDisplay";
+  color: #dc3545;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 0 !important;
+  margin-top: 20px !important;
+  margin-bottom: 20px !important;
+}
+
+.warning-text > .s_product_text{
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.single-product .product-details .prd-bottom .social-info{
+  padding-bottom: 10px;
+  padding-top: 10px;
+  top: 0px;
+  align-items: center;
+  justify-content: start;
+}
+
+.product-category{
+  font-family: "PlayfairDisplay";
+  font-size: 15px;
+	font-weight: normal;
+  color: grey;
+}
+
+.product-available{
+  font-family: "PlayfairDisplay";
+  font-size: 15px;
+	font-weight: normal;
+  color: grey;
+}
+
+.product_image_area{
+  padding-top: 70px !important;
+}
+
+.single-product .product-details .prd-bottom .social-info .hover-text{
+  font-size: 11px;
+  font-family: 'themify'; 
+  font-style: normal;
+	font-weight: 600;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  padding-bottom: 0px;
+padding-top: 9%;
+}
+
+p.hover-text.hover-custom{
+  padding-top: 0% !important;
+} 
+
+.single-product .product-details .prd-bottom .social-info:hover .hover-text {
+  left: 35px;
+}
+
+.single-product .product-details .prd-bottom .social-info:hover {
+  width: 120px;
+}
+
+.category-list .single-product {
+  margin-top: 30px;
+}
+
+.single-product{
+  margin-bottom: 30px;
 }
 
 .image-profile{
@@ -131,6 +248,7 @@ body .filter-value  {
   box-shadow: 0px 10px 30px 0px rgba(0, 0, 0, 0.30);
   padding: 10px;
 }
+
 .col-md-12-1{
   position: relative;
   width: 100%;
@@ -138,6 +256,18 @@ body .filter-value  {
   padding-right: 30px;
   padding-left: 30px;
 }
+ .delete-user{
+  margin-top: 255px;
+  margin-bottom: 255px;
+  margin-right: 25px;
+  margin-left: 25px;
+  padding: 25px;
+ }
+
+ .delete-button{
+  margin-top: 25px;
+  margin-bottom: 25px;
+ }
 
 /* form Area css
 ============================================================================================ */

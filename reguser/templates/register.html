@@ -8,10 +8,10 @@
 		<div class="container">
 			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 				<div class="col-first">
-					<h1>Login/Register</h1>
+					<h1>Авторизация/Регистрация</h1>
 					<nav class="d-flex align-items-center">
-						<a href="{% url 'home' %}">Home<span class="lnr lnr-arrow-right"></span></a>
-						<a href="{% url 'register' %}">Register</a>
+						<a href="{% url 'home' %}">Главная<span class="lnr lnr-arrow-right"></span></a>
+						<a href="{% url 'register' %}">Регистрация</a>
 					</nav>
 				</div>
 			</div>
@@ -35,7 +35,7 @@
 					{% endif %}
 
 					<div class="register_form_inner">
-						<h3>Register to enter</h3>                                          <!--id="contactForm"-->
+						<h3>Зарегистрируйтесь, чтобы продолжить</h3>                                          <!--id="contactForm"-->
 						<form class="row register_form" action="{% url 'register' %}" method="post" novalidate="novalidate" enctype="multipart/form-data">
 							{% csrf_token %}
 							<div class="col-md-12 form-group">

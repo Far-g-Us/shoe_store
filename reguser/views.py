@@ -125,7 +125,7 @@ class RegisterView(CreateView):
 
 class DeleteUserProfile(SuccessMessageMixin, DeleteView):
     model = CustomUser
-    success_message = "User has been deleted"
+    success_message = "Пользователь удалён!"
     template_name = 'delete_user_confirm.html'
     success_url = reverse_lazy("home")
 

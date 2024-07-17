@@ -63,8 +63,8 @@
 						<div class="f-icon">
 							<img src="{% static 'img/features/f-icon1.png' %}" alt="">
 						</div>
-						<h6>Free Delivery</h6>
-						<p>Free Shipping on all order</p>
+						<h6>Бесплатная доставка</h6>
+						<p>Бесплатная доставка на весь заказ</p>
 					</div>
 				</div>
 				<!-- single features -->
@@ -73,8 +73,8 @@
 						<div class="f-icon">
 							<img src="{% static 'img/features/f-icon2.png' %}" alt="">
 						</div>
-						<h6>Return Policy</h6>
-						<p>Free Shipping on all order</p>
+						<h6>Политика возврата</h6>
+						<p>Бесплатная доставка на весь заказ</p>
 					</div>
 				</div>
 				<!-- single features -->
@@ -83,8 +83,8 @@
 						<div class="f-icon">
 							<img src="{% static 'img/features/f-icon3.png' %}" alt="">
 						</div>
-						<h6>24/7 Support</h6>
-						<p>Free Shipping on all order</p>
+						<h6>Круглосуточная поддержка</h6>
+						<p>Бесплатная доставка на весь заказ</p>
 					</div>
 				</div>
 				<!-- single features -->
@@ -93,8 +93,8 @@
 						<div class="f-icon">
 							<img src="{% static 'img/features/f-icon4.png' %}" alt="">
 						</div>
-						<h6>Secure Payment</h6>
-						<p>Free Shipping on all order</p>
+						<h6>Безопасная оплата</h6>
+						<p>Бесплатная доставка на весь заказ</p>
 					</div>
 				</div>
 			</div>
@@ -178,7 +178,7 @@
 				<div class="row justify-content-center">
 					<div class="col-lg-6 text-center">
 						<div class="section-title">
-							<h1>Latest Products</h1>
+							<h1>Последние продукты</h1>
 							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
 								dolore
 								magna aliqua.</p>
@@ -191,9 +191,9 @@
 					<!-- single product -->
 					<div class="col-lg-4 col-md-6">
 						<div class="single-product">
-                               {% if shoe.main_image %}
-							<img class="img-fluid" src="{{ shoe.main_image.url }}" alt="{{ shoe.name }}">
-                                {% endif %}
+                            {% if shoe.main_image %}
+								<img class="img-fluid" src="{{ shoe.main_image.url }}" alt="{{ shoe.name }}">
+							{% endif %}
 							<div class="product-details">
 								<h6>{{ shoe.name }}</h6>
 								<div class="price">
@@ -207,20 +207,27 @@
                                     {% endif %}
 								</div>
 								{% if user.is_staff %}
-                                <a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.url shoe.id %}">Удалить продукт</a>
+                                	<a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.url shoe.id %}">Удалить продукт</a>
 								{% endif %}
 								<div class="prd-bottom">
-									<a href="{% url 'add_to_cart' shoe.id %}" class="social-info">
-										<span class="ti-bag"></span>
-										<p class="hover-text">add to bag</p>
-									</a>
+									{% if not user.is_authenticated %}
+										<a href="{% url 'login' %}" type="button">
+											<p class="warning-text">Для покупки пожалуйста&shy; авторизуйтесь</p>
+										</a>
+									{% endif %}
+									{% if user.is_authenticated %}
+										<a href="{% url 'add_to_cart' shoe.id %}" class="social-info">
+											<span class="ti-bag"></span>
+											<p class="hover-text hover-custom">добавить в корзину</p>
+										</a>
+									{% endif %}
 									<a href="#" class="social-info">
 										<span class="lnr lnr-sync"></span>
-										<p class="hover-text">compare</p>
+										<p class="hover-text">сравнить</p>
 									</a>
 									<a href="{% url 'product_detail' shoe.url shoe.id %}" class="social-info">
 										<span class="lnr lnr-move"></span>
-										<p class="hover-text">view more</p>
+										<p class="hover-text">подробнее</p>
 									</a>
 								</div>
 							</div>
@@ -228,7 +235,7 @@
 					</div>
 					{% endif %}
                 {% empty %}
-                <h4>Нет доступных продуктов.</h4>
+                	<h4>Нет доступных продуктов</h4>
                 {% endfor %}
 					<!-- single product -->
 <!--					<div class="col-lg-3 col-md-6">-->
@@ -272,7 +279,7 @@
 				<div class="row justify-content-center">
 					<div class="col-lg-6 text-center">
 						<div class="section-title">
-							<h1>Coming Products</h1>
+							<h1>Скоро в продаже</h1>
 							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
 								dolore
 								magna aliqua.</p>
@@ -296,31 +303,38 @@
                                         <h6>{{ shoe.discounted_price }} ₽</h6>
                                         {% endif %}
                                     {% else %}
-									<h6>{{ shoe.price }} ₽</h6>
+										<h6>{{ shoe.price }} ₽</h6>
                                     {% endif %}
 								</div>
 								{% if user.is_staff %}
-                                <a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.url shoe.id %}">Удалить продукт</a>
+                                	<a class="social-info" style="color: red;" href="{% url 'product_delete' shoe.url shoe.id %}">Удалить продукт</a>
 								{% endif %}
 								<div class="prd-bottom">
-									<a href="{% url 'add_to_cart' shoe.id %}" class="social-info">
-										<span class="ti-bag"></span>
-										<p class="hover-text">add to bag</p>
-									</a>
+									{% if not user.is_authenticated %}
+										<a href="{% url 'login' %}" type="button">
+											<p class="warning-text">Для покупки пожалуйста&shy; авторизуйтесь</p>
+										</a>
+									{% endif %}
+									{% if user.is_authenticated %}
+										<a href="{% url 'add_to_cart' shoe.id %}" class="social-info">
+											<span class="ti-bag"></span>
+											<p class="hover-text hover-custom">добавить в корзину</p>
+										</a>
+									{% endif %}
 									<a href="#" class="social-info">
 										<span class="lnr lnr-sync"></span>
-										<p class="hover-text">compare</p>
+										<p class="hover-text">сравнить</p>
 									</a>
 									<a href="{% url 'product_detail' shoe.url shoe.id %}" class="social-info">
 										<span class="lnr lnr-move"></span>
-										<p class="hover-text">view more</p>
+										<p class="hover-text">подробнее</p>
 									</a>
 								</div>
 							</div>
 						</div>
 					</div>
                     {% empty %}
-                    <h4>Нет доступных продуктов.</h4>
+                    	<h4>Нет доступных продуктов</h4>
                     {% endfor %}
 					<!-- single product -->
 <!--					<div class="col-lg-3 col-md-6">-->
@@ -465,7 +479,7 @@
 			<div class="row justify-content-center">
 				<div class="col-lg-6 text-center">
 					<div class="section-title">
-						<h1>Deals of the Week</h1>
+						<h1>Предложения недели</h1>
 						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore
 							magna aliqua.</p>
 					</div>
