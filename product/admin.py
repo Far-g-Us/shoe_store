@@ -2,8 +2,6 @@ from django.contrib import admin
 from .models import *
 
 
-
-
 admin.site.register(Gender)
 admin.site.register(ColorProduct)
 admin.site.register(SizeProduct)
@@ -13,6 +11,7 @@ admin.site.register(LiningMaterialProduct)
 admin.site.register(OutsoleMaterialProduct)
 admin.site.register(InsoleMaterialProduct)
 admin.site.register(CountryOfManufacture)
+admin.site.register(BrandOfManufacture)
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -51,8 +50,16 @@ class ShoeAdmin(admin.ModelAdmin):
     unpublish.short_description = "Товар появился в продаже"
     unpublish.allowed_permissions = ('change',)
 
-admin.site.register(Shoes, ShoeAdmin)
 
+admin.site.register(Shoes, ShoeAdmin)
 admin.site.register(RatingStar)
-admin.site.register(Rating)
 admin.site.register(Review)
+
+
+class RatingStarAdmin(admin.ModelAdmin):
+    def get_actions(self, request):
+        # Автоматическое создание 5 звёзд
+        if RatingStar.objects.count() == 0:
+            for i in range(1, 6):
+                RatingStar.objects.create(value=i)
+        return super().get_actions(request)

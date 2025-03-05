@@ -1,13 +1,16 @@
-from django.views.generic import ListView, DetailView, CreateView, DeleteView, FormView
+from django.views.generic import View, DetailView, CreateView, DeleteView, FormView
 from django_filters.views import FilterView
-from product.models import Shoes, Category, Review, Rating, RatingStar, CountryOfManufacture
+from django.contrib.auth.mixins import LoginRequiredMixin
+from product.models import Shoes, Category, Review, RatingStar, CountryOfManufacture
+from face.models import Cart, CartItem
 from product.forms import ShoesForm, ReviewForm
 from product.filters import ShoesFilter
 from django.shortcuts import get_object_or_404, redirect
-from django.db.models import Count, Sum
+from django.db.models import Count
+from django.contrib import messages
 # from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from urllib.parse import urlencode
 
 
@@ -26,10 +29,9 @@ class ProductListView(FilterView):
         if category_url:
             category = Category.objects.get(url=category_url)
             queryset = filter.qs.filter(category__in=category.get_descendants(include_self=True))
-        country_name = self.kwargs.get('pk')
-        if country_name:
-            country = CountryOfManufacture.objects.get(pk=country_name)
-            queryset = filter.qs.filter(country__name=country.get_descendatns(include_self=True))
+        country_id = self.kwargs.get('country_id')
+        if country_id:
+            queryset = queryset.filter(country_of_manufacture__id=country_id)
         queryset = queryset.annotate(num_products=Count('category__shoes')).order_by('id')
         ##------------------------------------------------------##
         price_min = self.request.GET.get('price__gte')
@@ -67,14 +69,13 @@ class ProductListView(FilterView):
         context['discounted_products'] = Shoes.objects.filter(discount__gt=0, available=True)[:9]
         # Фильтрация товаров по значениям из файла filters.py
         context['filter'] = ShoesFilter(self.request.GET, queryset=self.get_queryset())
+        context['countries'] = CountryOfManufacture.objects.all()
         context['categories'] = Category.objects.all()
         category_url = self.kwargs.get('url')
         if category_url:
             category = Category.objects.get(url=category_url)
             context['name'] = f'Обувь из категории: {category.name}'
         return context
-
-
 
 
 # class ProductByCategoryListView(ListView):
@@ -99,45 +100,101 @@ class ProductDetailView(DetailView):
     template_name = 'product_detail.html'
     context_object_name = 'shoe'
 
-
     def get_queryset(self):
         return Shoes.objects.all()
 
     def get_object(self, queryset=None):
-        slug = self.kwargs.get('url')  # Используйте 'url' вместо 'slug'
-        product_id = self.kwargs.get('id')  # Используйте 'id' вместо 'product_id'
-        #print(product_id, slug)
-        try:
-            return get_object_or_404(Shoes, url=slug, id=product_id)
-        except Shoes.DoesNotExist:
-            raise Http404("Product does not exist")
+        slug = self.kwargs.get('url')
+        product_id = self.kwargs.get('id')
+
+        return get_object_or_404(
+            Shoes.objects
+            .select_related('category')  # Оптимизация для ForeignKey
+            .prefetch_related(
+                'brand',
+                'gender',
+                'color',
+                'size',
+                'collection',
+                'upper_material',
+                'lining_material',
+                'outsole_material',
+                'insole_material',
+                'country_of_manufacture',
+                'review_set__user',
+                'review_set__star'
+            ),
+            url=slug,
+            id=product_id
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         shoe = self.get_object()
-        context['gender'] = shoe.gender.all()
-        context['colors'] = shoe.color.all()
-        context['sizes'] = shoe.size.all()
-        context['collections'] = shoe.collection.all()
-        context['upper_material'] = shoe.upper_material.all()
-        context['lining_material'] = shoe.lining_material.all()
-        context['outsole_material'] = shoe.outsole_material.all()
-        context['insole_material'] = shoe.insole_material.all()
-        context['country_of_manufacture'] = shoe.country_of_manufacture.all()
-        # Выводим количество комментариев и средний рейтинг для каждого товара на его странице
-        context['num_comments'] = shoe.review_set.count()
-        ratings = shoe.rating_set.annotate(value_sum=Sum('star__value'))
-        total_value = ratings.aggregate(Sum('value_sum'))['value_sum__sum'] or 0
-        total_count = ratings.count() or 1
-        context['average_rating'] = total_value / total_count
-        context['shoe'] = shoe
-        # Выбираем только товары у которых есть скидка
-        # discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]
-        # context['discounted_products'] = discounted_products
-        context['discounted_products'] = Shoes.objects.filter(discount__gt=0, available=True)[:9]
+
+        # Все связи уже загружены через prefetch_related
+        context.update({
+            'brand_of_manufacture': shoe.brand.all(),
+            'gender': shoe.gender.all(),
+            'colors': shoe.color.all(),
+            'sizes': shoe.size.all(),
+            'collections': shoe.collection.all(),
+            'upper_material': shoe.upper_material.all(),
+            'lining_material': shoe.lining_material.all(),
+            'outsole_material': shoe.outsole_material.all(),
+            'insole_material': shoe.insole_material.all(),
+            'country_of_manufacture': shoe.country_of_manufacture.all(),
+            'num_comments': shoe.review_set.count(),
+            'average_rating': shoe.average_rating,
+            'stars': range(int(shoe.average_rating)) if shoe.average_rating else [],
+            'discounted_products': Shoes.objects.filter(discount__gt=0, available=True)[:9]
+        })
+
+        # Оптимизированный запрос для статистики рейтингов
+        rating_stats = (
+            Review.objects
+            .filter(shoes=shoe)
+            .values('star__value')
+            .annotate(count=Count('id'))
+        )
+
+        rating_dict = {stat['star__value']: stat['count'] for stat in rating_stats}
+        context['rating_distribution'] = [
+            {'stars': i, 'count': rating_dict.get(i, 0)}
+            for i in range(5, 0, -1)
+        ]
+        context['has_ratings'] = sum(rating_dict.values()) > 0
 
         return context
 
+
+class AddToCartView(LoginRequiredMixin, View):
+    login_url = 'home'
+
+    def post(self, request, *args, **kwargs):
+        product_id = self.kwargs.get('product_id')
+        shoes = get_object_or_404(Shoes, id=product_id)
+        quantity = int(request.POST.get('quantity', 1))
+
+        # Валидация количества
+        if quantity < 1 or quantity > 10:
+            messages.error(request, "Некорректное количество (допустимо от 1 до 10)")
+            return redirect('product_detail', url=shoes.url, pk=shoes.id)
+
+        # Логика добавления в корзину
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        cart_item, created = CartItem.objects.get_or_create(
+            cart=cart,
+            shoes=shoes,
+            user=request.user,
+            defaults={'quantity': quantity}
+        )
+
+        if not created:
+            cart_item.quantity += quantity
+            cart_item.save()
+
+        return redirect('cart')
 
 class ProductCreateView(CreateView):
     model = Shoes
@@ -173,12 +230,16 @@ class ProductDetailReview(FormView):
     template_name = 'product_detail.html'
     form_class = ReviewForm
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        return kwargs
+
     def form_valid(self, form):
         shoes = self.get_object()
-        review = Review.objects.create(shoes=shoes, **form.cleaned_data)
-        if self.request.user.is_authenticated:
-            review.user = self.request.user
-        review.save()
+        review = form.save(commit=False)
+        review.shoes = shoes  # Привязываем товар
+        review.user = self.request.user  # Привязываем пользователя
+        review.save()  # Сохраняем с звездой из формы
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -196,11 +257,12 @@ class ProductDetailReview(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context['shoes'] = self.get_object()
-        shoe = context['shoe']
-        context['stars'] = [i for i in range(1, int(shoe.average_rating) + 1)]
+        shoe = self.get_object()
+        context['shoe'] = shoe
+        # Обновляем расчет среднего рейтинга
+        avg_rating = shoe.average_rating
+        context['stars'] = range(int(avg_rating)) if avg_rating > 0 else []
         return context
-
 
 class DeleteProductReview(DeleteView):
     model = Review

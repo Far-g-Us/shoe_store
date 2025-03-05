@@ -46,6 +46,16 @@ class CountryOfManufacture(models.Model):
         verbose_name = 'Страна производитель'
         verbose_name_plural = 'Страны производители'
 
+class BrandOfManufacture(models.Model):
+    name = models.CharField(max_length=25, db_index=True, verbose_name='Бренд производителя')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Бренд производитель'
+        verbose_name_plural = 'Бренды производители'
+
 class CollectionProduct(models.Model):
     name = models.CharField(max_length=40, db_index=True, verbose_name='Коллекция')
 
@@ -132,7 +142,7 @@ class Shoes(models.Model):
     category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=40, verbose_name='Название', db_index=True)
     url = models.SlugField(max_length=130, db_index=True)
-    brand = models.CharField(max_length=100, verbose_name='Бренд', blank=True)
+    brand = models.ManyToManyField(BrandOfManufacture, max_length=100, verbose_name='Бренд', related_name='brand_of_manufacture_product', blank=True)
     gender = models.ManyToManyField(Gender, max_length=40, verbose_name='Пол', related_name='gender', blank=True)
     color = models.ManyToManyField(ColorProduct, max_length=40,  verbose_name='Цвет обуви', related_name='color_product')
     size = models.ManyToManyField(SizeProduct, max_length=40,  verbose_name='Размер обуви', related_name='size_product')
@@ -162,16 +172,21 @@ class Shoes(models.Model):
         price_decimal = Decimal(str(self.price))
         discount_decimal = Decimal(str(self.discount))
         discounted_price = price_decimal * (1 - discount_decimal / 100)
-        return round(discounted_price)
+        return discounted_price.quantize(Decimal("1.00"))
 
-    def get_average_rating(self):
+    @property
+    def average_rating(self):
         reviews = self.review_set.all()
-        total_rating = sum([review.rating.star.value for review in reviews])
-        return total_rating / len(reviews) if len(reviews) > 0 else 0
+        if not reviews.exists():
+            return 0.0
+        total = sum(review.star.value for review in reviews)
+        return round(total / reviews.count(), 1)
+        #total_value = sum([review.star.value for review in reviews])
+        #return total_value / len(reviews) if len(reviews) > 0 else 0
 
     class Meta:
         verbose_name = 'Обувь'
-        verbose_name_plural = 'Обуви'
+        verbose_name_plural = 'Обувь'
 
 
 class RatingStar(models.Model):
@@ -184,23 +199,12 @@ class RatingStar(models.Model):
         verbose_name = 'Звезда рейтинга'
         verbose_name_plural = 'Звёзды рейтинга'
 
-class Rating(models.Model):
-    star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='звезда')
-    shoes = models.ForeignKey(Shoes, on_delete=models.CASCADE, verbose_name='обувь')
-
-    def __str__(self):
-        return f"{self.star} - {self.shoes}"
-
-    class Meta:
-        verbose_name = 'Рейтинг'
-        verbose_name_plural = 'Рейтинги'
-
 class Review(models.Model):
     text = models.TextField(verbose_name='Сообщение', max_length=5000, blank=True)
     parent = models.ForeignKey('self', verbose_name='Родитель', on_delete=models.SET_NULL, blank=True, null=True)
     shoes = models.ForeignKey(Shoes, verbose_name='Комментарий', on_delete=models.CASCADE)
-    rating = models.ForeignKey(Rating, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+    star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='Оценка')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

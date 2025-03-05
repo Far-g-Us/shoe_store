@@ -226,7 +226,7 @@
 		}
 		.prd-bottom {
 			position: relative;
-			margin-top: 20px;
+			margin-top: 5px;
 			.social-info {
 				position: relative;
 				display: inline-block;
@@ -285,12 +285,16 @@
 					.hover-text {
 						opacity: 1;
 						visibility: visible;
-						left: 40px;
+						left: 35px;
 					}
 				}
 			}
 		}
 	}
+}
+
+.single-product .product-details .prd-bottom .social-info .hover-text.hover-custom {
+	top: -1px;
 }
 
 /* end product area css

@@ -1,1 +1,35 @@
-https://www.sportmaster.ru/product/26615470299/
+1. Для продакшена (когда сайт будет на хостинге).
+DJANGO_ALLOWED_HOSTS надо изменить.
+2. Статические файлы (CSS, JS, изображения).
+В разработке Django сам раздает статику, но в продакшене это неэффективно и небезопасно.
+Настройки для продакшена:
+Настройте веб-сервер (Nginx пример):
+server {
+    location /static/ {
+        alias /path/to/your/project/staticfiles/;
+    }
+}
+Веб-сервер (Nginx/Apache) раздает статику напрямую, а Django занимается только динамическим контентом.
+3. Медиа-файлы (загрузки пользователей).
+Файлы из MEDIA_ROOT доступны по прямой ссылке (например, http://site.com/media/user_uploads/file.jpg).
+Это может быть уязвимостью, если не проверять права доступа.
+В продакшене:
+    Настройте веб-сервер для раздачи медиа-файлов через Django:
+    location /media/ {
+        alias /path/to/your/project/media/;
+    }
+Если файлы должны быть приватными, добавьте проверку прав доступа через Django-контроллер.
+from django.views.static import serve
+from django.conf import settings
+
+urlpatterns = [
+    ...
+    path(
+        "media/<path:path>",
+        serve,
+        {
+            "document_root": settings.MEDIA_ROOT,
+            "show_indexes": False,  # Запретить листинг файлов
+        },
+    ),
+]

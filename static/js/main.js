@@ -30,6 +30,15 @@ $(document).ready(function(){
         }
     });
 
+    // Search Toggle
+    $("#search_input_box").hide();
+    $("#search").on("click", function () {
+        $("#search_input_box").slideToggle();
+        $("#search_input").focus();
+    });
+    $("#close_search").on("click", function () {
+        $('#search_input_box').slideUp(500);
+    });
 
    /*==========================
 		javaScript for sticky header
@@ -136,7 +145,7 @@ $(document).ready(function(){
 
      if(document.getElementById("js-countdown")){
 
-        var countdown = new Date("May 05, 2024");
+        var countdown = new Date("May 05, 2025");
 
         function getRemainingTime(endtime) {
             var milliseconds = Date.parse(endtime) - Date.parse(new Date());
@@ -252,3 +261,45 @@ $(document).ready(function(){
         $(this).fadeOut();
     }); 
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star');
+    const hiddenInput = document.getElementById('id_star');
+
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const value = this.dataset.value;
+            hiddenInput.value = value;
+
+            // Обновляем визуальное отображение
+            stars.forEach(s => {
+                s.classList.remove('active');
+                if (s.dataset.value <= value) {
+                    s.classList.add('active');
+                }
+            });
+        });
+
+        star.addEventListener('mouseover', function() {
+            const hoverValue = this.dataset.value;
+            stars.forEach(s => {
+                s.classList.remove('active');
+                if (s.dataset.value <= hoverValue) {
+                    s.classList.add('active');
+                }
+            });
+        });
+
+        star.addEventListener('mouseout', function() {
+            const currentValue = hiddenInput.value || 0;
+            stars.forEach(s => {
+                s.classList.remove('active');
+                if (s.dataset.value <= currentValue) {
+                    s.classList.add('active');
+                }
+            });
+        });
+    });
+});
+

@@ -85,29 +85,56 @@
 								<li><a href="#"><span>Доступность</span> : Нет в наличии</a></li>
 							{% endif %}
 							<li><a href="#" style="pointer-events: none;"><span>Осталось</span> : {{ shoe.stock }}</a></li>
-							<li><a href="#"><span>Производитель</span> : {{ country_of_manufacture|join:'' }}</a></li>
+							{% for country in country_of_manufacture %}
+								<li><a href="#"><span>Производитель</span> : {{ country.name }} (ID: {{ country.id }})</a></li>{% if not forloop.last %}, {% endif %}
+							{% empty %}
+								<span>Не указано</span>
+							{% endfor %}
 							<li><a href="#" style="pointer-events: none;"><span>Код производителя</span> : {{ shoe.manufacturers_code }}</a></li>
 						</ul>
 						<p>{{ shoe.description|truncatechars:250 }}</p>
-						<div class="product_count">
-							<label>Количество:</label>
-							<input type="text" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
-							<button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-							 class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
-							<button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
-							 class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
-						</div>
-						<div class="card_area d-flex align-items-center">
-							{% if not user.is_authenticated %}
-								<a href="{% url 'login' %}" type="button">
-									<p class="warning-text">Для покупки пожалуйста&shy; авторизуйтесь</p>
-								</a>
-							{% endif %}
-							{% if user.is_authenticated %}
-								<a class="primary-btn" href="{% url 'add_to_cart' shoe.id %}">добавить в корзину</a>
-							{% endif %}
-							<a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
-							<a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
+						{% if user.is_authenticated %}
+							<form method="post" action="{% url 'add_to_cart' shoe.id %}">
+								{% csrf_token %}
+								<div class="product_count">
+									<label>Количество:</label>
+									<input
+										type="number"
+										name="quantity"
+										id="sst"
+										value="1"
+										min="1"
+										max="10"
+										class="input-text qty"
+									>
+									<button type="button"
+										onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
+										class="increase items-count items-count-up">
+									</button>
+									<button type="button"
+										onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
+										class="reduced items-count items-count-down">
+									</button>
+								</div>
+								<div class="card_area d-flex align-items-center">
+									<button type="submit" class="primary-btn">Добавить в корзину</button>
+									<a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
+									<a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
+								</div>
+							</form>
+						{% else %}
+							<a href="{% url 'login' %}" type="button">
+								<p class="warning-text">Для покупки пожалуйста авторизуйтесь</p>
+							</a>
+						{% endif %}
+<!--						<div class="card_area d-flex align-items-center">-->
+<!--						{% if user.is_authenticated %}-->
+<!--								<a class="primary-btn" href="{% url 'add_to_cart' shoe.id %}">добавить в корзину</a>-->
+<!--						{% else %}-->
+<!--							<a href="{% url 'login' %}" type="button">-->
+<!--								<p class="warning-text">Для покупки пожалуйста авторизуйтесь</p>-->
+<!--							</a>-->
+<!--						{% endif %}-->
 						</div>
 					</div>
 				</div>
@@ -122,11 +149,11 @@
 		{% csrf_token %}
 			<ul class="nav nav-tabs" id="myTab" role="tablist">
 				<li class="nav-item">
-					<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Description</a>
+					<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Описание</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
-					 aria-selected="false">Описание</a>
+					 aria-selected="false">Детали</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"
@@ -150,7 +177,7 @@
 										<h5>Бренд</h5>
 									</td>
 									<td>
-										<h5>{{ shoe.brand }}</h5>
+										<h5>{{ brand_of_manufacture|join:', ' }}</h5>
 									</td>
 								</tr>
 								<tr>
@@ -306,26 +333,52 @@
 								<div class="col-6">
 									<div class="box_total">
 										<h5>Рейтинг</h5>
-										<h4>{{ average_rating }}</h4>
-										<h6>({{ num_comments }} Отзывов)</h6>
-										<p>{{ shoe.get_latest_review }}</p>
+										<div class="average-rating">
+											{% with avg_rating=shoe.average_rating|default:0 %}
+												{% for i in "12345"|make_list %}
+													<i class="fa
+														{% if forloop.counter <= avg_rating %}
+															fa-star
+														{% else %}
+															fa-star-o
+														{% endif %}">
+													</i>
+												{% endfor %}
+											{% endwith %}
+											<h4>{{ average_rating|default:"0.0" }}</h4>
+										</div>
+										{% load review_filters %}
+										<h6>({{ num_comments }} {{ num_comments|review_nominative }})</h6>
+<!--										<p>{{ shoe.get_latest_review }}</p>-->
 									</div>
 								</div>
 								<div class="col-6">
 									<div class="rating_list">
-										<h3>Based on 3 Reviews</h3>
-										<ul class="list">
-											<li><a href="#">5 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-											<li><a href="#">4 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-											<li><a href="#">3 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-											<li><a href="#">2 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-											<li><a href="#">1 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-										</ul>
+										{% load review_filters %}
+										<h3>Основано на {{ num_comments }} {{ num_comments|review_prepositional }}</h3>
+										<div>
+											{% if has_ratings %}
+												{% for stat in rating_distribution %}
+													<div class="stat-item">
+														<div class="stars">
+															{% for i in "12345"|make_list %}
+																{% if forloop.counter <= stat.stars %}
+																	<i class="fa fa-star"></i>
+																{% else %}
+																	<i class="fa fa-star-o"></i>
+																{% endif %}
+															{% endfor %}
+														</div>
+														<div class="count">
+															{% load review_filters %}
+																{{ stat.count }} {{ stat.count|review_nominative }}
+														</div>
+													</div>
+												{% endfor %}
+											{% else %}
+												<p class="text-muted">Пока нет оценок</p>
+											{% endif %}
+										</div>
 									</div>
 								</div>
 							</div>
@@ -334,22 +387,30 @@
 								<div class="review_item">
 									<div class="media">
 										<div class="d-flex">
-											{% if review.user.image %}
-												<img class="img-fluid reviewer-image" src="{{ review.user.image.url }}" alt="{{ review.user.username }}">
-											{% endif %}
+											<img class="img-fluid reviewer-image" src="
+												{% if review.user.image %}
+													{{ review.user.image.url }}
+												{% else %}
+													{% static 'img/default_avatar.png' %}
+												{% endif %}"
+											alt="{{ review.user.username }}">
 										</div>
 										<div class="media-body">
 											<div class="container-comment">
 												<div class="column-comment">
 													<h4>{{ review.user.username }}</h4>
-													<a>{{ review.created_at|date:"d M Y" }}</a>
+													<a>{{ review.created_at|date:"d F Y H:i" }}</a>
 												</div>
 												<div class="row-comment">
-													{% for star in stars %}
-														<i class="fa fa-star"></i>
-													{% empty %}
-														<i class="fa fa-star-o"></i>
-													{% endfor %}
+													{% with star_value=review.star.value %}  <!-- Получаем значение звезды из отзыва -->
+														{% for i in "12345"|make_list %}     <!-- 5 итераций для 5 звезд -->
+															{% if forloop.counter <= star_value %}
+																<i class="fa fa-star"></i>  <!-- Заполненная звезда -->
+															{% else %}
+																<i class="fa fa-star-o"></i> <!-- Пустая звезда -->
+															{% endif %}
+														{% endfor %}
+													{% endwith %}
 												</div>
 											</div>
 										</div>
@@ -368,26 +429,36 @@
 							<div class="review_box">
 								<h4>Добавить отзыв</h4>
 								<p>Ваш рейтинг:</p>
-								<ul class="list">
-									<li><a href="#"><i class="fa fa-star"></i></a></li>
-									<li><a href="#"><i class="fa fa-star"></i></a></li>
-									<li><a href="#"><i class="fa fa-star"></i></a></li>
-									<li><a href="#"><i class="fa fa-star"></i></a></li>
-									<li><a href="#"><i class="fa fa-star"></i></a></li>
-								</ul>
 								{% if user.is_authenticated %}
 									<form method="post" action="{% url 'create_review' shoe.url shoe.id %}" enctype="multipart/form-data" class="row contact_form" novalidate="novalidate" onsubmit="console.log('Form submitted')">
 										{% csrf_token %}
 										<div class="col-md-12">
 											<div class="form-group">
-												<textarea class="form-control" id="text" name="text" placeholder="Review"></textarea>
+												<div class="rating-stars">
+													{% for i in "12345" %}
+														<span class="star" data-value="{{ i }}">★</span>
+													{% endfor %}
+													<input type="hidden" name="star" id="id_star" value="">
+												</div>
 											</div>
 										</div>
-										<input type="hidden" name="user" value="{{ request.user.id }}">
+										<div class="col-md-12">
+											<div class="form-group">
+												<textarea class="form-control" id="text" name="text" placeholder="Оставить отзыв"></textarea>
+											</div>
+										</div>
+
 										<div class="col-md-12 text-right">
-											<button type="submit" value="submit" class="primary-btn">Submit Now</button>
+											<button type="submit" class="primary-btn">Отправить</button>
 										</div>
 									</form>
+									{% if form.errors %}
+										<div class="alert alert-danger">
+											{% for field, errors in form.errors.items %}
+												{{ field }}: {{ errors|join:", " }}
+											{% endfor %}
+										</div>
+									{% endif %}
 								{% endif %}
 							</div>
 						</div>
@@ -441,6 +512,7 @@
 	</section>
 <!--	 End related-product Area -->
 {% endblock content %}
+
 <script>
 const form = document.querySelector('.contact_form');
 

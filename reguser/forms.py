@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import authenticate
 from reguser.models import CustomUser
 from django.contrib.auth.password_validation import validate_password
@@ -74,11 +74,25 @@ class LoginForm(AuthenticationForm):
         return cleaned_data
 
 
-# class UserProfileUpdateForm(forms.ModelForm):
-#     password = forms.CharField(widget=forms.PasswordInput)
-#     email = forms.EmailField(widget=forms.EmailInput)
-#     full_name = forms.CharField(widget=forms.TextInput)
-#
-#     class Meta:
-#         model = CustomUser
-#         fields = ('email', 'full_name', 'birthday', 'image', 'password')
+class UserProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['full_name', 'birthday', 'email', 'image']
+        widgets = {
+            'birthday': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        label="Старый пароль",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
+    new_password1 = forms.CharField(
+        label="Новый пароль",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
+    new_password2 = forms.CharField(
+        label="Подтверждение пароля",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )

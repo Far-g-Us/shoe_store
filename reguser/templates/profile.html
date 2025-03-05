@@ -53,13 +53,15 @@
 						<div class="col-md-12-1 form-group">
 							{% if user.email %}
 								<h4>Почта: {{ user.email }}</h4>
+							{% else %}
+								<h4>Пользователь не указал Почту</h4>
 							{% endif %}
 						</div>
 						<div class="col-md-12-1 form-group">
 							<h4>Аккаунт создан: {{ user.created_at|date:"d.m.Y" }}</h4>
 						</div>
-<!--						<a href="#" style="text-decorator: none"><button class="btn btn-primary">Редактировать профиль</button></a>-->
-						<a href="{% url 'delete_user_confirm' pk=user.id %}" style="text-decorator: none"><button class="btn btn-danger">Удалить пользователя</button></a>
+						<a href="{% url 'profile_update' %}" style="text-decorator: none"><button class="btn btn-primary btn-primary-new">Редактировать профиль</button></a>
+						<a href="{% url 'delete_user_confirm' pk=user.id %}" style="text-decorator: none"><button class="btn btn-danger btn-danger-new">Удалить пользователя</button></a>
 					</div>
 				</div>
 			</div>

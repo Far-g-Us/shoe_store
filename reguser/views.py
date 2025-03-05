@@ -2,6 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import CreateView, FormView, TemplateView, UpdateView, DeleteView
 from reguser.forms import CustomUserCreationForm, LoginForm
+from .forms import UserProfileUpdateForm, CustomPasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
 from reguser.models import CustomUser
 from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
@@ -200,3 +203,43 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 #         form = UserProfileUpdateForm(request.POST, instance=user)  # создаем форму с переданными данными пользователя
 #         if form.is_valid():
 #             form.save()  # сохраняем изменения только для указанного поля
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    form_class = UserProfileUpdateForm
+    template_name = 'profile_update.html'
+    success_url = reverse_lazy('profile')
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        # Обработка изображения
+        if 'image' in form.files:
+            image_file = form.files['image']
+            resized_image = resize_image(image_file)
+            form.instance.image.save(resized_image.name, resized_image, save=False)
+        return super().form_valid(form)
+
+
+class ChangePasswordView(LoginRequiredMixin, FormView):
+    form_class = CustomPasswordChangeForm
+    template_name = 'change_password.html'
+    success_url = reverse_lazy('profile')
+
+    def get_form_kwargs(self):
+        """Передаем текущего пользователя в форму"""
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        """Обработка валидной формы"""
+        user = form.save()
+        update_session_auth_hash(self.request, user)  # Сохраняем сессию
+        messages.success(self.request, 'Пароль успешно изменен!')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        """Обработка невалидной формы"""
+        messages.error(self.request, 'Исправьте ошибки в форме')
+        return super().form_invalid(form)

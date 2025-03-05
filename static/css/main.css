@@ -1278,7 +1278,7 @@ h1, h2, h3, h4, h5, h6 {
     padding-left: 15px;
     font-size: 12px;
     font-family: "Poppins", sans-serif;
-    font-weight: 500;
+    font-weight: 600;
     color: #222222; }
 
 .organic-breadcrumb {
@@ -1521,7 +1521,7 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 0; }
   .single-product .product-details .prd-bottom {
     position: relative;
-    margin-top: 20px; }
+    margin-top: 5px; }
     .single-product .product-details .prd-bottom .social-info {
       position: relative;
       display: inline-block;
@@ -1582,7 +1582,7 @@ h1, h2, h3, h4, h5, h6 {
         .single-product .product-details .prd-bottom .social-info:hover .hover-text {
           opacity: 1;
           visibility: visible;
-          left: 40px; }
+          left: 35px; }
 
 /* end product area css
 ============================================================================================ */
