@@ -1,12 +1,13 @@
+from django.core.exceptions import PermissionDenied
 from django.views.generic import View, DetailView, CreateView, DeleteView, FormView
 from django_filters.views import FilterView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from product.models import Shoes, Category, Review, RatingStar, CountryOfManufacture
+from product.models import Shoes, Category, Review, CountryOfManufacture, Comment
 from face.models import Cart, CartItem
-from product.forms import ShoesForm, ReviewForm
+from product.forms import ShoesForm, ReviewForm, CommentForm
 from product.filters import ShoesFilter
 from django.shortcuts import get_object_or_404, redirect
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.contrib import messages
 # from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse
@@ -24,11 +25,26 @@ class ProductListView(FilterView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        search_query = self.request.GET.get('q')
+
+        # Фильтрация по поисковому запросу
+        if search_query:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+
+        # Фильтрация по скидке 25%+
+        if self.request.GET.get('big_discount') == '1':
+            queryset = queryset.filter(discount__gte=25)
+
         filter = ShoesFilter(self.request.GET, queryset=queryset)
+
         category_url = self.kwargs.get('url')
         if category_url:
             category = Category.objects.get(url=category_url)
             queryset = filter.qs.filter(category__in=category.get_descendants(include_self=True))
+
         country_id = self.kwargs.get('country_id')
         if country_id:
             queryset = queryset.filter(country_of_manufacture__id=country_id)
@@ -63,10 +79,13 @@ class ProductListView(FilterView):
         filter_params._mutable = True
         filter_params.pop('page', None)
         context['filter_params'] = urlencode(filter_params)
+        context['search_query'] = self.request.GET.get('q', '')
         # Выбираем все товары
         context['show_products'] = Shoes.objects.all()[:12]
         # Выбираем только товары у которых есть скидка
         context['discounted_products'] = Shoes.objects.filter(discount__gt=0, available=True)[:9]
+        # Добавляем товары с большой скидкой в контекст
+        context['big_discount_products'] = Shoes.objects.filter(discount__gte=25, available=True)[:9]
         # Фильтрация товаров по значениям из файла filters.py
         context['filter'] = ShoesFilter(self.request.GET, queryset=self.get_queryset())
         context['countries'] = CountryOfManufacture.objects.all()
@@ -76,23 +95,6 @@ class ProductListView(FilterView):
             category = Category.objects.get(url=category_url)
             context['name'] = f'Обувь из категории: {category.name}'
         return context
-
-
-# class ProductByCategoryListView(ListView):
-#     model = Shoes
-#     template_name = 'product_list.html'
-#     context_object_name = 'shoes'
-#     category = None
-#
-#     def get_queryset(self):
-#         self.category = Category.objects.get(url=self.kwargs['url'])
-#         queryset = Shoes.objects.all().filter(category__url=self.category.url)
-#         return queryset
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['name'] = f'Обувь из категории: {self.category.name}'
-#         return context
 
 
 class ProductDetailView(DetailView):
@@ -121,8 +123,8 @@ class ProductDetailView(DetailView):
                 'outsole_material',
                 'insole_material',
                 'country_of_manufacture',
-                'review_set__user',
-                'review_set__star'
+                'reviews__user',
+                'reviews__star'
             ),
             url=slug,
             id=product_id
@@ -144,10 +146,12 @@ class ProductDetailView(DetailView):
             'outsole_material': shoe.outsole_material.all(),
             'insole_material': shoe.insole_material.all(),
             'country_of_manufacture': shoe.country_of_manufacture.all(),
-            'num_comments': shoe.review_set.count(),
+            'discounted_products': Shoes.objects.filter(discount__gt=0, available=True)[:9],
+            'num_comments': shoe.reviews.count(),
             'average_rating': shoe.average_rating,
             'stars': range(int(shoe.average_rating)) if shoe.average_rating else [],
-            'discounted_products': Shoes.objects.filter(discount__gt=0, available=True)[:9]
+            'comment_form' : CommentForm(),
+            'comments' : self.object.comments.filter(parent=None).order_by('-created_at')
         })
 
         # Оптимизированный запрос для статистики рейтингов
@@ -237,9 +241,9 @@ class ProductDetailReview(FormView):
     def form_valid(self, form):
         shoes = self.get_object()
         review = form.save(commit=False)
-        review.shoes = shoes  # Привязываем товар
-        review.user = self.request.user  # Привязываем пользователя
-        review.save()  # Сохраняем с звездой из формы
+        review.shoes = shoes
+        review.user = self.request.user
+        review.save()
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -267,21 +271,62 @@ class ProductDetailReview(FormView):
 class DeleteProductReview(DeleteView):
     model = Review
     template_name = 'product_review_delete.html'
-    # success_url = reverse_lazy('product_list')
-
-    def get_queryset(self):
-        return Review.objects.all()
 
     def get_object(self, queryset=None):
         review_id = self.kwargs.get('review_id')
-        try:
-            return get_object_or_404(Review, id=review_id)
-        except Review.DoesNotExist:
-            raise Http404("Comment does not exist")
+        return get_object_or_404(Review, id=review_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        review = self.get_object()
+        context['product'] = review.shoes
+        return context
 
     def get_success_url(self):
-        product_url = self.kwargs.get('url')
-        product_id = self.kwargs.get('id')
-        return reverse_lazy('product_detail', kwargs={'url': product_url, 'id': product_id})
+        review = self.get_object()
+        return reverse_lazy('product_detail', kwargs={
+            'url': review.shoes.url,
+            'id': review.shoes.id
+        })
 
 
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    form_class = CommentForm
+    template_name = 'product_detail.html'
+
+    def form_valid(self, form):
+        shoe = get_object_or_404(Shoes, id=self.kwargs['id'])
+        comment = form.save(commit=False)
+        comment.shoes = shoe
+        comment.author = self.request.user
+
+        parent_id = form.cleaned_data.get('parent_id')
+        if parent_id:
+            comment.parent = get_object_or_404(Comment, id=parent_id)
+
+        comment.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('product_detail', kwargs={
+            'url': self.kwargs['url'],
+            'id': self.kwargs['id']
+        }) + '#comments'
+
+
+class CommentDeleteView(DeleteView):
+    model = Comment
+    template_name = 'product_comment_delete.html'
+    pk_url_kwarg = 'pk'
+
+    def dispatch(self, request, *args, **kwargs):
+        comment = self.get_object()
+        if not (request.user.is_staff or comment.author == request.user):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('product_detail', kwargs={
+            'url': self.object.shoes.url,
+            'id': self.object.shoes.id
+        })

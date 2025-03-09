@@ -93,17 +93,6 @@
 										<p>{{ cart.get_total_price }} ₽</p>
 									</td>
 								</tr>
-<!--								<tr>-->
-<!--									<td>-->
-<!--										<h4>Shipping</h4>-->
-<!--									</td>-->
-<!--									<td>-->
-<!--										<h5></h5>-->
-<!--									</td>-->
-<!--									<td>-->
-<!--										<p>Flat rate: 50.00₽</p>-->
-<!--									</td>-->
-<!--								</tr>-->
 								<tr>
 									<td>
 										<h4>Итог</h4>
@@ -123,28 +112,5 @@
 		</div>
 	</section>
 	<!--================End Order Details Area =================-->
-
-<script>
-  function sendEmail() {
-    $.ajax({
-      type: 'POST',
-      url: '{% url "send_email" %}',
-      data: {
-        csrfmiddlewaretoken: '{{ csrf_token }}',
-        email: '{{ user.email }}',
-      },
-      success: function(response) {
-        console.log(response);
-        // Отобразить сообщение об успешной отправке сообщения на почту
-        alert('Сообщение успешно отправлено на почту!');
-      },
-      error: function(error) {
-        console.log(error);
-        // Отобразить сообщение об ошибке при отправке сообщения на почту
-        alert('Произошла ошибка при отправке сообщения на почту.');
-      },
-    });
-  }
-</script>
 
 {% endblock content %}

@@ -1,4 +1,3 @@
-
 $(document).ready(function(){
 	"use strict";
 
@@ -48,44 +47,61 @@ $(document).ready(function(){
     /*=================================
     Javascript for banner area carousel
     ==================================*/
-    $(".active-banner-slider").owlCarousel({
-        items:1,
-        autoplay:false,
-        autoplayTimeout: 5000,
-        loop:true,
-        nav:true,
-        navText:["<img src='/static/img/banner/prev.png'>","<img src='/static/img/banner/next.png'>"],
-        dots:false
+    $(document).ready(function() {
+        if ($('.active-banner-slider').children().length > 0) {
+            $('.active-banner-slider').owlCarousel({
+                items: 1,
+                autoplay: false,
+                loop: true,
+                nav: true,
+                navText: ["<img src='/static/img/banner/prev.png'>", "<img src='/static/img/banner/next.png'>"],
+                dots: false
+            });
+        } else {
+            console.log("Карусель баннеров пуста!");
+        }
     });
 
     /*=================================
     Javascript for product area carousel
     ==================================*/
-    $(".active-product-area").owlCarousel({
-        items:1,
-        autoplay:false,
-        autoplayTimeout: 5000,
-        loop:true,
-        nav:true,
-        navText:["<img src='/static/img/product/prev.png'>","<img src='/static/img/product/next.png'>"],
-        dots:false
-    });
+    if ($('.active-banner-slider').children().length > 0) {
+      $('.active-banner-slider').owlCarousel({
+         items: 1,
+         loop: true,
+         autoplay: true,
+         nav: true,
+         navText:["<img src='/static/img/product/prev.png'>","<img src='/static/img/product/next.png'>"],
+         dots:false
+      });
+    };
 
     /*=================================
     Javascript for single product area carousel
     ==================================*/
     $(".s_Product_carousel").owlCarousel({
-      items:1,
-      autoplay:false,
-      autoplayTimeout: 5000,
-      loop:true,
-      nav:false,
-      dots:true
+        items: 1,
+        loop: true,
+        dots: true,
+        nav: false,
+        touchDrag: true,    // Для сенсорных устройств
+        mouseDrag: true,     // Включаем перетаскивание мышью
+        pullDrag: true,      // Добавляем для лучшей совместимости
+        autoplay: false
     });
 
     /*=================================
     Javascript for exclusive area carousel
     ==================================*/
+    $('.product-carousel').owlCarousel({
+        items: 1, // Показывать по одному слайду
+        loop: true,
+        nav: true,
+        dots: false,
+        autoplay: false,
+        navText:["<img src='/static/img/product/prev.png'>","<img src='/static/img/product/next.png'>"],
+    });
+
     $(".active-exclusive-product-slider").owlCarousel({
         items:1,
         autoplay:false,
@@ -140,58 +156,6 @@ $(document).ready(function(){
         }
       }
     });
-
-
-
-     if(document.getElementById("js-countdown")){
-
-        var countdown = new Date("May 05, 2025");
-
-        function getRemainingTime(endtime) {
-            var milliseconds = Date.parse(endtime) - Date.parse(new Date());
-            var seconds = Math.floor(milliseconds / 1000 % 60);
-            var minutes = Math.floor(milliseconds / 1000 / 60 % 60);
-            var hours = Math.floor(milliseconds / (1000 * 60 * 60) % 24);
-            var days = Math.floor(milliseconds / (1000 * 60 * 60 * 24));
-
-        return {
-            'total': milliseconds,
-            'seconds': seconds,
-            'minutes': minutes,
-            'hours': hours,
-            'days': days
-            };
-        }
-
-        function initClock(id, endtime) {
-            var counter = document.getElementById(id);
-            var daysItem = counter.querySelector('.js-countdown-days');
-            var hoursItem = counter.querySelector('.js-countdown-hours');
-            var minutesItem = counter.querySelector('.js-countdown-minutes');
-            var secondsItem = counter.querySelector('.js-countdown-seconds');
-
-        function updateClock() {
-            var time = getRemainingTime(endtime);
-
-            daysItem.innerHTML = time.days;
-            hoursItem.innerHTML = ('0' + time.hours).slice(-2);
-            minutesItem.innerHTML = ('0' + time.minutes).slice(-2);
-            secondsItem.innerHTML = ('0' + time.seconds).slice(-2);
-
-            if (time.total <= 0) {
-              clearInterval(timeinterval);
-            }
-            }
-
-            updateClock();
-            var timeinterval = setInterval(updateClock, 1000);
-        }
-
-        initClock('js-countdown', countdown);
-
-  };
-
-
 
       $('.quick-view-carousel-details').owlCarousel({
           loop: true,
@@ -303,3 +267,70 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+if(document.getElementById("js-countdown")){
+    var countdownDate = new Date("March 07, 2025 00:00:00");
+
+    function getRemainingTime(endtime) {
+        var total = Date.parse(endtime) - Date.parse(new Date());
+        var seconds = Math.floor((total / 1000) % 60);
+        var minutes = Math.floor((total / 1000 / 60) % 60);
+        var hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+        var days = Math.floor(total / (1000 * 60 * 60 * 24));
+
+        return {
+            'total': total,
+            'days': days,
+            'hours': hours,
+            'minutes': minutes,
+            'seconds': seconds
+        };
+    }
+
+    function initClock(id, endtime) {
+        const counter = document.getElementById(id);
+        if (!counter) {
+            console.error('Элемент с id ' + id + ' не найден!');
+            return;
+        }
+
+        var daysItem = counter.querySelector('.js-countdown-days');
+        var hoursItem = counter.querySelector('.js-countdown-hours');
+        var minutesItem = counter.querySelector('.js-countdown-minutes');
+        var secondsItem = counter.querySelector('.js-countdown-seconds');
+
+        // Проверка всех элементов
+        if (!daysItem || !hoursItem || !minutesItem || !secondsItem) {
+            console.error('Не найдены элементы таймера!');
+            return;
+        }
+
+        function updateClock() {
+            const t = getRemainingTime(endtime);
+
+            daysItem.textContent = t.days;
+            hoursItem.textContent = ('0' + t.hours).slice(-2);
+            minutesItem.textContent = ('0' + t.minutes).slice(-2);
+            secondsItem.textContent = ('0' + t.seconds).slice(-2);
+
+            if (t.total <= 0) {
+                clearInterval(timeinterval);
+
+                // Проверка существования кнопки
+                const buyButton = document.querySelector('.buy-button');
+                if (buyButton) {
+                    buyButton.disabled = true;
+                } else {
+                    console.warn('Кнопка .buy-button не найдена!');
+                }
+
+                counter.innerHTML = '<div class="smalltext promo-ended">Время вышло!</div>';
+                document.querySelector('.buy-button').disabled = true; // Блокировка кнопки
+            }
+        }
+
+        updateClock(); // Первоначальный запуск
+        var timeinterval = setInterval(updateClock, 1000);
+    }
+
+    initClock('js-countdown', countdownDate);
+}

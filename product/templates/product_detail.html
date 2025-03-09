@@ -1,25 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<!--<div class="container container_detail">-->
-<!--{% csrf_token %}-->
-<!--    <div>-->
-<!--        <img src="{{ shoe.image.url }}" class="custom_img custom_img_detail" alt="Product image">-->
-<!--    </div>-->
-<!--    <div>-->
-<!--        <h2 class="custom_h2">{{ shoe.name }}</h2>-->
-<!--        {% for color in colors %}{% if not forloop.first %},{% endif %}<p class="custom_p">Цвет: {{ color.name }}</p>{% endfor %}-->
-<!--        <p class="custom_p">Размер: {{ sizes|join:', ' }}</p>-->
-<!--        {% if shoe.discount != 0 %}-->
-<!--        <p class="custom_p">Цена со скидкой: {{ discounted_price }} руб</p>-->
-<!--        {% else %}-->
-<!--        <p class="custom_p">Цена: {{ shoe.price }} руб</p>-->
-<!--        {% endif %}-->
-<!--        {% if shoe.volume %}<p class="custom_p">Колличество: {{ shoe.volume }}</p>{% endif %}-->
-<!--        <p class="custom_p">Коллекция: {{ collections|join:', ' }}</p>-->
-<!--        {% if shoe.description %}<p class="custom_p">Описание: {{ shoe.description }}</p>{% endif %}-->
-<!--    </div>-->
-<!--</div>-->
 
 	<!-- Start Banner Area -->
 	<section class="banner-area organic-breadcrumb">
@@ -61,15 +42,6 @@
 				<div class="col-lg-5 offset-lg-1">
 					<div class="s_product_text">
 						<h3>{{ shoe.name }}</h3>
-<!--						{% if discounted_price %}-->
-<!--							{% if shoe.discount != 0 %}-->
-<!--                            	{% if shoe.discounted_price != 0 %}-->
-<!--									<h2>{{ discounted_price }}₽</h2>-->
-<!--								{% endif %}-->
-<!--							{% else %}-->
-<!--                                <h2>{{ shoe.price }}₽</h2>-->
-<!--                            {% endif %}-->
-<!--						{% endif %}-->
 						{% if shoe.discounted_price %}
 							{% if shoe.discount != 0 %}
 								<h2>{{ shoe.discounted_price }} ₽</h2>
@@ -92,7 +64,7 @@
 							{% endfor %}
 							<li><a href="#" style="pointer-events: none;"><span>Код производителя</span> : {{ shoe.manufacturers_code }}</a></li>
 						</ul>
-						<p>{{ shoe.description|truncatechars:250 }}</p>
+						<p>{{ shoe.description|truncatechars:400 }}</p>
 						{% if user.is_authenticated %}
 							<form method="post" action="{% url 'add_to_cart' shoe.id %}">
 								{% csrf_token %}
@@ -127,14 +99,6 @@
 								<p class="warning-text">Для покупки пожалуйста авторизуйтесь</p>
 							</a>
 						{% endif %}
-<!--						<div class="card_area d-flex align-items-center">-->
-<!--						{% if user.is_authenticated %}-->
-<!--								<a class="primary-btn" href="{% url 'add_to_cart' shoe.id %}">добавить в корзину</a>-->
-<!--						{% else %}-->
-<!--							<a href="{% url 'login' %}" type="button">-->
-<!--								<p class="warning-text">Для покупки пожалуйста авторизуйтесь</p>-->
-<!--							</a>-->
-<!--						{% endif %}-->
 						</div>
 					</div>
 				</div>
@@ -166,7 +130,7 @@
 			</ul>
 			<div class="tab-content" id="myTabContent">
 				<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-					<p>{{ shoe.description }}</p>
+					<p>{{ shoe.description|truncatechars:5000 }}</p>
 				</div>
 				<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
 					<div class="table-responsive">
@@ -248,80 +212,89 @@
 						</table>
 					</div>
 				</div>
-				<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+				<div class="tab-pane fade" id="contact" id="comments" role="tabpanel" aria-labelledby="contact-tab">
 					<div class="row">
 						<div class="col-lg-6">
 							<div class="comment_list">
-								<div class="review_item">
-									<div class="media">
-										<div class="d-flex">
-											<img src="{% static 'img/product/review-1.png' %}" alt="">
-										</div>
-										<div class="media-body">
-											<h4>Blake Ruiz</h4>
-											<h5>12th Feb, 2018 at 05:56 pm</h5>
-											<a class="reply_btn" href="#">Reply</a>
-										</div>
-									</div>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-										commodo</p>
-								</div>
-								<div class="review_item reply">
-									<div class="media">
-										<div class="d-flex">
-											<img src="{% static 'img/product/review-2.png' %}" alt="">
-										</div>
-										<div class="media-body">
-											<h4>Blake Ruiz</h4>
-											<h5>12th Feb, 2018 at 05:56 pm</h5>
-											<a class="reply_btn" href="#">Reply</a>
-										</div>
-									</div>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-										commodo</p>
-								</div>
-								<div class="review_item">
-									<div class="media">
-										<div class="d-flex">
-											<img src="{% static 'img/product/review-3.png' %}" alt="">
-										</div>
-										<div class="media-body">
-											<h4>Blake Ruiz</h4>
-											<h5>12th Feb, 2018 at 05:56 pm</h5>
-											<a class="reply_btn" href="#">Reply</a>
-										</div>
-									</div>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-										commodo</p>
-								</div>
+                                {% for comment in shoe.comments.all %}
+									{% if not comment.parent %}
+                                        <div class="review_item">
+                                            <div class="media">
+                                                <div class="d-flex">
+                                                    <img class="img-fluid reviewer-image" src="
+                                                        {% if comment.user.image %}
+                                                            {{ comment.user.image.url }}
+                                                        {% else %}
+                                                            {% static 'img/default_avatar.png' %}
+                                                        {% endif %}"
+                                                         alt="{{ comment.author.username }}">
+                                                </div>
+                                                <div class="media-body">
+                                                    <h4>{{ comment.author.username }}</h4>
+                                                    <h5>{{ comment.created_at|date:"d M Y H:i" }}</h5>
+                                                    <p>{{ comment.text }}</p>
+													<a href="?parent_id={{ comment.id }}" class="reply-btn">Ответить</a>
+
+                                                    {% if user.is_staff or comment.author == user %}
+														<a style="color: red;" href="{% url 'comment_delete' pk=comment.id %}">Удалить</a>
+                                                    {% endif %}
+                                                </div>
+
+                                                <!-- Вложенные комментарии -->
+												<div class="replies">
+													{% for reply in comment.replies.all %}
+														<div class="review_item reply">
+															<div class="media">
+																<div class="d-flex">
+																	<img class="img-fluid reviewer-image" src="
+																		{% if reply.user.image %}
+																			{{ reply.user.image.url }}
+																		{% else %}
+																			{% static 'img/default_avatar.png' %}
+																		{% endif %}"
+																		alt="{{ reply.author.username }}">
+																</div>
+																<div class="media-body">
+																	<h4>{{ reply.author.username }}</h4>
+																	<h5>{{ reply.created_at|date:"d M Y H:i" }}</h5>
+																	<p>{{ reply.text }}</p>
+
+																	{% if user == user.is_staff or reply.author %}
+																		<a style="color: red;" href="{% url 'comment_delete' pk=reply.id %}">Удалить</a>
+																	{% endif %}
+																</div>
+															</div>
+														</div>
+													{% endfor %}
+												</div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+								{% empty %}
+									<p>Пока нет комментариев</p>
+								{% endfor %}
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="review_box">
 								<h4>Оставить комментарий</h4>
-								<form class="row contact_form" id="contactForm" novalidate="novalidate">
-									<div class="col-md-12">
-										<div class="form-group">
-											<input type="text" class="form-control" name="name" id="name" placeholder="Your Full name">
+								{% if user.is_authenticated %}
+									<form method="post" action="{% url 'create_comment' shoe.url shoe.id %}" class="row contact_form" id="comment-form" novalidate="novalidate">
+										{% csrf_token %}
+										<input type="hidden" name="parent_id" value="{{ request.GET.parent_id }}">
+										<div class="col-md-12 form-group">
+											<textarea class="form-control" name="text" rows="5" placeholder="Ваш комментарий" required></textarea>
 										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="form-group">
-											<input type="email" class="form-control" name="email" id="email" placeholder="Email Address">
+										<div class="col-md-12 text-right">
+											<button type="submit" class="btn primary-btn">Отправить</button>
+											{% if request.GET.parent_id %}
+												<a style="color: #fff;" href="?"><button style="background: #00ff28;" class="btn primary-btn">Отменить ответ</button></a>
+											{% endif %}
 										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="form-group">
-<!--											<textarea class="form-control" name="text" id="text" rows="1" placeholder="Message"></textarea>-->
-										</div>
-									</div>
-									<div class="col-md-12 text-right">
-										<button type="submit" value="submit" class="btn primary-btn">Отправить</button>
-									</div>
-								</form>
+									</form>
+								{% else %}
+									<p>Чтобы оставить комментарий, <a href="{% url 'login' %}">войдите</a></p>
+								{% endif %}
 							</div>
 						</div>
 					</div>
@@ -383,7 +356,7 @@
 								</div>
 							</div>
 							<div class="review_list">
-							{% for review in shoe.review_set.all %}
+							{% for review in shoe.reviews.all %}
 								<div class="review_item">
 									<div class="media">
 										<div class="d-flex">
@@ -398,26 +371,26 @@
 										<div class="media-body">
 											<div class="container-comment">
 												<div class="column-comment">
-													<h4>{{ review.user.username }}</h4>
-													<a>{{ review.created_at|date:"d F Y H:i" }}</a>
-												</div>
-												<div class="row-comment">
-													{% with star_value=review.star.value %}  <!-- Получаем значение звезды из отзыва -->
-														{% for i in "12345"|make_list %}     <!-- 5 итераций для 5 звезд -->
-															{% if forloop.counter <= star_value %}
-																<i class="fa fa-star"></i>  <!-- Заполненная звезда -->
-															{% else %}
-																<i class="fa fa-star-o"></i> <!-- Пустая звезда -->
-															{% endif %}
-														{% endfor %}
-													{% endwith %}
+													<div class="media-body">
+														<h4>{{ review.user.username }}</h4>
+														{% with star_value=review.star.value %}  <!-- Получаем значение звезды из отзыва -->
+															{% for i in "12345"|make_list %}     <!-- 5 итераций для 5 звезд -->
+																{% if forloop.counter <= star_value %}
+																	<i class="fa fa-star"></i>  <!-- Заполненная звезда -->
+																{% else %}
+																	<i class="fa fa-star-o"></i> <!-- Пустая звезда -->
+																{% endif %}
+															{% endfor %}
+														{% endwith %}
+													</div>
+													<!--<a>{{ review.created_at|date:"d F Y H:i" }}</a>-->
 												</div>
 											</div>
 										</div>
 									</div>
 									<p>{{ review.text }}</p>
 									{% if user.is_staff %}
-										<a style="color: red;" href="{% url 'review_delete' shoe.url shoe.id review.id %}">Удалить комментарий</a>
+										<a style="color: red;" href="{% url 'review_delete' shoe.url shoe.id review.id %}">Удалить отзыв</a>
 									{% endif %}
 								</div>
 							{% empty %}

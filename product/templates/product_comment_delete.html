@@ -7,7 +7,7 @@
 	<div class="container">
 		<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 			<div class="col-first">
-				<h1>Удаление Отзыва</h1>
+				<h1>Удаление Комментария</h1>
 				<nav class="d-flex align-items-center">
 					<a href="{% url 'home' %}">Главная<span class="lnr lnr-arrow-right"></span></a>
 					<a href="">Магазин<span class="lnr lnr-arrow-right"></span></a>
@@ -22,12 +22,14 @@
 <!-- Start Comment Delete -->
 <section class="section_gap-delete">
     <div class="container">
-        <h1>Удалить отзыв</h1>
+        <h1>Удалить комментарий</h1>
          <div class="confirmation-message">
-            <p>Вы уверены, что хотите удалить свой отзыв?</p>
+            <p>Вы уверены, что хотите удалить свой комментарий?</p>
             <blockquote class="review-content">
-                "{{ object.text|truncatechars:5000 }}"
+                "{{ object.text|truncatechars:500 }}"
             </blockquote>
+            <span>Автор: {{ object.author.username }}</span>
+            <span>Дата: {{ object.created_at|date:"d M Y H:i" }}</span>
         </div>
 
         <div class="button-container">

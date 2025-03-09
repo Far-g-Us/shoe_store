@@ -1,17 +1,17 @@
 from django.views.generic import ListView, View
-from face.models import Face, Contact, Cart, CartItem
+from face.models import Contact, Cart, CartItem, Banner, SpecialOffer
 from product.models import Shoes
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from django.core.mail import send_mail
-from django.conf import settings
-from django.http import JsonResponse
+#from django.core.mail import send_mail
+#from django.conf import settings
+#from django.http import JsonResponse
 
 
 
 class IndexView(ListView):
-    model = Face
+    model = Shoes
     fields = '__all__'
     template_name = 'index.html'
     context_object_name = 'shoes'
@@ -26,26 +26,22 @@ class IndexView(ListView):
         context = super().get_context_data(**kwargs)
 
         # Выбираем последние добавленные товары
-        latest_products = Shoes.objects.order_by('-created_at')[:9]
+        latest_products = Shoes.objects.filter(available=True).order_by('-created_at')[:9]
 
         # Выбираем только товары, не доступные для продажи
-        available_products = Shoes.objects.filter(available=False)[:9]
+        available_products = Shoes.objects.filter(available=False).order_by('-created_at')[:9]
 
         # Выбираем только товары у которых есть скидка
         discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]
-        # shoe = self.get_object()
-        # shoesList = []
-        # for item in shoe:
-        #     price_decimal = Decimal(str(item.price))
-        #     discount_decimal = Decimal(str(item.discount))
-        #     discounted_price = price_decimal * (1 - discount_decimal / 100)
-        #     item.price = {'price': price_decimal, 'sale': str(round(discounted_price))}
-        #     shoesList.append(item)
-        #     # print(shoesList)
-        # context['shoesList'] = shoesList
-        context['latest_products'] = latest_products
-        context['available_products'] = available_products
-        context['discounted_products'] = discounted_products
+
+        context.update({
+            'latest_products': latest_products,
+            'available_products': available_products,
+            'discounted_products': discounted_products,
+            'banners': Banner.objects.filter(available=True).select_related('product'),
+            'special_offers': SpecialOffer.objects.filter(available=True),
+        })
+
         return context
 
 
@@ -147,12 +143,6 @@ class ContactView(ListView):
         return Contact.objects.all()
 
 
-# class ConfirmView(DetailView):
-#     model = CartItem
-#     fields = '__all__'
-#     template_name = 'confirm.html'
-
-
 class ConfirmView(ListView):
     model = CartItem
     template_name = 'confirm.html'
@@ -172,7 +162,6 @@ class ConfirmView(ListView):
         for cart_item in context['cart_items']:
             cart_item.total_price = cart_item.get_total_price
         return context
-
 
 # def send_email(request):
 #     if request.method == 'POST':

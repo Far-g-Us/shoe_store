@@ -1,8 +1,12 @@
 from django.db import models
 from decimal import Decimal
+from django.core.validators import MinValueValidator, MaxValueValidator
 from mptt.models import MPTTModel, TreeForeignKey
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.conf import settings
+
+from reguser.models import CustomUser
 
 
 class Gender(models.Model):
@@ -107,18 +111,6 @@ class InsoleMaterialProduct(models.Model):
         verbose_name = 'Материал стельки'
         verbose_name_plural = 'Материалы стелек'
 
-# class DiscountProduct(models.Model):
-#     name = models.CharField(max_length=40, db_index=True, verbose_name='Скидка, %')
-#     value = models.IntegerField(verbose_name='%')
-#
-#     def __str__(self):
-#         return self.name
-#
-#     class Meta:
-#         verbose_name = 'Скидка'
-#         verbose_name_plural = 'Скидки'
-
-
 class Category(MPTTModel):
     name = models.CharField(max_length=160)
     url = models.SlugField(max_length=160, unique=True)
@@ -141,7 +133,7 @@ class Category(MPTTModel):
 class Shoes(models.Model):
     category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=40, verbose_name='Название', db_index=True)
-    url = models.SlugField(max_length=130, db_index=True)
+    url = models.SlugField(max_length=130, db_index=True, unique=True)
     brand = models.ManyToManyField(BrandOfManufacture, max_length=100, verbose_name='Бренд', related_name='brand_of_manufacture_product', blank=True)
     gender = models.ManyToManyField(Gender, max_length=40, verbose_name='Пол', related_name='gender', blank=True)
     color = models.ManyToManyField(ColorProduct, max_length=40,  verbose_name='Цвет обуви', related_name='color_product')
@@ -155,8 +147,24 @@ class Shoes(models.Model):
     image_2 = models.ImageField(verbose_name='Фото №2', upload_to='content/%Y/%m', blank=True, null=True)
     image_3 = models.ImageField(verbose_name='Фото №3', upload_to='content/%Y/%m', blank=True, null=True)
     description = models.TextField(verbose_name='О товаре', blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Цена, руб.', default=0)
-    discount = models.DecimalField(max_digits=4, decimal_places=0, default=0, verbose_name='Скидка, %', null=True)
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        verbose_name="Цена, руб.",
+        validators=[MinValueValidator(Decimal("0.01"))],
+        null=False
+    )
+    discount = models.DecimalField(
+        max_digits=5,
+        decimal_places=0,
+        default=0,
+        verbose_name="Скидка, %",
+        validators=[
+            MinValueValidator(Decimal("0")),  # Скидка ≥ 0%
+            MaxValueValidator(Decimal("100"))  # Скидка ≤ 100%
+        ],
+        null=False
+    )
     stock = models.PositiveIntegerField(verbose_name='Осталось', blank=True)
     country_of_manufacture = models.ManyToManyField(CountryOfManufacture, max_length=10, verbose_name='Страна производитель', related_name='country_of_manufacture_product', blank=True)
     manufacturers_code = models.CharField(max_length=10, verbose_name='Код производителя', blank=True, help_text='"Код товара должен состоять из 5-6 цифр"')
@@ -169,20 +177,26 @@ class Shoes(models.Model):
 
     @property
     def discounted_price(self):
-        price_decimal = Decimal(str(self.price))
-        discount_decimal = Decimal(str(self.discount))
-        discounted_price = price_decimal * (1 - discount_decimal / 100)
-        return discounted_price.quantize(Decimal("1.00"))
+        """Автоматический расчёт цены со скидкой."""
+        if self.price is None or self.discount is None:
+            return Decimal("0.00")
+
+        original_price = self.price
+        discount_percent = self.discount
+
+        discount_factor = Decimal("1") - (discount_percent / Decimal("100"))
+        return (original_price * discount_factor).quantize(Decimal("0.00"))
 
     @property
     def average_rating(self):
-        reviews = self.review_set.all()
+        reviews = self.reviews.all()
         if not reviews.exists():
             return 0.0
         total = sum(review.star.value for review in reviews)
         return round(total / reviews.count(), 1)
-        #total_value = sum([review.star.value for review in reviews])
-        #return total_value / len(reviews) if len(reviews) > 0 else 0
+
+    def get_absolute_url(self):
+        return reverse('product_detail', kwargs={'url': self.url, 'id': self.id})
 
     class Meta:
         verbose_name = 'Обувь'
@@ -199,13 +213,29 @@ class RatingStar(models.Model):
         verbose_name = 'Звезда рейтинга'
         verbose_name_plural = 'Звёзды рейтинга'
 
+
 class Review(models.Model):
-    text = models.TextField(verbose_name='Сообщение', max_length=5000, blank=True)
-    parent = models.ForeignKey('self', verbose_name='Родитель', on_delete=models.SET_NULL, blank=True, null=True)
-    shoes = models.ForeignKey(Shoes, verbose_name='Комментарий', on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+    shoes = models.ForeignKey(
+        Shoes,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        verbose_name='Товар'
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь'
+    )
+    text = models.TextField(verbose_name='Текст отзыва', max_length=5000, blank=True)
     star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='Оценка')
     created_at = models.DateTimeField(auto_now_add=True)
+    parent = models.ForeignKey(
+        'self',
+        verbose_name='Родитель',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
 
     def __str__(self):
         return f"{self.user} - {self.shoes}"
@@ -213,3 +243,41 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+
+
+class Comment(models.Model):
+    shoes = models.ForeignKey(
+        Shoes,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Товар'
+    )
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='replies'
+    )
+    text = models.TextField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Комментарии'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return f'Комментарий от {self.author} к {self.shoes}'
+
+    def clean(self):
+        if self.parent and self.parent.parent:
+            raise ValidationError("Максимальная вложенность - 1 уровень")
+        super().clean()
+
+    def get_absolute_url(self):
+        return reverse('product_detail', kwargs={
+            'url': self.shoes.url,
+            'id': self.shoes.id
+        }) + f'#comment-{self.id}'

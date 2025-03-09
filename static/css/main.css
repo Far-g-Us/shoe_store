@@ -1265,6 +1265,7 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 52px;
     text-align: center;
     border-radius: 50%;
+    margin-right: 5px;
     box-shadow: 0 10px 20px rgba(255, 108, 0, 0.2); }
     .add-bag .add-btn span {
       -webkit-transform: rotate(45deg);
@@ -1275,7 +1276,7 @@ h1, h2, h3, h4, h5, h6 {
       display: inline-block;
       color: #fff; }
   .add-bag .add-text {
-    padding-left: 15px;
+    padding-left: 5px;
     font-size: 12px;
     font-family: "Poppins", sans-serif;
     font-weight: 600;
@@ -1435,19 +1436,24 @@ h1, h2, h3, h4, h5, h6 {
 /* start product area css
 ============================================================================================ */
 .active-product-area {
+  position: relative;
+  z-index: 1;
   padding-top: 70px;
   padding-bottom: 50px; }
   .active-product-area .owl-nav div {
     position: absolute;
-    left: 35%;
+    left: 25%;
     top: 7%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
     opacity: .3; }
     @media (max-width: 1440px) {
       .active-product-area .owl-nav div {
-        left: 30%; } }
+        left: 22%; } }
     @media (max-width: 1200px) {
       .active-product-area .owl-nav div {
-        left: 28%; } }
+        left: 22%; } }
     @media (max-width: 991px) {
       .active-product-area .owl-nav div {
         top: 3%;
@@ -1468,22 +1474,22 @@ h1, h2, h3, h4, h5, h6 {
     @media (max-width: 480px) {
       .active-product-area .owl-nav div {
         margin-top: -20px;
-        left: 28%; } }
+        left: 22%; } }
     .active-product-area .owl-nav div:hover {
       opacity: 1; }
   .active-product-area .owl-nav .owl-next {
     left: auto;
-    right: 35%; }
+    right: 22%; }
     @media (max-width: 1440px) {
       .active-product-area .owl-nav .owl-next {
-        right: 30%; } }
+        right: 22%; } }
     @media (max-width: 1200px) {
       .active-product-area .owl-nav .owl-next {
-        right: 28%; } }
+        right: 22%; } }
     @media (max-width: 991px) {
       .active-product-area .owl-nav .owl-next {
         top: 3%;
-        right: 25%; } }
+        right: 22%; } }
     @media (max-width: 870px) {
       .active-product-area .owl-nav .owl-next {
         right: 15%; } }
@@ -4136,7 +4142,8 @@ label {
     padding-top: 10px;
     margin-bottom: 0px; }
   .review_item.reply {
-    padding-left: 28px; }
+    padding-left: 15px;
+    margin-top: 120px; }
 
 .review_box h4 {
   font-size: 24px;

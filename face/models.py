@@ -1,15 +1,15 @@
 from django.db import models
 from product.models import Shoes
 from reguser.models import CustomUser
-
-
-class Face(models.Model):
-    pass
+from django.core.validators import MinValueValidator, MaxValueValidator
+from decimal import Decimal
 
 class Banner(models.Model):
     title = models.CharField(max_length=40, verbose_name='Название', db_index=True)
-    description = models.TextField(verbose_name='О товаре', blank=True)
-    image = models.ImageField(upload_to='banner/%Y/%m', blank=True)
+    description = models.TextField(verbose_name='Кратко о товаре', blank=True)
+    image = models.ImageField(verbose_name='Изображение товара', upload_to='banner/%Y/%m', blank=True)
+    product = models.ForeignKey(Shoes, on_delete=models.CASCADE, verbose_name='Товар')
+    available = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
@@ -20,12 +20,44 @@ class Banner(models.Model):
 
 class SpecialOffer(models.Model):
     title = models.CharField(max_length=40, verbose_name='Название', db_index=True)
-    price = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Цена, руб.', default=0)
-    discount = models.DecimalField(max_digits=4, decimal_places=0, default=0, verbose_name='Скидка, %', null=True)
-    image = models.ImageField(upload_to='special_offer/%Y/%m', blank=True)
+    product = models.ForeignKey(Shoes, on_delete=models.CASCADE, verbose_name='Товар')
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        verbose_name="Исходная цена, руб.",
+        validators=[MinValueValidator(Decimal('0.01'))],
+        null=False
+    )
+    discount = models.DecimalField(
+        max_digits=5,
+        decimal_places=0,
+        default=0,
+        verbose_name="Скидка, %",
+        validators=[
+            MinValueValidator(Decimal('0')),  # Скидка ≥ 0%
+            MaxValueValidator(Decimal('100'))  # Скидка ≤ 100%
+        ],
+        null=False
+    )
+    image = models.ImageField(verbose_name='Изображение товара', upload_to='special_offer/%Y/%m', blank=True)
+    available = models.BooleanField(default=True)
+
+    @property
+    def discounted_price(self):
+        """Автоматический расчет цены со скидкой."""
+        if self.price is None or self.discount is None:
+            return Decimal("0.00")
+
+        original_price = self.price
+        discount_percent = self.discount
+
+        discount_factor = Decimal("1") - (discount_percent / Decimal("100"))
+        discounted_price = original_price * discount_factor
+
+        return discounted_price.quantize(Decimal("0.00"))
 
     def __str__(self):
-        return self.title
+        return f"{self.title} | Скидка: {self.discount}%"
 
     class Meta:
         verbose_name = 'Товар спец. предложения'

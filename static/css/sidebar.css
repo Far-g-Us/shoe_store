@@ -123,13 +123,13 @@ body .filter-value  {
 
 @media (max-width: 1200px) {
   .active-product-area .owl-nav .owl-next {
-    right: 26%;
+    right: 22%;
   }
 }
 
 @media (max-width: 1200px) {
   .active-product-area .owl-nav div {
-    left: 26%;
+    left: 22%;
   }
 }
 
@@ -187,8 +187,8 @@ body .filter-value  {
   padding-left: 10px;
   padding-right: 10px;
   padding-top: 0 !important;
-  margin-top: 20px !important;
-  margin-bottom: 20px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 .warning-text > .s_product_text {
@@ -344,6 +344,54 @@ p.hover-text.hover-custom {
 .btn-warning-new > .btn-primary {
   margin-left: 0px;
 }
+
+.exclusive-deal-area .exclusive-left .clock_sec .clock-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.promo-ended {
+  animation: blink 1s infinite;
+  font-size: 2em;
+  color: #ff0000;
+  text-align: center;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.h4-new {
+  text-align: center;
+}
+
+.review-content {
+  border-left: 3px solid #ff0000;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #666;
+}
+.confirmation-message {
+  margin: 2rem 0;
+}
+.gap-3 {
+  gap: 1rem;
+}
+
+
+.exclusive-deal-area .exclusive-right .product-details .price .h6-price {
+  font-size: 14px;
+  display: inline-block;
+  padding-right: 0;
+  margin-bottom: 15px; }
+  .exclusive-deal-area .exclusive-right .product-details .price .h6-price:not(:only-child), .h6-discount:not(:only-child) {
+    padding-right: 15px; }
+    .exclusive-deal-area .exclusive-right .product-details .price .h6-discount {
+      padding-right: 0;
+    }
 
 /* form Area css
 ============================================================================================ */
