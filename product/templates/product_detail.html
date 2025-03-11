@@ -213,88 +213,106 @@
 					</div>
 				</div>
 				<div class="tab-pane fade" id="contact" id="comments" role="tabpanel" aria-labelledby="contact-tab">
-					<div class="row">
-						<div class="col-lg-6">
-							<div class="comment_list">
-                                {% for comment in shoe.comments.all %}
-									{% if not comment.parent %}
-                                        <div class="review_item">
-                                            <div class="media">
-                                                <div class="d-flex">
-                                                    <img class="img-fluid reviewer-image" src="
-                                                        {% if comment.user.image %}
-                                                            {{ comment.user.image.url }}
-                                                        {% else %}
-                                                            {% static 'img/default_avatar.png' %}
-                                                        {% endif %}"
-                                                         alt="{{ comment.author.username }}">
-                                                </div>
-                                                <div class="media-body">
-                                                    <h4>{{ comment.author.username }}</h4>
-                                                    <h5>{{ comment.created_at|date:"d M Y H:i" }}</h5>
-                                                    <p>{{ comment.text }}</p>
-													<a href="?parent_id={{ comment.id }}" class="reply-btn">Ответить</a>
-
-                                                    {% if user.is_staff or comment.author == user %}
-														<a style="color: red;" href="{% url 'comment_delete' pk=comment.id %}">Удалить</a>
-                                                    {% endif %}
-                                                </div>
-
-                                                <!-- Вложенные комментарии -->
-												<div class="replies">
-													{% for reply in comment.replies.all %}
-														<div class="review_item reply">
-															<div class="media">
-																<div class="d-flex">
-																	<img class="img-fluid reviewer-image" src="
-																		{% if reply.user.image %}
-																			{{ reply.user.image.url }}
-																		{% else %}
-																			{% static 'img/default_avatar.png' %}
-																		{% endif %}"
-																		alt="{{ reply.author.username }}">
-																</div>
-																<div class="media-body">
-																	<h4>{{ reply.author.username }}</h4>
-																	<h5>{{ reply.created_at|date:"d M Y H:i" }}</h5>
-																	<p>{{ reply.text }}</p>
-
-																	{% if user == user.is_staff or reply.author %}
-																		<a style="color: red;" href="{% url 'comment_delete' pk=reply.id %}">Удалить</a>
-																	{% endif %}
-																</div>
-															</div>
-														</div>
-													{% endfor %}
-												</div>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-								{% empty %}
-									<p>Пока нет комментариев</p>
-								{% endfor %}
-							</div>
-						</div>
-						<div class="col-lg-6">
+					<div class="comment-section">
+						<div class="col-lg-12">
 							<div class="review_box">
 								<h4>Оставить комментарий</h4>
 								{% if user.is_authenticated %}
-									<form method="post" action="{% url 'create_comment' shoe.url shoe.id %}" class="row contact_form" id="comment-form" novalidate="novalidate">
-										{% csrf_token %}
-										<input type="hidden" name="parent_id" value="{{ request.GET.parent_id }}">
-										<div class="col-md-12 form-group">
-											<textarea class="form-control" name="text" rows="5" placeholder="Ваш комментарий" required></textarea>
-										</div>
-										<div class="col-md-12 text-right">
-											<button type="submit" class="btn primary-btn">Отправить</button>
-											{% if request.GET.parent_id %}
-												<a style="color: #fff;" href="?"><button style="background: #00ff28;" class="btn primary-btn">Отменить ответ</button></a>
-											{% endif %}
-										</div>
-									</form>
+								<form method="post" action="{% url 'create_comment' shoe.url shoe.id %}" class="row contact_form" id="comment-form" novalidate="novalidate">
+									{% csrf_token %}
+									<input type="hidden" name="parent_id" value="{{ request.GET.parent_id }}">
+									<div class="col-md-12 form-group">
+										<textarea class="form-control" name="text" rows="5" placeholder="Ваш комментарий" required></textarea>
+									</div>
+									<div class="col-md-12 text-right">
+										<button type="submit" class="btn primary-btn">Отправить</button>
+										{% if request.GET.parent_id %}
+										<a style="color: #fff;" href="?"><button style="background: #00ff28;" class="btn primary-btn">Отменить ответ</button></a>
+										{% endif %}
+									</div>
+								</form>
 								{% else %}
-									<p>Чтобы оставить комментарий, <a href="{% url 'login' %}">войдите</a></p>
+								<p>Чтобы оставить комментарий, <a href="{% url 'login' %}">войдите</a></p>
 								{% endif %}
+							</div>
+						</div>
+						<div class="col-lg-12">
+							<div class="comment_list">
+								{% for comment in shoe.comments.all %}
+									{% if not comment.parent %}
+										<div class="review_item">
+											<div class="media-example">
+												<div class="comment-head">
+													<img class="img-fluid reviewer-image" src="
+														{% if comment.user.image %}
+															{{ comment.user.image.url }}
+														{% else %}
+															{% static 'img/default_avatar.png' %}
+														{% endif %}"
+														 alt="{{ comment.author.username }}">
+													<div class="author-name-allign">
+															{{ comment.author.username }}
+													</div>
+													<div class="answer-section">
+														<a href="?parent_id={{ comment.id }}" class="reply_btn">Ответить</a>
+													</div>
+													<div class="delete-section">
+														{% if user.is_staff or comment.author == user %}
+															<a style="color: red;" href="{% url 'comment_delete' pk=comment.id %}">Удалить</a>
+														{% endif %}
+													</div>
+												</div>
+												<div class="comment-body-section">
+													<div class="comment-data-section">
+														{{ comment.created_at|date:"d M Y H:i" }}
+													</div>
+													<div class="comment-text-section">
+														{{ comment.text }}
+													</div>
+												</div>
+											</div>
+											<!-- Вложенные комментарии -->
+											<div class="replies">
+												{% for reply in comment.replies.all %}
+													<div class="review_item reply">
+														<div class="media-example">
+															<div class="comment-head">
+																<img class="img-fluid reviewer-image" src="
+																	{% if comment.user.image %}
+																		{{ comment.user.image.url }}
+																	{% else %}
+																		{% static 'img/default_avatar.png' %}
+																	{% endif %}"
+																	 alt="{{ comment.author.username }}">
+																<div class="author-name-allign">
+																		{{ comment.author.username }}
+																</div>
+																<div class="answer-section">
+																	<a href="?parent_id={{ comment.id }}" class="reply_btn">Ответить</a>
+																</div>
+																<div class="delete-section">
+																	{% if user.is_staff or comment.author == user %}
+																		<a style="color: red;" href="{% url 'comment_delete' pk=comment.id %}">Удалить</a>
+																	{% endif %}
+																</div>
+															</div>
+															<div class="comment-body-section">
+																<div class="comment-data-section">
+																	{{ comment.created_at|date:"d M Y H:i" }}
+																</div>
+																<div class="comment-text-section">
+																	{{ comment.text }}
+																</div>
+															</div>
+														</div>
+													</div>
+												{% endfor %}
+											</div>
+										</div>
+									{% endif %}
+								{% empty %}
+									<p>Пока нет комментариев</p>
+								{% endfor %}
 							</div>
 						</div>
 					</div>
