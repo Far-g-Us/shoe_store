@@ -45,15 +45,16 @@
 						</div>
 					</div>
 				{% endif %}
+
 				<!-- Start Filter Bar -->
 				<div class="filter-bar d-flex flex-wrap align-items-center">
 					<div class="sorting">
 					  <select id="sortProducts">
-						  <option value="">Сортировать по:</option>
-						  <option value="name_asc">По названию (А-Я)</option>
-						  <option value="name_desc">По названию (Я-А)</option>
-						  <option value="price_asc">По цене (возрастанию)</option>
-						  <option value="price_desc">По цене (убыванию)</option>
+						  <option value="">Сортировать по</option>
+						  <option value="name_asc" {% if request.GET.sort == 'name_asc' %}selected{% endif %}>Названию (А-Я)</option>
+						  <option value="name_desc" {% if request.GET.sort == 'name_desc' %}selected{% endif %}>Названию (Я-А)</option>
+						  <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Цене (↑)</option>
+						  <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Цене (↓)</option>
 					  </select>
 					</div>
 					<div class="sorting mr-auto"></div>
@@ -177,7 +178,13 @@
 				<!-- End Best Seller -->
 				<!-- Start Filter Bar -->
 				<div class="filter-bar d-flex flex-wrap align-items-center">
-					<div class="sorting mr-auto"></div>
+					<div class="sorting mr-auto">
+						<select>
+							<option value="1">Show 12</option>
+							<option value="1">Show 12</option>
+							<option value="1">Show 12</option>
+						</select>
+					</div>
 <!--					<div class="pagination">-->
 <!--					{% for page_num in page_numbers %}-->
 <!--						{% if page_obj.number == page_num %}-->
@@ -318,6 +325,5 @@
 <!--        </div>-->
 <!--    </div>-->
 <!--    {% endfor %}-->
-
 
 {% endblock content %}

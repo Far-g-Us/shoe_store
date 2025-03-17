@@ -213,69 +213,8 @@
 					</div>
 				</div>
 				<div class="tab-pane fade" id="contact" id="comments" role="tabpanel" aria-labelledby="contact-tab">
-					<div class="row">
-						<div class="col-lg-6">
-							<div class="comment_list">
-                                {% for comment in shoe.comments.all %}
-									{% if not comment.parent %}
-                                        <div class="review_item">
-                                            <div class="media">
-                                                <div class="d-flex">
-                                                    <img class="img-fluid reviewer-image" src="
-                                                        {% if comment.user.image %}
-                                                            {{ comment.user.image.url }}
-                                                        {% else %}
-                                                            {% static 'img/default_avatar.png' %}
-                                                        {% endif %}"
-                                                         alt="{{ comment.author.username }}">
-                                                </div>
-                                                <div class="media-body">
-                                                    <h4>{{ comment.author.username }}</h4>
-                                                    <h5>{{ comment.created_at|date:"d M Y H:i" }}</h5>
-                                                    <p>{{ comment.text }}</p>
-													<a href="?parent_id={{ comment.id }}" class="reply-btn">Ответить</a>
-
-                                                    {% if user.is_staff or comment.author == user %}
-														<a style="color: red;" href="{% url 'comment_delete' pk=comment.id %}">Удалить</a>
-                                                    {% endif %}
-                                                </div>
-
-                                                <!-- Вложенные комментарии -->
-												<div class="replies">
-													{% for reply in comment.replies.all %}
-														<div class="review_item reply">
-															<div class="media">
-																<div class="d-flex">
-																	<img class="img-fluid reviewer-image" src="
-																		{% if reply.user.image %}
-																			{{ reply.user.image.url }}
-																		{% else %}
-																			{% static 'img/default_avatar.png' %}
-																		{% endif %}"
-																		alt="{{ reply.author.username }}">
-																</div>
-																<div class="media-body">
-																	<h4>{{ reply.author.username }}</h4>
-																	<h5>{{ reply.created_at|date:"d M Y H:i" }}</h5>
-																	<p>{{ reply.text }}</p>
-
-																	{% if user == user.is_staff or reply.author %}
-																		<a style="color: red;" href="{% url 'comment_delete' pk=reply.id %}">Удалить</a>
-																	{% endif %}
-																</div>
-															</div>
-														</div>
-													{% endfor %}
-												</div>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-								{% empty %}
-									<p>Пока нет комментариев</p>
-								{% endfor %}
-							</div>
-						</div>
-						<div class="col-lg-6">
+					<div class="comment-section">
+						<div class="col-lg-12">
 							<div class="review_box">
 								<h4>Оставить комментарий</h4>
 								{% if user.is_authenticated %}
@@ -296,6 +235,24 @@
 									<p>Чтобы оставить комментарий, <a href="{% url 'login' %}">войдите</a></p>
 								{% endif %}
 							</div>
+						</div>
+
+						<div class="col-lg-12">
+							<div class="comment_list" id="comments-container">
+								{% include 'comments_partial.html' with comments=comments %}
+							</div>
+
+							{% if comments.has_next %}
+							<div class="load-more-wrapper mt-4">
+								<button id="load-more"
+										class="btn btn-primary load-more"
+										data-next-page="{{ comments.next_page_number }}"
+										data-url="{% url 'product_detail' shoe.url shoe.id %}">
+									Показать ещё
+									<span class="spinner-border spinner-border-sm d-none" role="status"></span>
+								</button>
+							</div>
+							{% endif %}
 						</div>
 					</div>
 				</div>
@@ -320,14 +277,14 @@
 											{% endwith %}
 											<h4>{{ average_rating|default:"0.0" }}</h4>
 										</div>
-										{% load review_filters %}
+										{% load custom_filters %}
 										<h6>({{ num_comments }} {{ num_comments|review_nominative }})</h6>
 <!--										<p>{{ shoe.get_latest_review }}</p>-->
 									</div>
 								</div>
 								<div class="col-6">
 									<div class="rating_list">
-										{% load review_filters %}
+										{% load custom_filters %}
 										<h3>Основано на {{ num_comments }} {{ num_comments|review_prepositional }}</h3>
 										<div>
 											{% if has_ratings %}
@@ -343,7 +300,7 @@
 															{% endfor %}
 														</div>
 														<div class="count">
-															{% load review_filters %}
+															{% load custom_filters %}
 																{{ stat.count }} {{ stat.count|review_nominative }}
 														</div>
 													</div>
@@ -356,46 +313,21 @@
 								</div>
 							</div>
 							<div class="review_list">
-							{% for review in shoe.reviews.all %}
-								<div class="review_item">
-									<div class="media">
-										<div class="d-flex">
-											<img class="img-fluid reviewer-image" src="
-												{% if review.user.image %}
-													{{ review.user.image.url }}
-												{% else %}
-													{% static 'img/default_avatar.png' %}
-												{% endif %}"
-											alt="{{ review.user.username }}">
-										</div>
-										<div class="media-body">
-											<div class="container-comment">
-												<div class="column-comment">
-													<div class="media-body">
-														<h4>{{ review.user.username }}</h4>
-														{% with star_value=review.star.value %}  <!-- Получаем значение звезды из отзыва -->
-															{% for i in "12345"|make_list %}     <!-- 5 итераций для 5 звезд -->
-																{% if forloop.counter <= star_value %}
-																	<i class="fa fa-star"></i>  <!-- Заполненная звезда -->
-																{% else %}
-																	<i class="fa fa-star-o"></i> <!-- Пустая звезда -->
-																{% endif %}
-															{% endfor %}
-														{% endwith %}
-													</div>
-													<!--<a>{{ review.created_at|date:"d F Y H:i" }}</a>-->
-												</div>
-											</div>
-										</div>
-									</div>
-									<p>{{ review.text }}</p>
-									{% if user.is_staff %}
-										<a style="color: red;" href="{% url 'review_delete' shoe.url shoe.id review.id %}">Удалить отзыв</a>
-									{% endif %}
+								<div id="reviews-container">
+									{% include 'reviews_partial.html' with reviews=reviews %}
 								</div>
-							{% empty %}
-								<p>Пока нет отзывов</p>
-  							{% endfor %}
+
+								{% if reviews.has_next %}
+								<div class="load-more-wrapper mt-4">
+									<button id="load-more-reviews"
+											class="btn btn-primary load-more"
+											data-next-page="{{ reviews.next_page_number }}"
+											data-url="{% url 'product_detail' shoe.url shoe.id %}">
+										Показать ещё отзывы
+										<span class="spinner-border spinner-border-sm d-none" role="status"></span>
+									</button>
+								</div>
+								{% endif %}
 							</div>
 						</div>
 						<div class="col-lg-6">

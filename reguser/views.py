@@ -10,46 +10,62 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect
 from django.db import transaction
-
-#from utils import resize_image
-
 from io import BytesIO
 from PIL import Image
 from django.core.files.base import ContentFile
+#from utils import resize_image
 
 
 def resize_image(image, output_format='WEBP'):
-    img = Image.open(image)
+    if not image:
+        return None
 
-    # Преобразуем изображение в режим RGB, если оно не в этом режиме и не является GIF
-    if img.mode != 'RGB' and img.format != 'GIF':
-        img = img.convert('RGB')
+    try:
+        # Проверка на анимированные GIF (вне зависимости от расширения)
+        if image.name.lower().endswith('.gif'):
+            img = Image.open(image)
+            if getattr(img, 'is_animated', False):
+                return ContentFile(image.read(), name=image.name)
 
-    img = img.resize((300, 300), Image.Resampling.LANCZOS)
+        # Открываем изображение
+        img = Image.open(image)
+        original_format = img.format.upper() if img.format else ''
 
-    image_io = BytesIO()
-    img.save(image_io, format=output_format)
+        # Определяем режим цвета
+        if original_format == 'PNG' and img.mode == 'RGBA':
+            convert_mode = 'RGBA'
+        else:
+            convert_mode = 'RGB'
 
-    image_data = image_io.getvalue()
+        # Конвертация цветового пространства
+        img = img.convert(convert_mode)
 
-    # Возвращаем ContentFile с оригинальным именем файла, но с новым расширением
-    new_name = f"{image.name.rsplit('.', 1)[0]}.{output_format.lower()}"
-    return ContentFile(image_data, name=new_name)
+        # Ресайз
+        img = img.resize((300, 300), Image.Resampling.LANCZOS)
 
+        # Настройки сохранения для разных форматов
+        save_args = {'format': output_format}
+        if output_format == 'WEBP':
+            save_args.update({'quality': 90, 'method': 6})
+        elif output_format == 'JPEG':
+            save_args['quality'] = 85
+            save_args['subsampling'] = '4:4:4'  # Максимальное качество цветности
 
-# class LoginView(FormView):
-#     template_name = 'login.html'
-#     form_class = LoginForm
-#     success_url = reverse_lazy('home')
-#
-#     def form_valid(self, form):
-#         user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-#         if user is not None:
-#             login(self.request, user)
-#             return super().form_valid(form)
-#         else:
-#             form.add_error(None, 'Неверный логин или пароль')
-#             return super().form_invalid(form)
+        # Сохраняем в буфер
+        buffer = BytesIO()
+        img.save(buffer, **save_args)
+
+        # Формируем имя файла
+        base_name = image.name.rsplit('.', 1)[0]
+        new_name = f"{base_name}.{output_format.lower()}"
+
+        return ContentFile(buffer.getvalue(), name=new_name)
+
+    except Exception as e:
+        print(f"Image processing error: {e}")
+        # Возвращаем оригинал с сохранением имени
+        return ContentFile(image.read(), name=image.name)
+
 
 class LoginView(FormView):
     template_name = 'login.html'
@@ -67,35 +83,6 @@ class LoginView(FormView):
     def get_success_url(self):
         return reverse_lazy('profile')  # Если не используете метод form_valid для перенаправления
 
-
-# class RegisterView(CreateView):
-#     model = CustomUser
-#     form_class = CustomUserCreationForm
-#     template_name = 'register.html'
-#     success_url = reverse_lazy('login')
-#
-#     def form_valid(self, form):
-#         with transaction.atomic():
-#             user = form.save(commit=False)
-#             user.username = form.cleaned_data['username']
-#             user.set_password(form.cleaned_data['password1'])
-#             user.save()
-#
-#             customUser = CustomUser.objects.get(username=user.username)
-#             customUser.full_name = form.cleaned_data['full_name']
-#             customUser.birthday = form.cleaned_data['birthday']
-#             customUser.image = resize_image(form.cleaned_data['image'])
-#             customUser.email = form.cleaned_data['email']
-#             customUser.user = user
-#             customUser.save()
-#
-#             print(customUser)
-#             login(self.request, user)
-#             return redirect('login')
-#
-#     def form_invalid(self, form):
-#         print(form.errors)
-#         return render(self.request, self.template_name, {'formuser': form, 'error': 'Поля должны быть заполнены.'})
 
 class RegisterView(CreateView):
     model = CustomUser
@@ -148,62 +135,6 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         return context
 
 
-# class ProfileUpdateView(LoginRequiredMixin, UpdateView):
-#     form_class = UserProfileUpdateForm
-#     template_name = 'profile_update.html'
-#
-#     def get_object(self, queryset=None):
-#         return self.request.user
-#
-#     def get_form_kwargs(self):
-#         kwargs = super().get_form_kwargs()
-#         kwargs['instance'] = self.request.user
-#         return kwargs
-#
-#     def get_success_url(self):
-#         return reverse_lazy('profile')
-#
-# @login_required
-# def update_profile(request):
-#     if request.method == 'POST':
-#         form = UserProfileUpdateForm(request.POST, request.FILES, instance=request.user.userprofile)
-#
-#         if form.is_valid():
-#             form.save()
-#             return redirect('profile')  # Replace 'profile' with the appropriate URL name for the user profile page
-#     else:
-#         form = UserProfileUpdateForm(instance=request.user.userprofile)
-#
-#     context = {
-#         'form': form,
-#     }
-#
-#     return render(request, 'profile_update.html', context)
-
-# class ProfileUpdateView(LoginRequiredMixin, UpdateView):
-#     model = CustomUser
-#     form_class = UserProfileUpdateForm
-#     template_name = 'profile_update.html'
-#
-#     def get_object(self, queryset=None):
-#         obj = super().get_object(queryset)
-#
-#         if obj != self.request.user:
-#             raise PermissionDenied
-#
-#         return obj
-#
-#     def get_success_url(self):
-#         return reverse_lazy('profile')
-
-# def update_user_field(request):
-#     user = CustomUser.objects.get(id=request.user.id)  # получаем объект пользователя
-#
-#     if request.method == 'POST':
-#         form = UserProfileUpdateForm(request.POST, instance=user)  # создаем форму с переданными данными пользователя
-#         if form.is_valid():
-#             form.save()  # сохраняем изменения только для указанного поля
-
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     form_class = UserProfileUpdateForm
     template_name = 'profile_update.html'
@@ -216,8 +147,15 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         # Обработка изображения
         if 'image' in form.files:
             image_file = form.files['image']
-            resized_image = resize_image(image_file)
-            form.instance.image.save(resized_image.name, resized_image, save=False)
+            processed_file = resize_image(image_file)
+
+            # Сохраняем только если обработка прошла успешно
+            if processed_file:
+                form.instance.image.save(
+                    processed_file.name,  # Используем имя из ContentFile
+                    processed_file,
+                    save=False
+                )
         return super().form_valid(form)
 
 

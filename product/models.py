@@ -5,7 +5,6 @@ from mptt.models import MPTTModel, TreeForeignKey
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.conf import settings
-
 from reguser.models import CustomUser
 
 
@@ -229,6 +228,7 @@ class Review(models.Model):
     text = models.TextField(verbose_name='Текст отзыва', max_length=5000, blank=True)
     star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='Оценка')
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     parent = models.ForeignKey(
         'self',
         verbose_name='Родитель',
@@ -262,6 +262,7 @@ class Comment(models.Model):
     )
     text = models.TextField(max_length=1000)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-created_at']

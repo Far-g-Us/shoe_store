@@ -4142,8 +4142,7 @@ label {
     padding-top: 10px;
     margin-bottom: 0px; }
   .review_item.reply {
-    padding-left: 15px;
-    margin-top: 120px; }
+    padding-inline: 15px; }
 
 .review_box h4 {
   font-size: 24px;
@@ -5800,4 +5799,74 @@ label {
 /*# sourceMappingURL=main.css.map */
 .next {
   background: url('img/banner/next.png');
+}
+
+
+
+/* new text from daun squad */
+.comment-section{
+  display: flex;
+  flex-direction: column;
+}
+.media-example{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  box-shadow: 0 0 5px 0 rgb(255, 255, 255), 0 2px 4px 0 rgb(191, 191, 191);
+  border-radius: .25rem;
+}
+.comment-head{
+  display: flex;
+  box-shadow: 0 0 5px 0 rgb(230, 230, 230), 0 2px 4px 0 rgb(255, 255, 255);
+}
+.author-name-allign{
+  margin-left: 5px;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  flex-basis: 90%;
+  font-size: 17px;
+  color: #000;
+  font-family: "Roboto", sans-serif;
+}
+.answer-section{
+  padding-inline: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-basis: 5%;
+}
+.delete-section{
+  padding-inline: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-basis: 5%;
+}
+.comment-body-section{
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 20px 20px;
+}
+.comment-data-section{
+  font-size: 12px;
+  font-family: "Roboto", sans-serif;
+}
+.comment-text-section{
+  font-size: 16px;
+  color: #000;
+  font-family: "Roboto", sans-serif;
+}
+
+.edit-mode {
+    margin-top: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.cancel-edit {
+    margin-left: 10px !important;
 }

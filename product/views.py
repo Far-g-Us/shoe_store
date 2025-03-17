@@ -1,5 +1,5 @@
 from django.core.exceptions import PermissionDenied
-from django.views.generic import View, DetailView, CreateView, DeleteView, FormView
+from django.views.generic import View, DetailView, CreateView, DeleteView, FormView, UpdateView
 from django_filters.views import FilterView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from product.models import Shoes, Category, Review, CountryOfManufacture, Comment
@@ -7,12 +7,16 @@ from face.models import Cart, CartItem
 from product.forms import ShoesForm, ReviewForm, CommentForm
 from product.filters import ShoesFilter
 from django.shortcuts import get_object_or_404, redirect
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Prefetch
 from django.contrib import messages
-# from django.core.paginator import Paginator
-from django.http import Http404, HttpResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import Http404, HttpResponse, JsonResponse
 from django.urls import reverse_lazy, reverse
 from urllib.parse import urlencode
+from django.template.loader import render_to_string
+from django.utils import timezone
+import logging
+logger = logging.getLogger(__name__)
 
 
 class ProductListView(FilterView):
@@ -25,6 +29,19 @@ class ProductListView(FilterView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+
+        print('Параметр сортировки:', self.request.GET.get('sort'))
+        # Сортировка
+        sort = self.request.GET.get('sort')
+        if sort == 'name_asc':
+            queryset = queryset.order_by('name')
+        elif sort == 'name_desc':
+            queryset = queryset.order_by('-name')
+        elif sort == 'price_asc':
+            queryset = queryset.order_by('price')
+        elif sort == 'price_desc':
+            queryset = queryset.order_by('-price')
+
         search_query = self.request.GET.get('q')
 
         # Фильтрация по поисковому запросу
@@ -48,7 +65,7 @@ class ProductListView(FilterView):
         country_id = self.kwargs.get('country_id')
         if country_id:
             queryset = queryset.filter(country_of_manufacture__id=country_id)
-        queryset = queryset.annotate(num_products=Count('category__shoes')).order_by('id')
+        queryset = queryset.annotate(num_products=Count('category__shoes'))
         ##------------------------------------------------------##
         price_min = self.request.GET.get('price__gte')
         price_max = self.request.GET.get('price__lte')
@@ -89,6 +106,8 @@ class ProductListView(FilterView):
         # Фильтрация товаров по значениям из файла filters.py
         context['filter'] = ShoesFilter(self.request.GET, queryset=self.get_queryset())
         context['countries'] = CountryOfManufacture.objects.all()
+        context['selected_categories'] = self.request.GET.getlist('category')
+        context['filter_params'] = self.request.GET.copy()
         context['categories'] = Category.objects.all()
         category_url = self.kwargs.get('url')
         if category_url:
@@ -101,6 +120,8 @@ class ProductDetailView(DetailView):
     model = Shoes
     template_name = 'product_detail.html'
     context_object_name = 'shoe'
+    paginate_by = 4 # Количество комментариев на страницу
+    review_paginate_by = 4  # Количество отзывов на страницу
 
     def get_queryset(self):
         return Shoes.objects.all()
@@ -123,8 +144,16 @@ class ProductDetailView(DetailView):
                 'outsole_material',
                 'insole_material',
                 'country_of_manufacture',
-                'reviews__user',
-                'reviews__star'
+                # Оптимизация для отзывов
+                Prefetch(
+                    'reviews',
+                    queryset=Review.objects.select_related('user', 'star')
+                ),
+                # Оптимизация для комментариев
+                Prefetch(
+                    'comments',
+                    queryset=Comment.objects.select_related('author')
+                )
             ),
             url=slug,
             id=product_id
@@ -133,6 +162,31 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         shoe = self.get_object()
+
+        comments = shoe.comments.filter(parent=None).order_by('-created_at')
+
+        # Для первоначальной загрузки
+        paginator = Paginator(comments, self.paginate_by)
+        page = self.request.GET.get('page', 1)
+
+        try:
+            comments_page = paginator.page(page)
+        except (PageNotAnInteger, EmptyPage):
+            comments_page = paginator.page(1)
+
+        # Пагинация для отзывов
+        reviews = shoe.reviews.all().order_by('-created_at')
+        paginator_reviews = Paginator(reviews, self.review_paginate_by)
+        page_reviews = self.request.GET.get('page_reviews', 1)
+
+        try:
+            reviews_page = paginator_reviews.page(page_reviews)
+        except (PageNotAnInteger, EmptyPage):
+            reviews_page = paginator_reviews.page(1)
+
+        context['comments'] = comments_page
+        context['reviews'] = reviews_page
+
 
         # Все связи уже загружены через prefetch_related
         context.update({
@@ -149,9 +203,7 @@ class ProductDetailView(DetailView):
             'discounted_products': Shoes.objects.filter(discount__gt=0, available=True)[:9],
             'num_comments': shoe.reviews.count(),
             'average_rating': shoe.average_rating,
-            'stars': range(int(shoe.average_rating)) if shoe.average_rating else [],
-            'comment_form' : CommentForm(),
-            'comments' : self.object.comments.filter(parent=None).order_by('-created_at')
+            'stars': range(int(shoe.average_rating)) if shoe.average_rating else []
         })
 
         # Оптимизированный запрос для статистики рейтингов
@@ -170,6 +222,71 @@ class ProductDetailView(DetailView):
         context['has_ratings'] = sum(rating_dict.values()) > 0
 
         return context
+
+    def get(self, request, *args, **kwargs):
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+        if is_ajax:
+            # Определяем тип запроса
+            reviews_page = request.GET.get('reviews_page')
+            comments_page = request.GET.get('page')
+
+            if reviews_page is not None:
+                # Обработка AJAX для отзывов
+                try:
+                    page = int(reviews_page)
+                    shoe = self.get_object()
+                    reviews = shoe.reviews.all().order_by('-created_at')
+                    paginator = Paginator(reviews, self.review_paginate_by)
+                    page_obj = paginator.page(page)
+
+                    html = render_to_string(
+                        'reviews_partial.html',
+                        {
+                            'reviews': page_obj.object_list,
+                            'user': request.user,
+                            'shoe': shoe
+                        }
+                    )
+
+                    return JsonResponse({
+                        'html': html,
+                        'has_next': page_obj.has_next(),
+                        'next_page': page_obj.next_page_number() if page_obj.has_next() else None
+                    })
+
+                except Exception as e:
+                    logger.error(f"Error in reviews AJAX handler: {str(e)}")
+                    return JsonResponse({'error': str(e)}, status=500)
+
+            elif comments_page is not None:
+                # Обработка AJAX для комментариев
+                try:
+                    page = int(comments_page)
+                    shoe = self.get_object()
+                    comments = shoe.comments.filter(parent=None).order_by('-created_at')
+                    paginator = Paginator(comments, self.paginate_by)
+                    page_obj = paginator.page(page)
+
+                    html = render_to_string(
+                        'comments_partial.html',
+                        {
+                            'comments': page_obj.object_list,
+                            'user': request.user
+                        }
+                    )
+
+                    return JsonResponse({
+                        'html': html,
+                        'has_next': page_obj.has_next(),
+                        'next_page': page_obj.next_page_number() if page_obj.has_next() else None
+                    })
+
+                except Exception as e:
+                    logger.error(f"Error in comments AJAX handler: {str(e)}")
+                    return JsonResponse({'error': str(e)}, status=500)
+
+        return super().get(request, *args, **kwargs)
 
 
 class AddToCartView(LoginRequiredMixin, View):
@@ -268,6 +385,29 @@ class ProductDetailReview(FormView):
         context['stars'] = range(int(avg_rating)) if avg_rating > 0 else []
         return context
 
+
+class ReviewUpdateView(LoginRequiredMixin, UpdateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'product_detail.html'
+
+    def get_success_url(self):
+        return reverse('product_detail', kwargs={
+            'url': self.object.shoes.url,
+            'id': self.object.shoes.id
+        })
+
+    def form_valid(self, form):
+        form.instance.updated_at = timezone.now()
+        response = super().form_valid(form)
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'text': self.object.text,
+                'star': int(self.object.star.value)
+            })
+        return response
+
+
 class DeleteProductReview(DeleteView):
     model = Review
     template_name = 'product_review_delete.html'
@@ -300,6 +440,9 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         comment.shoes = shoe
         comment.author = self.request.user
 
+        if not comment.author.image:
+            comment.author.image = 'default_avatar.png'
+
         parent_id = form.cleaned_data.get('parent_id')
         if parent_id:
             comment.parent = get_object_or_404(Comment, id=parent_id)
@@ -312,6 +455,34 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
             'url': self.kwargs['url'],
             'id': self.kwargs['id']
         }) + '#comments'
+
+
+class CommentUpdateView(LoginRequiredMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'product_detail.html'
+
+    def get_success_url(self):
+        return reverse('product_detail', kwargs={
+            'url': self.object.shoes.url,
+            'id': self.object.shoes.id
+        }) + f'#comment-{self.object.id}'
+
+    def dispatch(self, request, *args, **kwargs):
+        comment = self.get_object()
+        if comment.author != request.user and not request.user.is_staff:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.updated_at = timezone.now()
+        response = super().form_valid(form)
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'text': self.object.text,
+                'updated_at': self.object.updated_at.strftime("%d %b %Y %H:%M")
+            })
+        return response
 
 
 class CommentDeleteView(DeleteView):

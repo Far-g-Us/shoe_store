@@ -1,0 +1,67 @@
+{% load static %}
+{% for review in reviews %}
+	<div class="review_item" data-review-id="{{ review.id }}">
+		<div class="media">
+			<div class="d-flex">
+				<img class="img-fluid reviewer-image" src="
+					{% if review.user.image %}
+						{{ review.user.image.url }}
+					{% else %}
+						{% static 'img/default_avatar.png' %}
+					{% endif %}"
+					 onerror="this.onerror=null; this.src='{% static 'img/default_avatar.png' %}'"
+					 alt="{{ review.user.username }}">
+			</div>
+			<div class="media-body">
+				<div class="container-comment">
+					<div class="column-comment">
+						<div class="media-body">
+							<h4>{{ review.user.username }}</h4>
+							<div class="stars-container">
+								{% with star_value=review.star.value %}  <!-- Получаем значение звезды из отзыва -->
+									{% for i in "12345"|make_list %}     <!-- 5 итераций для 5 звезд -->
+										{% if forloop.counter <= star_value %}
+											<i class="fa fa-star"></i>  <!-- Заполненная звезда -->
+										{% else %}
+											<i class="fa fa-star-o"></i> <!-- Пустая звезда -->
+										{% endif %}
+									{% endfor %}
+								{% endwith %}
+							</div>
+						</div>
+						<!--<a>{{ review.created_at|date:"d F Y H:i" }}</a>-->
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="review-text-section">
+			<p>{{ review.text }}</p>
+		</div>
+		{% if review.user == user or user.is_staff %}
+			<button class="btn-edit">✎</button>
+		{% endif %}
+
+		{% if user.is_staff %}
+		<a style="color: red;" href="{% url 'review_delete' shoe.url shoe.id review.id %}">Удалить отзыв</a>
+		{% endif %}
+
+		<!-- Режим редактирования (скрыт по умолчанию) -->
+        <div class="edit-mode" style="display: none;">
+            <form class="edit-review-form" method="post" action="{% url 'review_edit' pk=review.id %}">
+                {% csrf_token %}
+                <select name="star" class="form-select mb-2">
+                    {% for i in "12345"|make_list %}
+                        <option value="{{ i }}" {% if review.star.value == forloop.counter %}selected{% endif %}>
+                            {{ i }} звезд
+                        </option>
+                    {% endfor %}
+                </select>
+                <textarea name="text" class="form-control">{{ review.text }}</textarea>
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+                    <button type="button" class="btn btn-sm btn-secondary cancel-edit">Отмена</button>
+                </div>
+            </form>
+        </div>
+	</div>
+{% endfor %}

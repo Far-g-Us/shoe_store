@@ -37,3 +37,8 @@ def review_prepositional(value):
         return "отзыве"
     else:
         return "отзывах"
+
+
+@register.filter(name='subtract')
+def subtract(value, arg):
+    return value - arg

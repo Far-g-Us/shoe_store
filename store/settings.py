@@ -28,11 +28,12 @@ SECRET_KEY = config("DJANGO_SECRET_KEY")
 DEBUG = True
 
 # ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-ALLOWED_HOSTS = config(
-    "DJANGO_ALLOWED_HOSTS",
-    default="localhost,127.0.0.1",
-    cast=lambda v: [s.strip() for s in v.split(",")]
-)
+ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = config(
+#     "DJANGO_ALLOWED_HOSTS",
+#     default="localhost,127.0.0.1",
+#     cast=lambda v: [s.strip() for s in v.split(",")]
+# )
 
 # Application definition
 
@@ -158,3 +159,19 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 #     SECURE_CONTENT_TYPE_NOSNIFF = True
 #     SECURE_BROWSER_XSS_FILTER = True
 #     X_FRAME_OPTIONS = "DENY"
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}

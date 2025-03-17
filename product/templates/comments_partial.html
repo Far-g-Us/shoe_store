@@ -1,0 +1,123 @@
+{% load static %}
+{% for comment in comments %}
+	{% if not comment.parent %}
+		<div class="review_item" data-comment-id="{{ comment.id }}">
+			<div class="media-example">
+				<div class="comment-head">
+					<img class="img-fluid reviewer-image" src="
+						{% if comment.author.image %}
+							{{ comment.author.image.url }}
+						{% else %}
+							{% static 'img/default_avatar.png' %}
+						{% endif %}"
+						 alt="{{ comment.author.username }}"
+						 onerror="this.onerror=null; this.src='{% static 'img/default_avatar.png' %}'">
+					<div class="author-name-allign">
+						{{ comment.author.username }}
+					</div>
+					<div class="answer-section">
+						<a href="?parent_id={{ comment.id }}" class="reply_btn">Ответить</a>
+						{% if comment.author == user or user.is_staff %}
+							<button class="btn-edit">✎</button>
+						{% endif %}
+					</div>
+					<div class="delete-section">
+						{% if user.is_staff or comment.author == user %}
+							<a style="color: red;" href="{% url 'comment_delete' pk=comment.id %}">Удалить</a>
+						{% endif %}
+					</div>
+				</div>
+				<div class="comment-body-section">
+					<div class="comment-data-section">
+						{{ comment.created_at|date:"d M Y H:i" }}
+					</div>
+					<div>
+						<small class="text-muted">
+						{{ comment.created_at|date:"d M Y H:i" }}
+						{% if comment.updated_at > comment.created_at %}
+							(изменено: {{ comment.updated_at|date:"d M Y H:i" }})
+						{% endif %}
+					</small>
+					</div>
+					<div class="comment-text-section">
+						{{ comment.text|linebreaks }}
+					</div>
+				</div>
+
+				<!-- Режим редактирования (скрыт по умолчанию) -->
+				<div class="edit-mode" style="display: none;">
+					<form class="edit-comment-form" method="post" action="{% url 'comment_edit' pk=comment.id %}">
+						{% csrf_token %}
+						<textarea name="text" class="form-control">{{ comment.text }}</textarea>
+						<div class="mt-2">
+							<button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+							<button type="button" class="btn btn-sm btn-secondary cancel-edit">Отмена</button>
+						</div>
+					</form>
+				</div>
+
+				<!-- Вложенные комментарии -->
+				<div class="replies">
+					{% for reply in comment.replies.all %}
+					<div class="review_item reply" data-comment-id="{{ comment.id }}">
+						<div class="media-example">
+							<div class="comment-head">
+								<img class="img-fluid reviewer-image" src="
+									{% if reply.author.image %}
+										{{ reply.author.image.url }}
+									{% else %}
+										{% static 'img/default_avatar.png' %}
+									{% endif %}"
+									 alt="{{ reply.author.username }}"
+									 onerror="this.onerror=null; this.src='{% static 'img/default_avatar.png' %}'">
+								<div class="author-name-allign">
+									{{ reply.author.username }}
+								</div>
+								<div class="answer-section">
+									<a href="?parent_id={{ comment.id }}" class="reply_btn">Ответить</a>
+									{% if reply.author == user or user.is_staff %}
+										<button class="btn-edit">✎</button>
+									{% endif %}
+								</div>
+								<div class="delete-section">
+									{% if user.is_staff or comment.author == user %}
+										<a style="color: red;" href="{% url 'comment_delete' pk=reply.id %}">Удалить</a>
+									{% endif %}
+								</div>
+							</div>
+							<div class="comment-body-section">
+								<div class="comment-data-section">
+									{{ reply.created_at|date:"d M Y H:i" }}
+								</div>
+								<div>
+									<small class="text-muted">
+									{{ reply.created_at|date:"d M Y H:i" }}
+									{% if reply.updated_at > reply.created_at %}
+										(изменено: {{ reply.updated_at|date:"d M Y H:i" }})
+									{% endif %}
+								</small>
+								</div>
+								<div class="comment-text-section">
+									{{ reply.text|linebreaks }}
+								</div>
+							</div>
+
+							<!-- Режим редактирования (скрыт по умолчанию) -->
+							<div class="edit-mode" style="display: none;">
+								<form class="edit-comment-form" method="post" action="{% url 'comment_edit' pk=reply.id %}">
+									{% csrf_token %}
+									<textarea name="text" class="form-control">{{ reply.text }}</textarea>
+									<div class="mt-2">
+										<button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+										<button type="button" class="btn btn-sm btn-secondary cancel-edit">Отмена</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	{% endif %}
+{% endfor %}

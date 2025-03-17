@@ -334,3 +334,261 @@ if(document.getElementById("js-countdown")){
 
     initClock('js-countdown', countdownDate);
 }
+
+// Подгрузка комментариев кнопкой
+document.addEventListener('DOMContentLoaded', function() {
+    const loadMoreBtn = document.getElementById('load-more');
+
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', async function() {
+            const btn = this;
+            const spinner = btn.querySelector('.spinner-border');
+            const nextPage = btn.dataset.nextPage;
+            const baseUrl = btn.dataset.url;
+
+            // Формируем URL с параметрами
+            const url = new URL(baseUrl, window.location.origin);
+            url.searchParams.set('page', nextPage);
+
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+
+            try {
+                console.log('Fetching:', url.toString());
+
+                const response = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('Received data:', data);
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                if (data.html) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data.html, 'text/html');
+                    const newElements = doc.body.children;
+
+                    const commentsContainer = document.getElementById('comments-container');
+                    while (newElements.length > 0) {
+                        commentsContainer.appendChild(newElements[0]);
+                    }
+
+                    if (data.has_next) {
+                        btn.dataset.nextPage = data.next_page;
+                    } else {
+                        btn.remove();
+                    }
+                }
+            } catch (error) {
+                console.error('Error details:', {
+                    error: error.message,
+                    stack: error.stack
+                });
+                alert(`Ошибка загрузки: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+            }
+        });
+    }
+});
+
+// Обработчик для подгрузки отзывов
+document.addEventListener('DOMContentLoaded', function() {
+    const loadMoreReviewsBtn = document.getElementById('load-more-reviews');
+
+    if (loadMoreReviewsBtn) {
+        loadMoreReviewsBtn.addEventListener('click', async function() {
+            const btn = this;
+            const spinner = btn.querySelector('.spinner-border');
+            const nextPage = btn.dataset.nextPage;
+            const baseUrl = btn.dataset.url;
+
+            const url = new URL(baseUrl, window.location.origin);
+            url.searchParams.set('reviews_page', nextPage);
+            url.searchParams.set('is_ajax', '1');
+
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+                const data = await response.json();
+
+                if (data.html) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data.html, 'text/html');
+                    const newElements = doc.body.children;
+
+                    const reviewsContainer = document.getElementById('reviews-container');
+                    while (newElements.length > 0) {
+                        reviewsContainer.appendChild(newElements[0]);
+                    }
+
+                    if (data.has_next) {
+                        btn.dataset.nextPage = data.next_page;
+                    } else {
+                        btn.remove();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+                alert(`Ошибка загрузки: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+            }
+        });
+    }
+});
+
+
+// Обработка редактирования комментариев и отзывов
+document.addEventListener('click', function(e) {
+    // Показать форму редактирования при клике на ✎
+    if (e.target.classList.contains('btn-edit')) {
+        const commentBlock = e.target.closest('.review_item');
+        const editForm = commentBlock.querySelector('.edit-mode');
+        editForm.style.display = 'block';
+    }
+
+    // Скрыть форму при клике на "Отмена"
+    if (e.target.classList.contains('cancel-edit')) {
+        const editForm = e.target.closest('.edit-mode');
+        editForm.style.display = 'none';
+    }
+});
+
+// Исправленный универсальный обработчик отправки форм
+document.addEventListener('submit', async function(e) {
+    if (e.target.classList.contains('edit-comment-form') ||
+       e.target.classList.contains('edit-review-form')) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {'X-Requested-With': 'XMLHttpRequest'},
+            });
+
+            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+            const data = await response.json();
+            const parentBlock = form.closest('.review_item');
+
+            // Для комментариев
+            if (form.classList.contains('edit-comment-form')) {
+                const textElement = parentBlock.querySelector('.comment-text-section');
+                const dateElement = parentBlock.querySelector('small');
+
+                if (textElement) textElement.textContent = data.text;
+                if (dateElement && data.updated_at) {
+                    dateElement.innerHTML = `
+                        ${parentBlock.querySelector('.comment-data-section').textContent}
+                        (изменено: ${data.updated_at})
+                    `;
+                }
+            }
+
+            // Для отзывов
+            if (form.classList.contains('edit-review-form')) {
+                const textElement = parentBlock.querySelector('.review-text-section');
+                const starsContainer = parentBlock.querySelector('.stars-container');
+
+                if (textElement) textElement.textContent = data.text;
+                if (starsContainer) starsContainer.innerHTML = generateStars(data.star);
+            }
+
+            form.closest('.edit-mode').style.display = 'none';
+
+        } catch (error) {
+            console.error('Ошибка:', {
+                error: error.message,
+                url: form.action
+            });
+        }
+    }
+});
+
+// Генерация HTML для звезд
+function generateStars(rating) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        stars += i <= rating
+            ? '<i class="fa fa-star"></i>'
+            : '<i class="fa fa-star-o"></i>';
+    }
+    return stars;
+}
+
+document.querySelectorAll('.btn-edit').forEach(button => {
+    button.addEventListener('click', () => {
+        const commentBlock = button.closest('.review_item');
+        const editForm = commentBlock.querySelector('.edit-mode');
+        editForm.style.display = 'block'; // Показываем форму
+    });
+});
+
+
+// Исправленный обработчик для кнопки "Отмена"
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('cancel-edit')) {
+        const editForm = e.target.closest('.edit-mode');
+        if (!editForm) return;
+
+        editForm.style.display = 'none';
+
+        // Сброс значений только если есть элементы
+        const textarea = editForm.querySelector('textarea');
+        const select = editForm.querySelector('select');
+
+        if (textarea) textarea.value = editForm.dataset.originalText;
+        if (select) select.value = editForm.dataset.originalStar;
+    }
+});
+
+// Исправленное сохранение исходных значений
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('btn-edit')) {
+        const form = e.target.closest('.review_item').querySelector('.edit-mode');
+        if (!form) return;
+
+        form.dataset.originalText = form.querySelector('textarea').value;
+        const select = form.querySelector('select');
+        if (select) form.dataset.originalStar = select.value;
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация Nice Select
+    $('select#sortProducts').niceSelect();
+
+    // Обработчик изменения для кастомного виджета
+    $('select#sortProducts').on('change', function() {
+        const selectedValue = $(this).val();
+        const url = new URL(window.location.href);
+        url.searchParams.set('sort', selectedValue);
+        window.location.href = url.toString();
+    });
+});

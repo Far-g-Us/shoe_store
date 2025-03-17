@@ -381,6 +381,25 @@ p.hover-text.hover-custom {
   gap: 1rem;
 }
 
+#comments-container {
+    transition: opacity 0.3s ease;
+}
+
+.load-more {
+    margin: 20px 0;
+    margin-left: 40px;
+    text-align: start;
+}
+
+.load-more-wrapper {
+    margin: 25px 0;
+}
+
+.spinner-border {
+    vertical-align: middle;
+    margin-left: 8px;
+}
+
 
 .exclusive-deal-area .exclusive-right .product-details .price .h6-price {
   font-size: 14px;
