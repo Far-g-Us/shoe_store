@@ -24,8 +24,10 @@ class ProductListView(FilterView):
     filterset_class = ShoesFilter
     context_object_name = 'shoes'
     template_name = 'product_list.html'
-    paginate_by = 6
 
+
+    def get_paginate_by(self, queryset):
+        return int(self.request.GET.get('per_page', 6))
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -33,14 +35,14 @@ class ProductListView(FilterView):
         print('Параметр сортировки:', self.request.GET.get('sort'))
         # Сортировка
         sort = self.request.GET.get('sort')
-        if sort == 'name_asc':
-            queryset = queryset.order_by('name')
-        elif sort == 'name_desc':
-            queryset = queryset.order_by('-name')
-        elif sort == 'price_asc':
-            queryset = queryset.order_by('price')
-        elif sort == 'price_desc':
-            queryset = queryset.order_by('-price')
+        sorting_map = {
+            'name_asc': 'name',
+            'name_desc': '-name',
+            'price_asc': 'price',
+            'price_desc': '-price'
+        }
+        if sort in sorting_map:
+            queryset = queryset.order_by(sorting_map[sort])
 
         search_query = self.request.GET.get('q')
 
@@ -81,21 +83,28 @@ class ProductListView(FilterView):
         return queryset
 
     def get_context_data(self, **kwargs):
-        ##------------------------------------------------------##
-        # print(self.request.GET)
         context = super().get_context_data(**kwargs)
-        # Обработка товаров для пагинации
-        # shoes = context['shoes']
-        paginator = context['paginator']
+        ##------------------------------------------------------##
         page_obj = context['page_obj']
-        page_numbers = [n for n in paginator.page_range if n > page_obj.number - 4 and n < page_obj.number + 4]
+        page_numbers = []
+        for i in range(max(1, page_obj.number - 2), min(page_obj.paginator.num_pages + 1, page_obj.number + 3)):
+            page_numbers.append(i)
         context['page_numbers'] = page_numbers
         ##------------------------------------------------------##
-        # Добавление параметров фильтрации в URL-адрес
+        # Параметры фильтрации
         filter_params = self.request.GET.copy()
-        filter_params._mutable = True
-        filter_params.pop('page', None)
-        context['filter_params'] = urlencode(filter_params)
+
+        if 'page' in filter_params:
+            del filter_params['page']
+        if 'per_page' in filter_params:
+            del filter_params['per_page']
+
+        # Сохраняем как строку
+        context['filter_params'] = filter_params.urlencode()
+
+        # Текущее значение per_page
+        context['current_per_page'] = self.get_paginate_by(self.get_queryset())
+
         context['search_query'] = self.request.GET.get('q', '')
         # Выбираем все товары
         context['show_products'] = Shoes.objects.all()[:12]
@@ -107,7 +116,6 @@ class ProductListView(FilterView):
         context['filter'] = ShoesFilter(self.request.GET, queryset=self.get_queryset())
         context['countries'] = CountryOfManufacture.objects.all()
         context['selected_categories'] = self.request.GET.getlist('category')
-        context['filter_params'] = self.request.GET.copy()
         context['categories'] = Category.objects.all()
         category_url = self.kwargs.get('url')
         if category_url:

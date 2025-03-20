@@ -8,7 +8,9 @@ from django.contrib import messages
 #from django.conf import settings
 #from django.http import JsonResponse
 
-
+class CartMixin:
+    def get_cart(self, user):
+        return Cart.objects.get_or_create(user=user)
 
 class IndexView(ListView):
     model = Shoes
@@ -16,28 +18,16 @@ class IndexView(ListView):
     template_name = 'index.html'
     context_object_name = 'shoes'
 
-    def __init__(self, url=None):
-        self.url = url
-
     def get_object(self):
         return Shoes.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Выбираем последние добавленные товары
-        latest_products = Shoes.objects.filter(available=True).order_by('-created_at')[:9]
-
-        # Выбираем только товары, не доступные для продажи
-        available_products = Shoes.objects.filter(available=False).order_by('-created_at')[:9]
-
-        # Выбираем только товары у которых есть скидка
-        discounted_products = Shoes.objects.filter(discount__gt=0, available=True)[:9]
-
         context.update({
-            'latest_products': latest_products,
-            'available_products': available_products,
-            'discounted_products': discounted_products,
+            'latest_products': Shoes.objects.filter(available=True).order_by('-created_at')[:6],
+            'available_products': Shoes.objects.filter(available=False).order_by('-created_at')[:6],
+            'discounted_products': Shoes.objects.filter(discount__gt=0, available=True)[:9],
             'banners': Banner.objects.filter(available=True).select_related('product'),
             'special_offers': SpecialOffer.objects.filter(available=True),
         })

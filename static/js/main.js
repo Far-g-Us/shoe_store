@@ -592,3 +592,17 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = url.toString();
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация Nice Select для обоих селекторов
+    $('select#perPageSelect').niceSelect();
+
+    // Обработчик изменения через jQuery (как в рабочем примере)
+    $('select#perPageSelect').on('change', function() {
+        const selectedValue = $(this).val();
+        const url = new URL(window.location.href);
+        url.searchParams.set('per_page', selectedValue);
+        url.searchParams.delete('page'); // Сбрасываем страницу
+        window.location.href = url.toString();
+    });
+});

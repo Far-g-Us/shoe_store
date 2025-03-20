@@ -63,12 +63,12 @@
 							{% if page_obj.has_previous %}
 								{% if page_obj.number|add:'-3' > 1 %}
 							  		<li class="pagination__item">
-										<a href="?{% if request.GET.big_discount %}big_discount=1&{% endif %}q={{ search_query }}&{{ filter_params }}&page=1">1</a>
+										<a href="?{% if request.GET.big_discount %}big_discount=1&q={{ search_query }}&{{ filter_params }}&{% endif %}page=1&per_page={{ request.GET.per_page|default:6 }}">1</a>
 							  		</li>
 								{% endif %}
 								{% if page_obj.number|add:'-3' >= 3 %}
 							  		<li class="pagination__item pagination__item--dots">
-										<a href="?{% if request.GET.big_discount %}big_discount=1&{% endif %}q={{ search_query }}&{{ filter_params }}&page={{ page_obj.previous_page_number|add:'-3' }}">
+										<a href="?{% if request.GET.big_discount %}big_discount=1&q={{ search_query }}&{{ filter_params }}&{% endif %}page={{ page_obj.previous_page_number|add:'-3' }}&per_page={{ request.GET.per_page|default:6 }}">
 								  			<span class="pagination__link">...</span>
 										</a>
 							  		</li>
@@ -83,7 +83,7 @@
 										</li>
 							  		{% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
 										<li class="pagination__item">
-											<a class="pagination__link" href="?{% if request.GET.big_discount %}big_discount=1&{% endif %}q={{ search_query }}&{{ filter_params }}&page={{ i }}">{{ i }}</a>
+											<a class="pagination__link" href="?{% if request.GET.big_discount %}big_discount=1&q={{ search_query }}&{{ filter_params }}&{% endif %}page={{ i }}&per_page={{ request.GET.per_page|default:6 }}">{{ i }}</a>
 										</li>
 							  		{% endif %}
 								{% endfor %}
@@ -92,14 +92,14 @@
 						  	{% if page_obj.has_next %}
 								{% if page_obj.number|add:'3' < page_obj.paginator.num_pages %}
 							  		<li class="pagination__item pagination__item--dots">
-										<a href="?{% if request.GET.big_discount %}big_discount=1&{% endif %}q={{ search_query }}&{{ filter_params }}&page={{ page_obj.next_page_number|add:'3' }}">
+										<a href="?{% if request.GET.big_discount %}big_discount=1&q={{ search_query }}&{{ filter_params }}&{% endif %}page={{ page_obj.next_page_number|add:'3' }}&per_page={{ request.GET.per_page|default:6 }}">
 								  			<span class="pagination__link">...</span>
 										</a>
 							  		</li>
 								{% endif %}
 								{% if page_obj.number|add:'2' < page_obj.paginator.num_pages %}
 							  		<li class="pagination__item">
-										<a class="pagination__link" href="?{% if request.GET.big_discount %}big_discount=1&{% endif %}q={{ search_query }}&{{ filter_params }}&page={{ page_obj.paginator.num_pages }}">
+										<a class="pagination__link" href="?{% if request.GET.big_discount %}big_discount=1&q={{ search_query }}&{{ filter_params }}&{% endif %}page={{ page_obj.paginator.num_pages }}&per_page={{ request.GET.per_page|default:6 }}">
 								  			{{ page_obj.paginator.num_pages }}
 										</a>
 							  		</li>
@@ -179,32 +179,24 @@
 				<!-- Start Filter Bar -->
 				<div class="filter-bar d-flex flex-wrap align-items-center">
 					<div class="sorting mr-auto">
-						<select>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
+						<select id="perPageSelect">
+							<option value="6" {% if request.GET.per_page == "6" or not request.GET.per_page %}selected{% endif %}>6</option>
+							<option value="9" {% if request.GET.per_page == "9" %}selected{% endif %}>9</option>
+							<option value="12" {% if request.GET.per_page == "12" %}selected{% endif %}>12</option>
+							<option value="15" {% if request.GET.per_page == "15" %}selected{% endif %}>15</option>
 						</select>
 					</div>
-<!--					<div class="pagination">-->
-<!--					{% for page_num in page_numbers %}-->
-<!--						{% if page_obj.number == page_num %}-->
-<!--							<a class="page-item active">{{ page_num }}</a>-->
-<!--						{% else %}-->
-<!--							<a href="?page={{ page_num }}" class="page-item">{{ page_num }}</a>-->
-<!--						{% endif %}-->
-<!--					{% endfor %}-->
-<!--					</div>-->
 					<div>
 						<ul class="pagination">
 							{% if page_obj.has_previous %}
 								{% if page_obj.number|add:'-3' > 1 %}
 							  		<li class="pagination__item">
-										<a href="?{% if request.GET.big_discount %}big_discount=1&{% endif %}q={{ search_query }}&{{ filter_params }}&page=1">1</a>
+										<a href="?{% if request.GET.big_discount %}big_discount=1&q={{ search_query }}&{{ filter_params }}&{% endif %}page=1&per_page={{ request.GET.per_page|default:6 }}">1</a>
 							  		</li>
 								{% endif %}
 								{% if page_obj.number|add:'-3' >= 3 %}
 							  		<li class="pagination__item pagination__item--dots">
-										<a href="?{% if request.GET.big_discount %}big_discount=1&{% endif %}q={{ search_query }}&{{ filter_params }}&page={{ page_obj.previous_page_number|add:'-3' }}">
+										<a href="?{% if request.GET.big_discount %}big_discount=1&q={{ search_query }}&{{ filter_params }}&{% endif %}page={{ page_obj.previous_page_number|add:'-3' }}&per_page={{ request.GET.per_page|default:6 }}">
 								  			<span class="pagination__link">...</span>
 										</a>
 							  		</li>
@@ -218,7 +210,7 @@
 										</li>
 							  		{% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
 										<li class="pagination__item">
-											<a class="pagination__link" href="?{% if request.GET.big_discount %}big_discount=1&{% endif %}q={{ search_query }}&{{ filter_params }}&page={{ i }}">{{ i }}</a>
+											<a class="pagination__link" href="?{% if request.GET.big_discount %}big_discount=1&q={{ search_query }}&{{ filter_params }}&{% endif %}page={{ i }}&per_page={{ request.GET.per_page|default:6 }}">{{ i }}</a>
 										</li>
 							  		{% endif %}
 								{% endfor %}
@@ -226,33 +218,20 @@
 						  	{% if page_obj.has_next %}
 								{% if page_obj.number|add:'3' < page_obj.paginator.num_pages %}
 							  		<li class="pagination__item pagination__item--dots">
-										<a href="?{% if request.GET.big_discount %}big_discount=1&{% endif %}q={{ search_query }}&{{ filter_params }}&page={{ page_obj.next_page_number|add:'3' }}">
+										<a href="?{% if request.GET.big_discount %}big_discount=1&q={{ search_query }}&{{ filter_params }}&{% endif %}page={{ page_obj.next_page_number|add:'3' }}&per_page={{ request.GET.per_page|default:6 }}">
 								  			<span class="pagination__link">...</span>
 										</a>
 							  		</li>
 								{% endif %}
 								{% if page_obj.number|add:'2' < page_obj.paginator.num_pages %}
 							  		<li class="pagination__item">
-										<a class="pagination__link" href="?{% if request.GET.big_discount %}big_discount=1&{% endif %}q={{ search_query }}&{{ filter_params }}&page={{ page_obj.paginator.num_pages }}">
+										<a class="pagination__link" href="?{% if request.GET.big_discount %}big_discount=1&q={{ search_query }}&{{ filter_params }}&{% endif %}page={{ page_obj.paginator.num_pages }}&per_page={{ request.GET.per_page|default:6 }}">
 								  			{{ page_obj.paginator.num_pages }}
 										</a>
 							  		</li>
 								{% endif %}
 						  	{% endif %}
 						</ul>
-<!--						<div class="pagination">-->
-<!--							{% with page_numbers=page_obj.paginator.page_range %}-->
-<!--								{% for page_num in page_numbers %}-->
-<!--									{% if page_obj.number == page_num %}-->
-<!--										<a class="page-item active">{{ page_num }}</a>-->
-<!--									{% elif page_num > page_obj.number|add:'-4' and page_num < page_obj.number|add:'4' %}-->
-<!--										<a href="?{{ filter_params }}&page={{ page_num }}" class="page-item">{{ page_num }}</a>-->
-<!--									{% elif page_num == 1 or page_num == page_obj.paginator.num_pages or page_num == page_obj.number|add:'-3' or page_num == page_obj.number|add:'3' %}-->
-<!--										<a href="?{{ filter_params }}&page={{ page_num }}" class="page-item">{{ page_num }}</a>-->
-<!--									{% endif %}-->
-<!--								{% endfor %}-->
-<!--							{% endwith %}-->
-<!--						</div>-->
 					</div>
 				</div>
 				<!-- End Filter Bar -->
@@ -307,23 +286,4 @@
 	</section>
 	<!-- End related-product Area -->
 </div>
-
-<!--    {% for shoe in shoes %}-->
-<!--    <div class="card mb-3">-->
-<!--        <div class="row">-->
-<!--            <div class="col-4">-->
-<!--                <img src="{{ shoe.main_image.url }}" class="card-img-top" alt="{{ shoe.name }}">-->
-<!--            </div>-->
-<!--            <div class="col-8">-->
-<!--                <div class="card-body">-->
-<!--                    <h5 class="card-title">{{ shoe.name }}</h5>-->
-<!--                    <div class="card-subtitle">{{ shoe.author.username }}</div>-->
-<!--                    <p class="card-text">{{ shoe.description }}</p>-->
-<!--                    <a href="{% url 'product_by_category' shoe.category.url %}" class="btn btn-primary">{{ shoe.category.name }}</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    {% endfor %}-->
-
 {% endblock content %}
